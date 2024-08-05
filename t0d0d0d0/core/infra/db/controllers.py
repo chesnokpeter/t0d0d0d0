@@ -36,11 +36,11 @@ class Controller(Generic[T]):
         stmt = insert(self.model).values(**data)
         stmt = stmt.returning(self.model)
         return await self.session.scalar(stmt)
-    async def offset(self, offset: int = 0, limit: int = 10, order = None, **data) -> List[List[Optional[T]]]:
+    async def offset(self, offset: int = 0, limit: int = None, order = None, **data) -> Optional[List[T]]:
         stmt = select(self.model).offset(offset).limit(limit).order_by(order).filter_by(**data)
         res = await self.session.execute(stmt)
         res = res.all()
-        return res
+        return [i[0] for i in res]
     async def update(self, id: int, **data) -> T:
         query = (
             update(self.model)
@@ -56,6 +56,12 @@ class UserController(Controller[USER]):
 
 class TaskController(Controller[TASK]):
     model = TASK
+    async def get_by_date(self, offset: int = 0, limit: int = None, order = None, **data) -> Optional[List[TASK]]:
+        stmt = select(self.model).offset(offset).limit(limit).order_by(self.model.date.desc()).filter_by(**data).filter(self.model.date.isnot(None))
+        res = await self.session.execute(stmt)
+        res = res.all()
+        return [i[0] for i in res]
+
 
 class ProjectController(Controller[PROJECT]):
     model = PROJECT

@@ -14,3 +14,10 @@ async def new_project(data:NewProjectSch, uow=uowdep(infra()), credentials = Sec
     return r.response
 
 
+@projectRouter.get('/getProjects') 
+async def new_project( uow=uowdep(infra()), credentials = Security(accessSecure)):
+    s = await ProjectService(uow).getProjects(user_id=int(credentials["id"]))
+    r = Answer.OkAnswerModel('project', 'project', data=s)
+    return r.response
+
+

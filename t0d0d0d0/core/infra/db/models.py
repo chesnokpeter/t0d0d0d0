@@ -34,6 +34,9 @@ class TaskModel(NewTaskModel):
 
 class CleanTaskModel(NewTaskModel):...
 
+class CleanGetTasksModel(NewTaskModel):
+    project_name: Optional[str]
+
 
 class NewProjectModel(BaseModel):
     name: str

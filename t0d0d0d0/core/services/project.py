@@ -18,3 +18,12 @@ class ProjectService:
             p = await self.uow.project.add(**p.model_dump())
             await self.uow.commit()
             return CleanProjectModel(**p.model().model_dump())
+        
+    async def getProjects(self, user_id:int) -> list[CleanProjectModel]:
+        """required: database"""
+        async with self.uow:
+            u = await self.uow.user.get_one(id=user_id)
+            if not u: raise AuthException('User not found')
+            t = await self.uow.task.get(user_id=user_id)
+            return [CleanProjectModel(**i.model().model_dump()) for i in t]
+        

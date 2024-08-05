@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
 from t0d0d0d0.core.exceptions import BaseExtention
@@ -24,16 +24,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get('/ping') 
+apiRouter = APIRouter(prefix='/api', tags=['api'])
+
+@apiRouter.get('/ping') 
 async def ping():
     return 'pong'
 
-app.include_router(userRouter)
-app.include_router(taskRouter)
-app.include_router(projectRouter)
+
+
+apiRouter.include_router(userRouter)
+apiRouter.include_router(taskRouter)
+apiRouter.include_router(projectRouter)
 
 @app.exception_handler(BaseExtention)
 async def exception_handler(res, exc: BaseExtention):  
     return Answer.ErrAnswer(message=exc.errType, desc=exc.message, statuscode=exc.statuscode).make_resp()
 
 
+app.include_router(apiRouter)

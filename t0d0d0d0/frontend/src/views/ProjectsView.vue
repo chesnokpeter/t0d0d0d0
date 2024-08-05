@@ -1,14 +1,11 @@
 <template>
-<div class="container">
-    <logo class="logo"></logo>
-    <menu-comp sel="overview" class="menu"></menu-comp>
-    <div class="content">
-        <div class="inboxs">
-            inbox //
-            <div class="inbox"><div class="inbox-item" v-for="inbox in inboxs">{{ inbox[0] }}</div></div>
+    <div class="container">
+        <logo class="logo"></logo>
+        <menu-comp sel="projects" class="menu"></menu-comp>
+        <div class="content">
+            
         </div>
     </div>
-</div>
 </template>
 
 
@@ -18,11 +15,10 @@ import { request } from '@/modules/requester'
 import MenuComp from '../components/MenuComp.vue'
 import { onMounted } from 'vue';
 
-const inboxs = [['первый инбокс', ''], ['доделать бота', ''], ['выложить фул прокси', ''], ['сделать норм гх', '']]
 
 onMounted(async ()=> {
-    let r = request('/task/getInbox', 'GET', {}, true)
-    console.log(r);
+    // let r = request('/task/getInbox', 'GET', {}, true)
+    // console.log(r);
 })
 
 

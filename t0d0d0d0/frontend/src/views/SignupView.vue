@@ -6,11 +6,12 @@
             <div class="gray-text">get the authcode in the bot</div>
             <a href="https://t.me/t0d0d0d0bot" class="link">telegram bot</a>
             <div class="gray-text">authcode</div>
-            <input type="text" class="input" name="authcode" id="authcode">
+            <input type="text" class="input" name="authcode" id="authcode" v-model="authcode">
             <div class="gray-text">name</div>
-            <input type="text" class="input" name="name" id="name">
+            <input type="text" class="input" name="name" id="name" v-model="name">
             <button class="button" @click="signup">done</button>
             <router-link class="referer" to="/login">log in</router-link>
+            <div class="error">{{ error }}</div>
         </div>
     </div>
 </template>
@@ -19,11 +20,25 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import Logo from '../components/Logo.vue'
+import { ref } from 'vue'
 import { request } from '@/modules/requester'
 
+const authcode = ref('')
+const name = ref('') 
+const error = ref('') 
+
 async function signup() {
-    console.log(121211);
+    console.log(authcode);
+    let r = await request('/user/signup', 'POST', {name:name.value, authcode:authcode.value})
+    if (r.type === 'error' && r.message === 'Auth Code Error' | r.message === 'Auth Error') {
+        error.value = r.desc
+    } else {
+        error.value = ''
+        window.location = '/overview'
+    }
 }
+
+
 
 </script>
 
@@ -119,5 +134,8 @@ async function signup() {
         color: var(--black-color);
     }
 
+    .error {
+        color:var(--red-color);
+    }
 
 </style>

@@ -6,9 +6,10 @@
             <div class="gray-text">get the authcode in the bot</div>
             <a href="https://t.me/t0d0d0d0bot" class="link">telegram bot</a>
             <div class="gray-text">authcode</div>
-            <input type="text" class="input" name="authcode" id="authcode">
-            <button class="button">done</button>
+            <input type="text" class="input" name="authcode" id="authcode" v-model="authcode">
+            <button class="button" @click="login">done</button>
             <router-link class="referer" to="/signup">sign up</router-link>
+            <div class="error">{{ error }}</div>
         </div>
     </div>
 </template>
@@ -17,6 +18,21 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import Logo from '../components/Logo.vue'
+import { ref } from 'vue'
+import { request } from '@/modules/requester'
+
+const authcode = ref('')
+const error = ref('') 
+
+async function login() {
+    let r = await request('/user/login', 'POST', {authcode:authcode.value})
+    if (r.type === 'error' && r.message === 'Auth Code Error' | r.message === 'Auth Error') {
+        error.value = r.desc
+    } else {
+        error.value = ''
+        window.location = '/overview'
+    }
+}
 </script>
 
 
@@ -111,5 +127,7 @@ import Logo from '../components/Logo.vue'
         color: var(--black-color);
     }
 
-
+    .error {
+        color:var(--red-color);
+    }
 </style>

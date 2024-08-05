@@ -1,4 +1,4 @@
-from t0d0d0d0.core.infra.db.models import TaskModel, NewTaskModel, CleanTaskModel
+from t0d0d0d0.core.infra.db.models import TaskModel, NewTaskModel, CleanTaskModel, CleanGetTasksModel
 from t0d0d0d0.core.schemas.task import NewTaskSch
 from t0d0d0d0.core.uow import UnitOfWork
 from t0d0d0d0.core.exceptions import AuthException, ProjectException
@@ -30,3 +30,12 @@ class TaskService:
             if not u: raise AuthException('User not found')
             t = await self.uow.task.get(user_id=user_id, project_id=None, date=None, time=None)
             return [CleanTaskModel(**i.model().model_dump()) for i in t]
+        
+    async def getTasks(self, user_id:int) -> list[CleanGetTasksModel]:
+        """required: database"""
+        async with self.uow:
+            u = await self.uow.user.get_one(id=user_id)
+            if not u: raise AuthException('User not found')
+            t = await self.uow.task.get_by_date(user_id=user_id)
+            r = [CleanGetTasksModel(**i.model().model_dump(), project_name=i.project.name) if i.project else CleanGetTasksModel(**i.model().model_dump(), project_name=None) for i in t]
+            return r

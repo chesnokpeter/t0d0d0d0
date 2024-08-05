@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Security, Depends
+from fastapi import APIRouter, Security, Depends, Body
 from t0d0d0d0.core.depends import uowdep
 from t0d0d0d0.backend.answer import Answer
 from t0d0d0d0.core.schemas.user import SignUpSch
@@ -18,7 +18,7 @@ async def signup_user(data: SignUpSch, uow=uowdep(infra(memory=True))):
     return r.response
 
 @userRouter.post('/login')
-async def login_user(authcode:str, uow=uowdep(infra(memory=True))):
+async def login_user(authcode:str = Body(embed=True), uow=uowdep(infra(memory=True))):
     payload = await UserService(uow).login(authcode)
     r = Answer.OkAnswer('user logged', 'user logged', [{}])
     access_token = access.create_access_token(subject={'id':payload})
