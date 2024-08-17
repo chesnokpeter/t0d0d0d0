@@ -54,4 +54,5 @@ export default {
         color: var(--gray-color);
     }
 
+
 </style>

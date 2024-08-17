@@ -1,6 +1,6 @@
 from typing import List, Type, TypeVar, Generic, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import select, update, insert
+from sqlalchemy import select, update, insert, delete
 from t0d0d0d0.core.infra.db.tables import USER, AbsMODEL, PROJECT, TASK
 
 from abc import ABC, abstractmethod
@@ -49,6 +49,10 @@ class Controller(Generic[T]):
             .returning(self.model)
         ) 
         return await self.session.scalar(query)
+    async def delete(self, id:int):
+        stmt = (delete(self.model).where(self.model.id==id))
+        await self.session.execute(stmt)
+
 
 
 class UserController(Controller[USER]):

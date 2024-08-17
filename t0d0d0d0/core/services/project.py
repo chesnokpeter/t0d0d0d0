@@ -24,6 +24,6 @@ class ProjectService:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u: raise AuthException('User not found')
-            t = await self.uow.task.get(user_id=user_id)
+            t = await self.uow.project.get(user_id=user_id)
             return [CleanProjectModel(**i.model().model_dump()) for i in t]
         

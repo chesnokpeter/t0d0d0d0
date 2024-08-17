@@ -3,7 +3,7 @@
         <logo class="logo"></logo>
         <menu-comp sel="projects" class="menu"></menu-comp>
         <div class="content">
-            
+            <div class="project" v-for="(project, index) in projects" :key="index">{{ project }}</div>
         </div>
     </div>
 </template>
@@ -13,17 +13,19 @@
 import Logo from '../components/Logo.vue'
 import { request } from '@/modules/requester'
 import MenuComp from '../components/MenuComp.vue'
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
+let projects = ref([])
 
 onMounted(async ()=> {
-    // let r = request('/task/getInbox', 'GET', {}, true)
-    // console.log(r);
+    let r = await request('/project/getProjects', 'GET', {}, true)
+    for (let i = 0; i < r.data.length; i++) {
+        projects.value.push(r.data[i].name)
+        
+    }
 })
 
 
-// let r = await request('/task/getInbox', 'GET', jwtcheck=true)
-// console.log(r);
 
 
 
@@ -76,6 +78,20 @@ onMounted(async ()=> {
     left: -100px;
 }
 
+.content {
+    display: flex;
+    gap: 10px;
+    max-width: 600px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.project {
+    outline:1px solid var(--gray-color);
+    outline-offset:-1px;
+    padding: 3.5px;
+}
+
 @media (max-width: 750px) {
     .container {
         margin-top: 0px; 
@@ -90,7 +106,10 @@ onMounted(async ()=> {
         bottom: 0;
         width: 100%;
         left: 0;
+        flex-direction: row;
+        justify-content: space-between;
     }
+    
 
 }
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
-from t0d0d0d0.core.exceptions import BaseExtention
+from t0d0d0d0.core.exceptions import BaseException
 from t0d0d0d0.backend.answer import Answer
 
 from t0d0d0d0.backend.routes.user import userRouter
@@ -36,8 +36,8 @@ apiRouter.include_router(userRouter)
 apiRouter.include_router(taskRouter)
 apiRouter.include_router(projectRouter)
 
-@app.exception_handler(BaseExtention)
-async def exception_handler(res, exc: BaseExtention):  
+@app.exception_handler(BaseException)
+async def exception_handler(res, exc: BaseException):  
     return Answer.ErrAnswer(message=exc.errType, desc=exc.message, statuscode=exc.statuscode).make_resp()
 
 

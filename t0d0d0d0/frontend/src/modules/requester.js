@@ -32,20 +32,30 @@ export async function request(path, method, data, jwtcheck=false) {
             headers: {'Content-Type': 'application/json;charset=utf-8'}
         });
         const res = response.data;
-    
-        if (jwtcheck) {
-            let j = await jwtChecker(res);
-            return j
-        }
+
         return res
         
     } catch (error) {
+        console.log(error);
         const response = error.response.data
+        console.log(response);
         const res = response;
     
-        if (jwtcheck) {
-            let j = await jwtChecker(res);
-            return j
+        if (jwtcheck && res.type === 'error' && res.message == 'JWT Error') {
+            const req = await fetch(`/api/user/refresh`, {method: 'POST', headers:new Headers().append("Content-Type", "application/json")})
+            const res2 = await req.json()
+            if (res2.type === 'error' && res2.message == 'JWT Error') {
+                window.location = '/'
+            } else{
+                const response = await axios({
+                    method: method,
+                    url: `/api${path}`,
+                    data: data,
+                    headers: {'Content-Type': 'application/json;charset=utf-8'}
+                });
+                const res = response.data;
+                return res
+            }
         }
         return res
     } 
