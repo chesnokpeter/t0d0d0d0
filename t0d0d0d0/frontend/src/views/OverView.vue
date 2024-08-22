@@ -10,15 +10,23 @@
         <div class="calendar">
             <div class="calday" v-for="(c, i) in calendar" :key="i">
                 <div class="calday-title">{{ c.dprint() }}</div>
-                <div class="calday-tasks">
-                    <div class="calday-task" v-for="(t, i) in c.tasks" :key="i">{{ t.name }}</div>
+                    <div class="calday-tasks">
+                        <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in c.tasks" :key="i" @click="openModel(t.name, t.project_name, t.date, t.time)">
+                            <div class="calday-task-title">{{ t.name }}</div>
+                            <div class="calday-task-desc">
+                                <div class="calday-task-project">{{ taskdescprint(t.project_name, t.time) }}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
         <div class="backcal" @click="backcal"><</div>
         <div class="backcal" @click="nextcal">></div>
-        <!-- <div class="calendar" v-for="(date, i) in calendar" :key="i">{{ date.date }} <div>{{ date.tasks }}</div></div> -->
     </div>
+
+    <!-- <button @click="showModal = true">Open Modal</button> -->
+    <ModalWindow v-if="showModal" @close="showModal = false" kind="task" :name="nameModel" :project="projectModel" :date="dateModel" :time="timeModel"/>
+
 </div>
 </template>
 
@@ -29,10 +37,26 @@ import { request } from '@/modules/requester'
 import { calday } from '@/modules/calday'
 import MenuComp from '../components/MenuComp.vue'
 import { onMounted, ref, reactive } from 'vue';
+import ModalWindow from '@/components/ModalWindow.vue';
 
 const inboxs = ref([])
-let today = new calday(todaydate())
-let calendar = ref([])
+const today = new calday(todaydate())
+const calendar = ref([])
+const showModal = ref(false)
+
+const nameModel = ref()
+const projectModel = ref()
+const dateModel = ref()
+const timeModel = ref()
+
+function openModel(name, project, date, time) {
+    nameModel.value = name
+    projectModel.value = project
+    dateModel.value = date
+    timeModel.value = time
+    showModal.value = true
+}
+
 
 async function gettasksbydate(date) {
     let r = await request('/task/getTaskByDate', 'POST', {date:date}, true)
@@ -60,12 +84,30 @@ async function nextcal() {
     calendar.value = [...calendar.value];
 }
 
+function isdonetask(task) {
+    if (task.status == 'done') {
+        return true
+    } return false
+}
+
+function isstoptask(task) {
+    if (task.status == 'stop') {
+        return true
+    } return false
+}
+
 function todaydate() {
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`
+}
+
+function taskdescprint(project, time) {
+    if (project && time) {
+        return `${project} - ${time}`
+    } return project
 }
 
 onMounted(async ()=> {
@@ -85,23 +127,16 @@ onMounted(async ()=> {
 
 })
 
-
-
-
-
-
-
-
-
 </script>
 
 <style>
 #app{
     align-items: center;
 }
+
 </style>
 
-<style scoped>
+<style scoped lang="scss">
 .inboxs {
     display: flex;
     flex-direction: column;
@@ -153,14 +188,33 @@ onMounted(async ()=> {
     justify-content: space-between;
 }
 
-.calday {
+.calday, .calday-tasks {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
+
+.calday-task {
+    border: var(--gray-color) solid 1px;
+    &.isdonetask{
+        border: var(--green-color) solid 1px;
+    }
+    &.isstoptask{
+        border: var(--red-color) solid 1px;
+    }
+}
+
 .calday-title {
     text-decoration: underline ;
     color: var(--gray-color);
+}
+
+.calday-task-title {
+    font-size: 16px;
+}
+
+.calday-task-desc {
+    font-size: 12px;
 }
 
 @media (max-width: 750px) {

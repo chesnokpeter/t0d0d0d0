@@ -1,5 +1,5 @@
 from datetime import date as datetype
-from t0d0d0d0.core.infra.db.models import TaskModel, NewTaskModel, CleanTaskModel, CleanGetTasksModel, IdCleanTaskModel
+from t0d0d0d0.core.infra.db.models import TaskModel, NewTaskModel, CleanTaskModel, IdCleanGetTasksModel, IdCleanTaskModel
 from t0d0d0d0.core.schemas.task import NewTaskSch
 from t0d0d0d0.core.uow import UnitOfWork
 from t0d0d0d0.core.exceptions import AuthException, ProjectException, TaskException
@@ -38,13 +38,13 @@ class TaskService:
             r = [IdCleanTaskModel(**i.model().model_dump(), project_name=i.project.name) if i.project else IdCleanTaskModel(**i.model().model_dump(), project_name=None) for i in t]
             return r
         
-    async def getTaskByDate(self, user_id:int, date:datetype) -> list[IdCleanTaskModel]:
+    async def getTaskByDate(self, user_id:int, date:datetype) -> list[IdCleanGetTasksModel]:
         """required: database"""
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u: raise AuthException('User not found')
             t = await self.uow.task.get(user_id=user_id, date=date)
-            r = [IdCleanTaskModel(**i.model().model_dump(), project_name=i.project.name) if i.project else IdCleanTaskModel(**i.model().model_dump(), project_name=None) for i in t]
+            r = [IdCleanGetTasksModel(**i.model().model_dump(), project_name=i.project.name) if i.project else IdCleanGetTasksModel(**i.model().model_dump(), project_name=None) for i in t]
             return r
         
     async def delTask(self, user_id:int, id:str) -> None:

@@ -37,8 +37,8 @@ class CleanTaskModel(NewTaskModel):...
 class IdCleanTaskModel(CleanTaskModel):
     id: int
 
-class CleanGetTasksModel(NewTaskModel):
-    project_name: Optional[str]
+class IdCleanGetTasksModel(IdCleanTaskModel):
+    project_name: Optional[str] = None
 
 
 class NewProjectModel(BaseModel):

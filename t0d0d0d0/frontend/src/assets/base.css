@@ -29,14 +29,15 @@ body {
   --blue-color:#0088CC;
   --black-color:#121212;
 }
-
-
+  
+  
 .default-text{
-  color: var(--white-color);
-  font-size: 16px;
+    color: var(--white-color);
+    font-size: 16px;
 }
 
 .gray-text{
   color: var(--gray-color);
   font-size: 12px;
 }
+  
