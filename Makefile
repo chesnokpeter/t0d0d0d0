@@ -13,3 +13,6 @@ migration:
 
 init:
 	source .bash
+
+npminstall:
+	cd t0d0d0d0/frontend

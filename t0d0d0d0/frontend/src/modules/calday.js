@@ -98,6 +98,10 @@ export class calday {
     setTasks(tasks){
         this.tasks = tasks
     }
+
+    addTask(task){
+        this.tasks.push(task)
+    }
 }
 
 

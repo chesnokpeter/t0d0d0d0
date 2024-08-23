@@ -8,17 +8,32 @@
         <div class="label">date</div>
         <input id="datepic" type="text" v-model="ndate" class="opt" @input="onInput" />
         <div class="label">time</div>
-        <input type="time" v-model="ntime" class="opt"@input="onInput" />
+        <!-- <div class="time">
+            <input type="number" class="time-hours" @input="onInput" v-model="nhours">
+            :
+            <input type="number" class="time-minutes" @input="onInput" v-model="nminutes">
+            :
+            <input type="number" class="time-seconds" @input="onInput" v-model="nseconds">
+        </div> -->
+        <!-- <input type="time" step=1 v-model="ntime" class="opt"@input="onInput" /> -->
+        <vue-timepicker format="hh:mm:ss" hide-clear-button></vue-timepicker>
     </div>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref,  } from 'vue';
 import { useDatepicker } from 'vue-air-datepicker'
+import localeEn from 'air-datepicker/locale/en';
 import 'air-datepicker/air-datepicker.css';
 import '@/assets/custom_airdatepicker.css'
 
+import VueTimePicker from "vue3-timepicker";
+import "vue3-timepicker/dist/VueTimepicker.css";
+
 export default defineComponent({
+    components: {
+        "vue-timepicker": VueTimePicker,
+    },
     name: 'ModalWindow',
     emits: ['close'],
     props: {
@@ -63,12 +78,21 @@ export default defineComponent({
         const ndate = ref(props.date)
         const ntime = ref(props.time)
 
+        // const nhours = ntime.value.split(':')[0]
+        // const nminutes = ntime.value.split(':')[1]
+        // const nseconds = ntime.value.split(':')[2]
+
         useDatepicker('#datepic',{
             selectedDates: [ndate.value],
             isMobile:true,
+            locale: localeEn,
+            dateFormat: 'yyyy-MM-dd',
+            onSelect(date){
+                console.log(date);
+            }
             // inline: true,
         })
-        return { close, onInput, nname, nproject, ndate, ntime };
+        return { close, onInput, nname, nproject, ndate, ntime,  };
     },
 });
 </script>

@@ -7,9 +7,15 @@
             inbox //
             <div class="inbox"><div class="inbox-item" v-for="(inbox, index) in inboxs" :key="index">{{ inbox }}</div></div>
         </div>
+        <div class="calendar-nav">
+            <div class="backcal" @click="backcal"><</div>
+            <div class="calendar-nav-title">// calendar //</div>
+            <div class="backcal backcal2" @click="nextcal">></div>
+        </div>
         <div class="calendar">
             <div class="calday" v-for="(c, i) in calendar" :key="i">
                 <div class="calday-title">{{ c.dprint() }}</div>
+                <input class="calday-new" type="button" value="+" @click="addNewTask(c)">
                     <div class="calday-tasks">
                         <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in c.tasks" :key="i" @click="openModel(t.name, t.project_name, t.date, t.time)">
                             <div class="calday-task-title">{{ t.name }}</div>
@@ -20,8 +26,6 @@
                     </div>
                 </div>
             </div>
-        <div class="backcal" @click="backcal"><</div>
-        <div class="backcal" @click="nextcal">></div>
     </div>
 
     <!-- <button @click="showModal = true">Open Modal</button> -->
@@ -60,8 +64,12 @@ function openModel(name, project, date, time) {
 
 async function gettasksbydate(date) {
     let r = await request('/task/getTaskByDate', 'POST', {date:date}, true)
+    if (Object.keys(r.data[0]).length === 0) {
+        return []
+    }
     return r.data
 }
+
 async function backcal() {
     for (let i = 0; i < calendar.value.length; i++) {
         calendar.value[i].backDay()
@@ -70,7 +78,7 @@ async function backcal() {
         let t = await gettasksbydate(calendar.value[i].y_m_d())
         calendar.value[i].setTasks(t)
     }
-    calendar.value = [...calendar.value];
+    // calendar.value = [...calendar.value];
 }
 
 async function nextcal() {
@@ -108,6 +116,17 @@ function taskdescprint(project, time) {
     if (project && time) {
         return `${project} - ${time}`
     } return project
+}
+
+async function addNewTask(c) {
+    let r = await request('/task/newTask', 'POST', {name:'task', date:c.y_m_d()}, true)
+    c.addTask(r.data[0])
+    let task = r.data[0]
+    nameModel.value = task.name
+    projectModel.value = task.project
+    dateModel.value = task.date
+    timeModel.value = task.time
+    showModal.value = true
 }
 
 onMounted(async ()=> {
@@ -217,6 +236,45 @@ onMounted(async ()=> {
     font-size: 12px;
 }
 
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.calendar-nav-title {
+    color: var(--gray-color);
+}
+
+.backcal {
+    flex: 1;
+}
+
+.backcal:hover{
+    background-color: var(--gray-color);
+    color: var(--black-color);
+}
+
+.backcal2 {
+    text-align: end;
+}
+
+input{
+    border-color: none;
+    // padding: 10px;
+    background-color: var(--black-color);
+    border: none;
+    // border: var(--gray-color) solid 1px;
+    color: var(--white-color);
+    font-family: "Source Code Pro", monospace;
+    font-size: 16px;
+}
+
+input:hover{
+    background-color: var(--gray-color);
+    color: var(--black-color);
+}  
+
 @media (max-width: 750px) {
     .container {
         margin-top: 0px; 
@@ -236,5 +294,6 @@ onMounted(async ()=> {
     }
 
 }
+
 
 </style>
