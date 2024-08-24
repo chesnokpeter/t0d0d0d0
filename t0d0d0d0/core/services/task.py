@@ -1,7 +1,9 @@
 from datetime import date as datetype
+from datetime import time as timetype
 from t0d0d0d0.core.infra.db.models import TaskModel, NewTaskModel, CleanTaskModel, IdCleanGetTasksModel, IdCleanTaskModel
 from t0d0d0d0.core.schemas.task import NewTaskSch
 from t0d0d0d0.core.uow import UnitOfWork
+from t0d0d0d0.core.infra.db.enums import TaskStatus
 from t0d0d0d0.core.exceptions import AuthException, ProjectException, TaskException
 
 class TaskService: 
@@ -57,3 +59,15 @@ class TaskService:
             if t.user_id != user_id: raise AuthException
             await self.uow.task.delete(id=id)
             await self.uow.commit()
+
+    async def editProperty(self, user_id:int, id:str, **data) -> None:
+        """required: database"""
+        async with self.uow:
+            u = await self.uow.user.get_one(id=user_id)
+            if not u: raise AuthException('User not found')
+            t = await self.uow.task.get_one(id=id)
+            if not t: raise TaskException('task not found')
+            if t.user_id != user_id: raise AuthException
+            await self.uow.task.update(id, **data)
+            await self.uow.commit()
+

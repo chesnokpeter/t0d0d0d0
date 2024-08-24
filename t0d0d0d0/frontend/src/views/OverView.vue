@@ -15,14 +15,15 @@
         <div class="calendar">
             <div class="calday" v-for="(c, i) in calendar" :key="i">
                 <div class="calday-title">{{ c.dprint() }}</div>
-                <input class="calday-new" type="button" value="+" @click="addNewTask(c)">
                     <div class="calday-tasks">
-                        <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in c.tasks" :key="i" @click="openModel(t.name, t.project_name, t.date, t.time)">
+                        <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in c.tasks" :key="i" @click="openModel(t.name, t.project_id, t.date, t.time)">
                             <div class="calday-task-title">{{ t.name }}</div>
                             <div class="calday-task-desc">
                                 <div class="calday-task-project">{{ taskdescprint(t.project_name, t.time) }}</div>
                             </div>
                         </div>
+                        <input class="calday-new" type="button" value="+" @click="addNewTask(c)">
+
                     </div>
                 </div>
             </div>
@@ -63,7 +64,7 @@ function openModel(name, project, date, time) {
 
 
 async function gettasksbydate(date) {
-    let r = await request('/task/getTaskByDate', 'POST', {date:date}, true)
+    let r = await request('/task/get/taskByDate', 'POST', {date:date}, true)
     if (Object.keys(r.data[0]).length === 0) {
         return []
     }
@@ -119,7 +120,7 @@ function taskdescprint(project, time) {
 }
 
 async function addNewTask(c) {
-    let r = await request('/task/newTask', 'POST', {name:'task', date:c.y_m_d()}, true)
+    let r = await request('/task/new/task', 'POST', {name:'task', date:c.y_m_d()}, true)
     c.addTask(r.data[0])
     let task = r.data[0]
     nameModel.value = task.name
@@ -130,7 +131,7 @@ async function addNewTask(c) {
 }
 
 onMounted(async ()=> {
-    let r = await request('/task/getInbox', 'GET', {}, true)
+    let r = await request('/task/get/inbox', 'GET', {}, true)
     for (let i = 0; i < r.data.length; i++) {
         inboxs.value.push(r.data[i].name)
     }
@@ -210,7 +211,12 @@ onMounted(async ()=> {
 .calday, .calday-tasks {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
+
+}
+
+.calday {
+    min-width: 150px;
 }
 
 .calday-task {

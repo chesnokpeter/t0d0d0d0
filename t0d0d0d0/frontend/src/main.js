@@ -9,6 +9,5 @@ const app = createApp(App)
 const vad = createAirDatepicker({css:false})
 
 app.use(router)
-
 app.use(vad)
 app.mount('#app')

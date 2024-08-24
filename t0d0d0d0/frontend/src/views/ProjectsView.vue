@@ -18,7 +18,7 @@ import { onMounted, ref } from 'vue';
 let projects = ref([])
 
 onMounted(async ()=> {
-    let r = await request('/project/getProjects', 'GET', {}, true)
+    let r = await request('/project/get/projects', 'GET', {}, true)
     for (let i = 0; i < r.data.length; i++) {
         projects.value.push(r.data[i].name)
         
