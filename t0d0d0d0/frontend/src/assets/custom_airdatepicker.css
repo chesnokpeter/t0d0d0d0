@@ -49,9 +49,6 @@
 .air-datepicker-cell.-year-:hover {
     color: var(--black-color);
 }
-:root {
-    --adp-cell-background-color-selected: #121212;
-}
 
 .air-datepicker-nav {
     border-bottom: none;

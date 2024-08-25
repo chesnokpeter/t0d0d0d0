@@ -16,7 +16,7 @@
             <div class="calday" v-for="(c, i) in calendar" :key="i">
                 <div class="calday-title">{{ c.dprint() }}</div>
                     <div class="calday-tasks">
-                        <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in c.tasks" :key="i" @click="openModel(t.name, t.project_id, t.date, t.time)">
+                        <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in c.tasks" :key="i" @click="openModel(t.name, t.project_id, t.date, t.time, t.status)">
                             <div class="calday-task-title">{{ t.name }}</div>
                             <div class="calday-task-desc">
                                 <div class="calday-task-project">{{ taskdescprint(t.project_name, t.time) }}</div>
@@ -30,7 +30,7 @@
     </div>
 
     <!-- <button @click="showModal = true">Open Modal</button> -->
-    <ModalWindow v-if="showModal" @close="showModal = false" kind="task" :name="nameModel" :project="projectModel" :date="dateModel" :time="timeModel"/>
+    <ModalWindow v-if="showModal" @close="showModal = false" kind="task" :name="nameModal" :project="projectModal" :date="dateModal" :time="timeModal" :status="statusModal"/>
 
 </div>
 </template>
@@ -49,17 +49,19 @@ const today = new calday(todaydate())
 const calendar = ref([])
 const showModal = ref(false)
 
-const nameModel = ref()
-const projectModel = ref()
-const dateModel = ref()
-const timeModel = ref()
+const nameModal = ref()
+const projectModal = ref()
+const dateModal = ref()
+const timeModal = ref()
+const statusModal = ref()
 
-function openModel(name, project, date, time) {
-    nameModel.value = name
-    projectModel.value = project
-    dateModel.value = date
-    timeModel.value = time
+function openModel(name, project, date, time, status) {
+    nameModal.value = name
+    projectModal.value = project
+    dateModal.value = date
+    timeModal.value = time
     showModal.value = true
+    statusModal.value = status
 }
 
 
@@ -123,11 +125,12 @@ async function addNewTask(c) {
     let r = await request('/task/new/task', 'POST', {name:'task', date:c.y_m_d()}, true)
     c.addTask(r.data[0])
     let task = r.data[0]
-    nameModel.value = task.name
-    projectModel.value = task.project
-    dateModel.value = task.date
-    timeModel.value = task.time
+    nameModal.value = task.name
+    projectModal.value = task.project
+    dateModal.value = task.date
+    timeModal.value = task.time
     showModal.value = true
+    statusModal.value = task.status
 }
 
 onMounted(async ()=> {

@@ -1,0 +1,82 @@
+:deep(.vue-select .indicators-container){
+    display: none;
+}
+:deep(.vue-select .control){
+    border-radius: 0;
+    border: none;
+    background-color: var(--black-color);
+    border: var(--gray-color) solid 1px;
+}
+:deep(.vue-select .control.focused){
+    box-shadow: none;
+    border-color: unset;
+    background-color: var(--gray-color);
+    border: var(--gray-color) solid 1px;
+}
+:deep(.vue-select .value-container){
+    padding: 10px;
+}
+:deep(.vue-select .search-input) {
+    /* padding: 10px; */
+    font-size: 16px;
+    line-height: normal;
+    font-family: "Source Code Pro", monospace;
+}
+:deep(.vue-select .focused.menu-option.focused){
+    border-radius: 0;
+    border: 0;
+    /* border: var(--gray-color) solid 1px; */
+    background-color: var(--black-color);
+}
+:deep(.vue-select .menu-option){
+    padding: 10px;
+    font-family: "Source Code Pro", monospace;
+    background-color: var(--black-color);
+    color: var(--white-color);
+}
+:deep(.vue-select .menu-option:hover){
+    background-color: var(--white-color);
+    color: var(--black-color);
+}
+:deep(.vue-select .menu){
+    border-radius: 0;
+    margin-top: 0;
+    border: 1px solid var(--gray-color);
+    border: 0;
+    outline:1px solid var(--white-color);
+    outline-offset:-1px;
+}
+:deep(.vue-select .single-value){
+    color: var(--white-color);
+    line-height: normal;
+    font-family: "Source Code Pro", monospace;
+}
+:deep(.vue-select.open .value-container .single-value){
+    opacity: 1;
+    color: var(--black-color);
+}
+:deep(.vue-select .menu-option.selected){
+    background-color: var(--green-color);
+    color: var(--black-color);
+}
+:deep(.vue-select .menu-option.selected:hover){
+    outline:1px solid var(--green-color);
+    outline-offset:-1px;
+    color: var(--green-color);
+    background-color: var(--black-color);
+}
+:deep(.vue-select .focused.menu-option.focused:hover){
+    background-color: var(--white-color);
+    color: var(--black-color);
+    border: 0;
+}
+:deep(.vue-select .focused.selected.menu-option.focused.selected:hover){
+    outline:1px solid var(--green-color);
+    outline-offset:-1px;
+    color: var(--green-color);
+    background-color: var(--black-color);
+}
+:deep(.vue-select .focused.selected.menu-option.focused.selected){
+    color: var(--black-color);
+    background-color: var(--green-color);
+}
