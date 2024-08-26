@@ -9,6 +9,7 @@
             v-model="nproject"
             :options="projects"
             placeholder="..."
+            @option-selected="onInputProject"
         />
 
         <div class="label">date</div>
@@ -16,15 +17,30 @@
         <div class="label">time</div>
 
         <div class="time">
-            <input min="00" max="24" type="number" class="time-hours" @input="onInput" v-model="nhours">
+            <!-- <input min="00" max="24" type="number" class="time-hours" @input="onInput" v-model="nhours"> -->
+            <VueSelect
+                class="hours-select"
+                v-model="nhours"
+                :options="hours"
+                placeholder="..."
+                @option-selected="onInputTime"
+            />
             :
-            <input min="00" max="60" type="number" class="time-minutes" @input="onInput" v-model="nminutes">
+            <VueSelect
+                class="minutes-select"
+                v-model="nminutes"
+                :options="minutes"
+                placeholder="..."
+                @option-selected="onInputTime"
+            />
+            <!-- <input min="00" max="60" type="number" class="time-minutes" @input="onInput" v-model="nminutes"> -->
         </div>
 
         <div class="label">status</div>
         <VueSelect
+            @option-selected="onInputStatus"
             v-model="nstatus"
-            :options="[{label:'backlog', value:'backlog'}, {label:'done', value:'done'}, {label:'stop', value:'stop'}]"
+            :options="[{label:'done', value:'done'}, {label:'backlog', value:'backlog'}, {label:'stop', value:'stop'}]"
             placeholder="..."
         />
     </div>
@@ -51,10 +67,9 @@ export default defineComponent({
     name: 'ModalWindow',
     emits: ['close'],
     props: {
-        kind: {
-            type: String,
-            required: false,
-            default: 'task'
+        id: {
+            type: Number,
+            required: true,
         },
         name: {
             type: String,
@@ -83,6 +98,7 @@ export default defineComponent({
     setup(props, { emit }) {
         const close = () => { emit('close') }
         let inputTimeout = null;
+        let inputTimeTimeout = null;
 
         const nname = ref(props.name)
         const nproject = ref(props.project)
@@ -92,10 +108,30 @@ export default defineComponent({
         if (Boolean(ntime.value) == false) {
             ntime.value = '00:00'
         }
-        const nhours = ntime.value.split(':')[0]
-        const nminutes = ntime.value.split(':')[1]
+        const nhours = ref(ntime.value.split(':')[0])
+        const nminutes = ref(ntime.value.split(':')[1])
 
         const projects = ref([])
+
+        function range(start, end, step = 1) {
+            return Array.from({ length: Math.floor((end - start) / step) + 1 }, (v, i) => start + i * step);
+        }
+
+        const hours = ref([])
+        const minutes = ref([])
+
+
+        hours.value = range(0, 23).map(item => ({
+            ...item,
+            label: item.toString().padStart(2, '0'),
+            value: item.toString().padStart(2, '0'),
+        }));
+        minutes.value = range(0, 59).map(item => ({
+            ...item,
+            label: item.toString().padStart(2, '0'),
+            value: item.toString().padStart(2, '0'),
+        }));
+
         onMounted(async ()=> {
             let r = await request('/project/get/projects', 'GET', {}, true)
             projects.value = r.data.map(item => ({
@@ -105,57 +141,48 @@ export default defineComponent({
             }));
         })
 
-
         useDatepicker('#datepic',{
             selectedDates: [ndate.value],
             isMobile:true,
             locale: localeEn,
             dateFormat: 'yyyy-MM-dd',
             autoClose: true,
-            onSelect(date){
-                console.log(date);
+            onSelect: async(date) => {
+                await editTask('date', date.formattedDate)
             }
             // inline: true,
         })
 
+        async function editTask(type, edit) {
+            let r = await request(`/task/edit/${type}`, 'PATCH', {id:props.id, edit:edit}, true)
+            console.log(r);
+        }
 
-        function onInputName() {
+
+        async function onInputName() {
             if (inputTimeout) {
                 clearTimeout(inputTimeout);
             }
-            inputTimeout = setTimeout(() => {
-                console.log(nname);
+            inputTimeout = setTimeout(async () => {
+                await editTask('name', nname.value)
             }, 1000);
         }
 
-        function onInputProject() {
-            if (inputTimeout) {
-                clearTimeout(inputTimeout);
-            }
-            inputTimeout = setTimeout(() => {
-                console.log(nproject);
-            }, 1000);
+        async function onInputProject(option) {
+            await editTask('project', option.value)
         }
 
-        function onInputTime() {
-            if (inputTimeout) {
-                clearTimeout(inputTimeout);
-            }
-            inputTimeout = setTimeout(() => {
-                console.log(ntime);
-            }, 1000);
+        async function onInputStatus(option) {
+            await editTask('status', option.value)
         }
 
-        function onInput() {
-            if (inputTimeout) {
-                clearTimeout(inputTimeout);
-            }
-            inputTimeout = setTimeout(() => {
-                console.log(nname);
-            }, 1000);
+        async function onInputTime(option) {
+            await editTask('time', `${nhours.value}:${nminutes.value}`)
         }
 
-        return { close, onInputName, onInputProject, onInputTime, nname, nproject, ndate, ntime, nhours, nminutes, nstatus, projects  };
+
+
+        return { close, onInputName, onInputProject, onInputTime, onInputStatus, nname, nproject, ndate, ntime, nhours, nminutes, nstatus, projects, hours, minutes };
     },
 });
 </script>

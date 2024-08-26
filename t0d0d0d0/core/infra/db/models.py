@@ -15,10 +15,6 @@ class NewUserModel(BaseModel):
 class UserModel(NewUserModel):
     id: int
 
-class CleanUserModel(NewUserModel):...
-class IdCleanUserModel(CleanUserModel):
-    id: int
-
 
 
 class NewTaskModel(BaseModel):
@@ -33,11 +29,7 @@ class NewTaskModel(BaseModel):
 class TaskModel(NewTaskModel):
     id: int
 
-class CleanTaskModel(NewTaskModel):...
-class IdCleanTaskModel(CleanTaskModel):
-    id: int
-
-class IdCleanGetTasksModel(IdCleanTaskModel):
+class NameTaskModel(TaskModel):
     project_name: Optional[str] = None
 
 
@@ -47,7 +39,4 @@ class NewProjectModel(BaseModel):
     user_id: int
 
 class ProjectModel(NewProjectModel):
-    id: int
-class CleanProjectModel(NewProjectModel):...
-class IdCleanProjectModel(CleanProjectModel):
     id: int

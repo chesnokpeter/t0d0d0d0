@@ -16,13 +16,13 @@
             <div class="calday" v-for="(c, i) in calendar" :key="i">
                 <div class="calday-title">{{ c.dprint() }}</div>
                     <div class="calday-tasks">
-                        <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in c.tasks" :key="i" @click="openModel(t.name, t.project_id, t.date, t.time, t.status)">
+                        <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, ii) in c.tasks" :key="ii" @click="openModal(t.name, t.project_id, t.date, t.time, t.status, t.id, i)">
                             <div class="calday-task-title">{{ t.name }}</div>
                             <div class="calday-task-desc">
                                 <div class="calday-task-project">{{ taskdescprint(t.project_name, t.time) }}</div>
                             </div>
                         </div>
-                        <input class="calday-new" type="button" value="+" @click="addNewTask(c)">
+                        <input class="calday-new" type="button" value="+" @click="addNewTask(c, i)">
 
                     </div>
                 </div>
@@ -30,7 +30,7 @@
     </div>
 
     <!-- <button @click="showModal = true">Open Modal</button> -->
-    <ModalWindow v-if="showModal" @close="showModal = false" kind="task" :name="nameModal" :project="projectModal" :date="dateModal" :time="timeModal" :status="statusModal"/>
+    <ModalWindow v-if="showModal" @close="closeModal" :id="idModal" :name="nameModal" :project="projectModal" :date="dateModal" :time="timeModal" :status="statusModal"/>
 
 </div>
 </template>
@@ -54,16 +54,25 @@ const projectModal = ref()
 const dateModal = ref()
 const timeModal = ref()
 const statusModal = ref()
+const idModal = ref()
+const idCalday = ref()
 
-function openModel(name, project, date, time, status) {
+function openModal(name, project, date, time, status, id, idc) {
     nameModal.value = name
     projectModal.value = project
     dateModal.value = date
     timeModal.value = time
     showModal.value = true
     statusModal.value = status
+    idModal.value = id
+    idCalday.value = idc
 }
 
+async function closeModal() {
+    showModal.value = false
+    const t = await gettasksbydate(calendar.value[idCalday.value].y_m_d())
+    calendar.value[idCalday.value].setTasks(t)
+}
 
 async function gettasksbydate(date) {
     let r = await request('/task/get/taskByDate', 'POST', {date:date}, true)
@@ -78,7 +87,7 @@ async function backcal() {
         calendar.value[i].backDay()
         calendar.value[i].backDay()
         calendar.value[i].backDay()
-        let t = await gettasksbydate(calendar.value[i].y_m_d())
+        const t = await gettasksbydate(calendar.value[i].y_m_d())
         calendar.value[i].setTasks(t)
     }
     // calendar.value = [...calendar.value];
@@ -121,16 +130,18 @@ function taskdescprint(project, time) {
     } return project
 }
 
-async function addNewTask(c) {
-    let r = await request('/task/new/task', 'POST', {name:'task', date:c.y_m_d()}, true)
+async function addNewTask(c, idc) {
+    const r = await request('/task/new/task', 'POST', {name:'task', date:c.y_m_d()}, true)
     c.addTask(r.data[0])
-    let task = r.data[0]
+    const task = r.data[0]
     nameModal.value = task.name
     projectModal.value = task.project
     dateModal.value = task.date
     timeModal.value = task.time
     showModal.value = true
     statusModal.value = task.status
+    idModal.value = task.id
+    idCalday.value = idc
 }
 
 onMounted(async ()=> {

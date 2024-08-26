@@ -2,7 +2,7 @@ from fastapi import APIRouter, Security, Body
 from datetime import date as datetype
 from datetime import time as timetype
 from t0d0d0d0.core.depends import uowdep
-from t0d0d0d0.core.infra.db.models import CleanTaskModel, IdCleanTaskModel
+from t0d0d0d0.core.infra.db.models import TaskModel
 from t0d0d0d0.core.infra.db.enums import TaskStatus
 from t0d0d0d0.backend.answer import Answer, AnswerResModel
 from t0d0d0d0.core.schemas.task import NewTaskSch, EditTaskSch
@@ -11,13 +11,13 @@ from t0d0d0d0.core.depends import accessSecure, infra
 
 taskRouter = APIRouter(prefix='/task', tags=['task'])
 
-@taskRouter.post('/new/task', response_model=AnswerResModel[CleanTaskModel]) 
+@taskRouter.post('/new/task', response_model=AnswerResModel[TaskModel]) 
 async def new_task(data:NewTaskSch, uow=uowdep(infra()), credentials = Security(accessSecure)):
     s = await TaskService(uow).newTask(user_id=int(credentials["id"]), data=data)
     r = Answer.OkAnswerModel('task', 'task', data=s)
     return r.response
 
-@taskRouter.get('/get/inbox', response_model=AnswerResModel[CleanTaskModel]) 
+@taskRouter.get('/get/inbox', response_model=AnswerResModel[TaskModel]) 
 async def get_inbox(uow=uowdep(infra()), credentials = Security(accessSecure)):
     s = await TaskService(uow).getInbox(user_id=int(credentials["id"]))
     r = Answer.OkAnswerModel('task', 'task', data=s)
@@ -29,7 +29,7 @@ async def del_task(id:int = Body(embed=True), uow=uowdep(infra()), credentials =
     r = Answer.OkAnswer('task', 'task', data=[{}])
     return r.response
 
-@taskRouter.post('/get/taskByDate', response_model=AnswerResModel[IdCleanTaskModel]) 
+@taskRouter.post('/get/taskByDate', response_model=AnswerResModel[TaskModel]) 
 async def get_task_by_date(date:datetype = Body(embed=True), uow=uowdep(infra()), credentials = Security(accessSecure)):
     s = await TaskService(uow).getTaskByDate(user_id=int(credentials["id"]), date=date)
     r = Answer.OkAnswerModel('task', 'task', data=s)

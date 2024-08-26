@@ -80,3 +80,17 @@
     color: var(--black-color);
     background-color: var(--green-color);
 }
+:deep(.vue-select.hours-select .menu-option){
+    padding: 5px;
+}
+:deep(.vue-select.minutes-select .menu-option){
+    padding: 5px;
+}
+:deep(.vue-select.hours-select .menu){
+    max-height: 500px;
+    margin-top: -300px;
+}
+:deep(.vue-select.minutes-select .menu){
+    max-height: 500px;
+    margin-top: -300px;
+}

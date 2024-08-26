@@ -1,5 +1,5 @@
 from typing import Optional
-from t0d0d0d0.core.infra.db.models import NewUserModel, UserModel, CleanUserModel
+from t0d0d0d0.core.infra.db.models import NewUserModel, UserModel
 from t0d0d0d0.core.infra.memory.models import AuthCodeModel
 from t0d0d0d0.core.schemas.user import SignUpSch
 from t0d0d0d0.core.uow import  UnitOfWork
@@ -49,12 +49,12 @@ class UserService:
             await self.uow.memory.add(code, AuthCodeModel(tgid=tgid, tgusername=tgusername))
             return code
 
-    async def getUser(self, id:int) -> CleanUserModel:
+    async def getUser(self, id:int) -> UserModel:
         """required: database"""
         async with self.uow:
             u = await self.uow.user.get_one(id=id)
             if not u: raise AuthException('User not found')
-            return CleanUserModel(**u.model().model_dump())
+            return UserModel(**u.model().model_dump())
 
 
 
