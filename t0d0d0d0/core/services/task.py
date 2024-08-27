@@ -71,3 +71,10 @@ class TaskService:
             await self.uow.task.update(id, **data)
             await self.uow.commit()
 
+    async def getTaskById(self, user_id:int, id:str) -> TaskModel | None:
+        """required: database"""
+        async with self.uow:
+            u = await self.uow.user.get_one(id=user_id)
+            if not u: raise AuthException('User not found')
+            t = await self.uow.task.get_one(user_id=user_id, id=id)
+            return t.model()

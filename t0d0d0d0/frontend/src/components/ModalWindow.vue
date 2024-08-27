@@ -155,7 +155,6 @@ export default defineComponent({
 
         async function editTask(type, edit) {
             let r = await request(`/task/edit/${type}`, 'PATCH', {id:props.id, edit:edit}, true)
-            console.log(r);
         }
 
 
@@ -165,7 +164,7 @@ export default defineComponent({
             }
             inputTimeout = setTimeout(async () => {
                 await editTask('name', nname.value)
-            }, 1000);
+            }, 300);
         }
 
         async function onInputProject(option) {

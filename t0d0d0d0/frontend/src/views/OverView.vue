@@ -5,7 +5,7 @@
     <div class="content">
         <div class="inboxs">
             inbox //
-            <div class="inbox"><div class="inbox-item" v-for="(inbox, index) in inboxs" :key="index">{{ inbox }}</div></div>
+            <div class="inbox"><div class="inbox-item" v-for="(inbox, index) in inboxs" :key="index" @dragstart="onDragStart($event, inbox)" draggable="true">{{ inbox.name }}</div></div>
         </div>
         <div class="calendar-nav">
             <div class="backcal" @click="backcal"><</div>
@@ -15,7 +15,7 @@
         <div class="calendar">
             <div class="calday" v-for="(c, i) in calendar" :key="i">
                 <div class="calday-title">{{ c.dprint() }}</div>
-                    <div class="calday-tasks">
+                    <div class="calday-tasks" @drop="onDrop($event, c.y_m_d())" @dragover.prevent @dragenter.prevent>
                         <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, ii) in c.tasks" :key="ii" @click="openModal(t.name, t.project_id, t.date, t.time, t.status, t.id, i)">
                             <div class="calday-task-title">{{ t.name }}</div>
                             <div class="calday-task-desc">
@@ -29,7 +29,6 @@
             </div>
     </div>
 
-    <!-- <button @click="showModal = true">Open Modal</button> -->
     <ModalWindow v-if="showModal" @close="closeModal" :id="idModal" :name="nameModal" :project="projectModal" :date="dateModal" :time="timeModal" :status="statusModal"/>
 
 </div>
@@ -70,8 +69,20 @@ function openModal(name, project, date, time, status, id, idc) {
 
 async function closeModal() {
     showModal.value = false
-    const t = await gettasksbydate(calendar.value[idCalday.value].y_m_d())
-    calendar.value[idCalday.value].setTasks(t)
+
+    let t = await gettasksbyid(idModal.value)
+    for (let i = 0; i < calendar.value.length; i++) {
+        if (t.date == calendar.value[i].y_m_d()) {
+            const tt = await gettasksbydate(calendar.value[i].y_m_d())
+            calendar.value[i].setTasks(tt)
+        }
+        
+    }
+    if (t.date != calendar.value[idCalday.value].y_m_d()) {        
+        t = await gettasksbydate(calendar.value[idCalday.value].y_m_d())
+        calendar.value[idCalday.value].setTasks(t)
+    }
+    
 }
 
 async function gettasksbydate(date) {
@@ -80,6 +91,10 @@ async function gettasksbydate(date) {
         return []
     }
     return r.data
+}
+async function gettasksbyid(data) {
+    let r = await request('/task/get/taskById', 'POST', {id:data}, true)
+    return r.data[0]
 }
 
 async function backcal() {
@@ -101,7 +116,7 @@ async function nextcal() {
         let t = await gettasksbydate(calendar.value[i].y_m_d())
         calendar.value[i].setTasks(t)
     }
-    calendar.value = [...calendar.value];
+    // calendar.value = [...calendar.value];
 }
 
 function isdonetask(task) {
@@ -144,20 +159,39 @@ async function addNewTask(c, idc) {
     idCalday.value = idc
 }
 
+function onDragStart(e, task) {
+    e.dataTransfer.dropEffect = 'move'
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('task_id', task.id)
+}
+
+async function onDrop(e, date) {
+    const task_id = e.dataTransfer.getData('task_id')
+    console.log(task_id);
+    await request('/task/edit/date', 'PATCH', {id:task_id, edit:date}, true)
+    for (let i = 0; i < calendar.value.length; i++) {
+        if (date == calendar.value[i].y_m_d()) {
+            const tt = await gettasksbydate(date)
+            calendar.value[i].setTasks(tt)
+        }
+        
+    }
+}
+
 onMounted(async ()=> {
     let r = await request('/task/get/inbox', 'GET', {}, true)
     for (let i = 0; i < r.data.length; i++) {
-        inboxs.value.push(r.data[i].name)
+        inboxs.value.push(r.data[i])
     }
 
-    let ts = await gettasksbydate(today.y_m_d())
-    calendar.value.push(reactive(new calday(today.y_m_d(), ts)))
+    let t = await gettasksbydate(today.y_m_d())
+    calendar.value.push(reactive(new calday(today.y_m_d(), t)))
     today.nextDay()
-    ts = await gettasksbydate(today.y_m_d())
-    calendar.value.push(reactive(new calday(today.y_m_d(), ts)))
+    t = await gettasksbydate(today.y_m_d())
+    calendar.value.push(reactive(new calday(today.y_m_d(), t)))
     today.nextDay()
-    ts = await gettasksbydate(today.y_m_d())
-    calendar.value.push(reactive(new calday(today.y_m_d(), ts)))
+    t = await gettasksbydate(today.y_m_d())
+    calendar.value.push(reactive(new calday(today.y_m_d(), t)))
 
 })
 
@@ -187,7 +221,7 @@ onMounted(async ()=> {
 .inbox-item {
     outline:1px solid var(--gray-color);
     outline-offset:-1px;
-    padding: 3.5px;
+    padding: 0px;
 }
 
 * {
@@ -234,6 +268,11 @@ onMounted(async ()=> {
 }
 
 .calday-task {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
     border: var(--gray-color) solid 1px;
     &.isdonetask{
         border: var(--green-color) solid 1px;
@@ -242,6 +281,8 @@ onMounted(async ()=> {
         border: var(--red-color) solid 1px;
     }
 }
+
+
 
 .calday-title {
     text-decoration: underline ;

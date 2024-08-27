@@ -35,6 +35,12 @@ async def get_task_by_date(date:datetype = Body(embed=True), uow=uowdep(infra())
     r = Answer.OkAnswerModel('task', 'task', data=s)
     return r.response
 
+@taskRouter.post('/get/taskById', response_model=AnswerResModel[TaskModel]) 
+async def get_task_by_date(id:int = Body(embed=True), uow=uowdep(infra()), credentials = Security(accessSecure)):
+    s = await TaskService(uow).getTaskById(user_id=int(credentials["id"]), id=id)
+    r = Answer.OkAnswerModel('task', 'task', data=s)
+    return r.response
+
 
 
 @taskRouter.patch('/edit/name') 
