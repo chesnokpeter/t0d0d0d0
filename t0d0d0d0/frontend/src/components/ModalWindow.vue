@@ -3,20 +3,21 @@
     <div class="modal">
         <div class="label">name</div>
         <input type="text" v-model="nname" class="opt" @input="onInputName" />
-        <div class="label">project</div>
 
-        <VueSelect
+        <div class="label" v-if="nkind=='task'" >project</div>
+
+        <VueSelect v-if="nkind=='task'"
             v-model="nproject"
             :options="projects"
             placeholder="..."
             @option-selected="onInputProject"
         />
 
-        <div class="label">date</div>
-        <input id="datepic" type="text" v-model="ndate" class="opt" />
-        <div class="label">time</div>
+        <div class="label" v-if="nkind=='task'" >date</div>
+        <input id="datepic" v-if="nkind=='task'" type="text" v-model="ndate" class="opt" />
+        <div class="label" v-if="nkind=='task'">time</div>
 
-        <div class="time">
+        <div class="time" v-if="nkind=='task'">
             <!-- <input min="00" max="24" type="number" class="time-hours" @input="onInput" v-model="nhours"> -->
             <VueSelect
                 class="hours-select"
@@ -36,8 +37,8 @@
             <!-- <input min="00" max="60" type="number" class="time-minutes" @input="onInput" v-model="nminutes"> -->
         </div>
 
-        <div class="label">status</div>
-        <VueSelect
+        <div class="label" v-if="nkind=='task'">status</div>
+        <VueSelect v-if="nkind=='task'"
             @option-selected="onInputStatus"
             v-model="nstatus"
             :options="[{label:'done', value:'done'}, {label:'backlog', value:'backlog'}, {label:'stop', value:'stop'}]"
@@ -67,13 +68,17 @@ export default defineComponent({
     name: 'ModalWindow',
     emits: ['close'],
     props: {
+        kind: {
+            type: String,
+            required: true
+        },
         id: {
             type: Number,
             required: true,
         },
         name: {
             type: String,
-            required: false,
+            required: true,
         },
         project: {
             type: Number,
@@ -98,8 +103,7 @@ export default defineComponent({
     setup(props, { emit }) {
         const close = () => { emit('close') }
         let inputTimeout = null;
-        let inputTimeTimeout = null;
-
+        const nkind = ref(props.kind)
         const nname = ref(props.name)
         const nproject = ref(props.project)
         const ndate = ref(props.date)
@@ -141,17 +145,21 @@ export default defineComponent({
             }));
         })
 
-        useDatepicker('#datepic',{
-            selectedDates: [ndate.value],
-            isMobile:true,
-            locale: localeEn,
-            dateFormat: 'yyyy-MM-dd',
-            autoClose: true,
-            onSelect: async(date) => {
-                await editTask('date', date.formattedDate)
-            }
-            // inline: true,
-        })
+        if (nkind.value == 'task') {
+            
+            useDatepicker('#datepic',{
+                selectedDates: [ndate.value],
+                isMobile:true,
+                locale: localeEn,
+                dateFormat: 'yyyy-MM-dd',
+                autoClose: true,
+                onSelect: async(date) => {
+                    await editTask('date', date.formattedDate)
+                }
+                // inline: true,
+            })
+        }
+
 
         async function editTask(type, edit) {
             let r = await request(`/task/edit/${type}`, 'PATCH', {id:props.id, edit:edit}, true)
@@ -181,7 +189,7 @@ export default defineComponent({
 
 
 
-        return { close, onInputName, onInputProject, onInputTime, onInputStatus, nname, nproject, ndate, ntime, nhours, nminutes, nstatus, projects, hours, minutes };
+        return { close, onInputName, onInputProject, onInputTime, onInputStatus, nkind, nname, nproject, ndate, ntime, nhours, nminutes, nstatus, projects, hours, minutes };
     },
 });
 </script>
