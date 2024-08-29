@@ -29,13 +29,13 @@ async def login_user(authcode:str = Body(embed=True), uow=uowdep(infra(memory=Tr
 
 @userRouter.get('/me') 
 async def me_user(uow=uowdep(infra()), credentials = Security(accessSecure)):
-    u = await UserService(uow).getUser(id=int(credentials["id"]))
+    u = await UserService(uow).getOne(id=int(credentials["id"]))
     r = Answer.OkAnswerModel('user', 'user', data=u)
     return r.response
 
 @userRouter.post('/refresh') 
 async def refresh_token(uow=uowdep(infra()), credentials = Security(refreshSecure)):
-    u = await UserService(uow).getUser(id=int(credentials["id"]))
+    u = await UserService(uow).getOne(id=int(credentials["id"]))
     r = Answer.OkAnswer('access token has been updated', 'access token has been updated', data=[{}])
     access_token = access.create_access_token(subject={'id':credentials["id"]})
     access.set_access_cookie(r.response, access_token)

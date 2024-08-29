@@ -23,3 +23,4 @@ class ProjectException(BaseException):
 
 class TaskException(BaseException):
     errType = 'Task Error'
+

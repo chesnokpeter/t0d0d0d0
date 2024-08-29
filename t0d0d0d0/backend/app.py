@@ -5,7 +5,7 @@ from t0d0d0d0.core.exceptions import BaseException
 from t0d0d0d0.backend.answer import Answer
 
 from t0d0d0d0.backend.routes.user import userRouter
-from t0d0d0d0.backend.routes.task import taskRouter
+from t0d0d0d0.backend.routes.task import taskRouter, inboxRouter
 from t0d0d0d0.backend.routes.project import projectRouter
 
 
@@ -35,6 +35,7 @@ async def ping():
 apiRouter.include_router(userRouter)
 apiRouter.include_router(taskRouter)
 apiRouter.include_router(projectRouter)
+apiRouter.include_router(inboxRouter)
 
 @app.exception_handler(BaseException)
 async def exception_handler(res, exc: BaseException):  

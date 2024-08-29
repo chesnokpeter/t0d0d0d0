@@ -3,6 +3,9 @@ bot:
 back:
 	uvicorn t0d0d0d0.backend.app:app --reload --port 8011
 
+mypy:
+	mypy app.py
+
 front:
 	cd t0d0d0d0/frontend && npm run dev
 

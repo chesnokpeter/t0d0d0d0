@@ -15,18 +15,17 @@
         <div class="calendar">
             <div class="calday" v-for="(c, i) in calendar" :key="i">
                 <div class="calday-title">{{ c.dprint() }}</div>
-                    <div class="calday-tasks" @drop="onDrop($event, c.y_m_d())" @dragover.prevent @dragenter.prevent>
-                        <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, ii) in c.tasks" :key="ii" @click="openModal(t.name, t.project_id, t.date, t.time, t.status, t.id, i, 'task')" @dragstart="onDragStart($event, t)" draggable="true">
-                            <div class="calday-task-title">{{ t.name }}</div>
-                            <div class="calday-task-desc">
-                                <div class="calday-task-project">{{ taskdescprint(t.project_name, t.time) }}</div>
-                            </div>
+                <div class="calday-tasks" @drop="onDrop($event, c.y_m_d())" @dragover.prevent @dragenter.prevent>
+                    <div :class="['calday-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, ii) in c.tasks" :key="ii" @click="openModal(t.name, t.project_id, t.date, t.time, t.status, t.id, i, 'task')" @dragstart="onDragStart($event, t)" draggable="true">
+                        <div class="calday-task-title">{{ t.name }}</div>
+                        <div class="calday-task-desc">
+                            <div class="calday-task-project">{{ taskdescprint(t.project_name, t.time) }}</div>
                         </div>
-                        <input class="calday-new" type="button" value="+" @click="addNewTask(c, i)">
-
                     </div>
+                    <input class="calday-new" type="button" value="+" @click="addNewTask(c, i)">
                 </div>
             </div>
+        </div>
     </div>
 
     <ModalWindow v-if="showModal" @close="closeModal" :kind="kindModal" :id="idModal" :name="nameModal" :project="projectModal" :date="dateModal" :time="timeModal" :status="statusModal"/>
@@ -74,24 +73,37 @@ async function closeModal() {
 
     if (kindModal.value == 'task') {
         let t = await gettasksbyid(idModal.value)
-        for (let i = 0; i < calendar.value.length; i++) {
-            if (t.date == calendar.value[i].y_m_d()) {
-                const tt = await gettasksbydate(calendar.value[i].y_m_d())
-                calendar.value[i].setTasks(tt)
+        if (t) {
+            for (let i = 0; i < calendar.value.length; i++) {
+                if (t.date == calendar.value[i].y_m_d()) {
+                    const tt = await gettasksbydate(calendar.value[i].y_m_d())
+                    calendar.value[i].setTasks(tt)
+                }
+                
             }
-            
-        }
-        if (t.date != calendar.value[idCalday.value].y_m_d()) {        
+            if (t.date != calendar.value[idCalday.value].y_m_d()) {        
+                t = await gettasksbydate(calendar.value[idCalday.value].y_m_d())
+                calendar.value[idCalday.value].setTasks(t)
+            }
+        } else{
             t = await gettasksbydate(calendar.value[idCalday.value].y_m_d())
             calendar.value[idCalday.value].setTasks(t)
         }
     } else if (kindModal.value == 'inbox') {
         let t = await gettasksbyid(idModal.value)
-        for (let i = 0; i < inboxs.value.length; i++) {
-            if (t.id == inboxs.value[i].id) {
-                inboxs.value[i] = t
+        if (t) {
+            for (let i = 0; i < inboxs.value.length; i++) {
+                if (t.id == inboxs.value[i].id) {
+                    inboxs.value[i] = t
+                }
             }
-            
+        } else {
+            for (let i = 0; i < inboxs.value.length; i++) {
+                if (idModal.value == inboxs.value[i].id) {
+                    inboxs.value.splice(i, 1)
+                }
+                
+            }
         }
     }
 
@@ -99,14 +111,14 @@ async function closeModal() {
 }
 
 async function gettasksbydate(date) {
-    let r = await request('/task/get/taskByDate', 'POST', {date:date}, true)
+    let r = await request('/task/get/byDate', 'POST', {date:date}, true)
     if (Object.keys(r.data[0]).length === 0) {
         return []
     }
     return r.data
 }
 async function gettasksbyid(data) {
-    let r = await request('/task/get/taskById', 'POST', {id:data}, true)
+    let r = await request('/task/get/byId', 'POST', {id:data}, true)
     return r.data[0]
 }
 
@@ -159,7 +171,7 @@ function taskdescprint(project, time) {
 }
 
 async function addNewTask(c, idc) {
-    const r = await request('/task/new/task', 'POST', {name:'task', date:c.y_m_d()}, true)
+    const r = await request('/task/new', 'POST', {name:'task', date:c.y_m_d()}, true)
     c.addTask(r.data[0])
     const task = r.data[0]
     nameModal.value = task.name
@@ -174,7 +186,7 @@ async function addNewTask(c, idc) {
 }
 
 async function addNewInbox() {
-    const r = await request('/task/new/task', 'POST', {name:'inbox'}, true)
+    const r = await request('/task/new', 'POST', {name:'inbox'}, true)
     const task = r.data[0]
     nameModal.value = task.name
     projectModal.value = task.project
@@ -184,7 +196,6 @@ async function addNewInbox() {
     statusModal.value = task.status
     idModal.value = task.id
     kindModal.value = 'inbox'
-    console.log(inboxs);
     inboxs.value.push(task)
 }
 
@@ -197,11 +208,9 @@ function onDragStart(e, task) {
 async function onDrop(e, date) {
     const task_id = e.dataTransfer.getData('task_id')
 
-
     for (let i = 0; i < inboxs.value.length; i++) {
         if (task_id == inboxs.value[i].id) {
             inboxs.value.splice(i, 1)
-            return
         }
         
     } for (let i = 0; i < calendar.value.length; i++) {
@@ -210,7 +219,6 @@ async function onDrop(e, date) {
                 calendar.value[i].tasks.splice(ii, 1)
             }
         }
-        
     }
 
 
@@ -225,7 +233,7 @@ async function onDrop(e, date) {
 }
 
 onMounted(async ()=> {
-    let r = await request('/task/get/inbox', 'GET', {}, true)
+    let r = await request('/inbox/get', 'GET', {}, true)
     for (let i = 0; i < r.data.length; i++) {
         inboxs.value.push(r.data[i])
     }
@@ -246,6 +254,9 @@ onMounted(async ()=> {
 <style>
 #app{
     align-items: center;
+}
+body{
+    overflow-x: hidden;
 }
 
 </style>
@@ -322,13 +333,31 @@ onMounted(async ()=> {
     border: var(--gray-color) solid 1px;
     &.isdonetask{
         border: var(--green-color) solid 1px;
+        background-color: var(--green-color);
+        color: var(--black-color);
     }
     &.isstoptask{
         border: var(--red-color) solid 1px;
     }
 }
 
+.inbox-item:hover{
+    background-color: var(--white-color);
+    color: var(--black-color);
+}
 
+.calday-task:hover{
+    background-color: var(--white-color);
+    color: var(--black-color);
+
+    &.isdonetask{
+        background-color: var(--black-color);
+        color: var(--green-color);
+    }
+    &.isstoptask{
+        background-color: var(--red-color);
+    }
+}
 
 .calday-title {
     text-decoration: underline ;

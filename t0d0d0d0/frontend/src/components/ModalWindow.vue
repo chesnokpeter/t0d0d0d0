@@ -44,6 +44,8 @@
             :options="[{label:'done', value:'done'}, {label:'backlog', value:'backlog'}, {label:'stop', value:'stop'}]"
             placeholder="..."
         />
+
+        <input type="button" class="opt delete" value="delete" @click="deleteTask"/>
     </div>
 </template>
 
@@ -137,7 +139,7 @@ export default defineComponent({
         }));
 
         onMounted(async ()=> {
-            let r = await request('/project/get/projects', 'GET', {}, true)
+            let r = await request('/project/get/all', 'GET', {}, true)
             projects.value = r.data.map(item => ({
                 ...item,
                 label: item.name,
@@ -187,9 +189,13 @@ export default defineComponent({
             await editTask('time', `${nhours.value}:${nminutes.value}`)
         }
 
+        async function deleteTask() {
+            await request('/task/delete', 'DELETE', {id:props.id})
+            emit('close')
+        }
 
 
-        return { close, onInputName, onInputProject, onInputTime, onInputStatus, nkind, nname, nproject, ndate, ntime, nhours, nminutes, nstatus, projects, hours, minutes };
+        return { close, onInputName, onInputProject, onInputTime, onInputStatus, deleteTask, nkind, nname, nproject, ndate, ntime, nhours, nminutes, nstatus, projects, hours, minutes };
     },
 });
 </script>
@@ -243,6 +249,16 @@ export default defineComponent({
     flex: 1;
 }
 
+.delete {
+    border: var(--red-color) solid 1px;
+    text-align: center;
+}
+
+.delete:hover{
+    background-color: var(--red-color);
+    color: var(--black-color);
+}
+
 input{
     border-color: none;
     padding: 10px;
@@ -261,7 +277,8 @@ input:hover{
 input:focus, button {
     outline: none;
 }
-input[type="button"] {
+/* input[type="button"] {
     text-align: start;
-}
+} */
+
 </style>

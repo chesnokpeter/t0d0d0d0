@@ -7,16 +7,16 @@ from t0d0d0d0.core.depends import accessSecure, infra
 
 projectRouter = APIRouter(prefix='/project', tags=['project'])
 
-@projectRouter.post('/new/project') 
+@projectRouter.post('/new') 
 async def new_project(data:NewProjectSch, uow=uowdep(infra()), credentials = Security(accessSecure)):
-    s = await ProjectService(uow).newProject(user_id=int(credentials["id"]), data=data)
+    s = await ProjectService(uow).new(user_id=int(credentials["id"]), data=data)
     r = Answer.OkAnswerModel('project', 'project', data=s)
     return r.response
 
 
-@projectRouter.get('/get/projects') 
+@projectRouter.get('/get/all') 
 async def new_project( uow=uowdep(infra()), credentials = Security(accessSecure)):
-    s = await ProjectService(uow).getProjects(user_id=int(credentials["id"]))
+    s = await ProjectService(uow).getAll(user_id=int(credentials["id"]))
     r = Answer.OkAnswerModel('project', 'project', data=s)
     return r.response
 

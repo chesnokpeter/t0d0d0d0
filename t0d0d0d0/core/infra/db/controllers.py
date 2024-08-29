@@ -1,12 +1,12 @@
 from typing import List, Type, TypeVar, Generic, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, update, insert, delete
-from t0d0d0d0.core.infra.db.tables import USER, AbsMODEL, PROJECT, TASK
+from t0d0d0d0.core.infra.db.models import USER, AbcModel, PROJECT, TASK
 
 from abc import ABC, abstractmethod
 
 class AbsController(ABC):
-    model: AbsMODEL
+    model: AbcModel
     @abstractmethod
     def __init__(self): raise NotImplementedError
     @abstractmethod
@@ -17,17 +17,19 @@ class AbsController(ABC):
     async def offset(self): raise NotImplementedError
     @abstractmethod
     async def update(self): raise NotImplementedError
+    @abstractmethod
+    async def delete(self): raise NotImplementedError
 
-T = TypeVar('T')
+T = TypeVar('T', bound=AbcModel)
 
 class Controller(Generic[T]):   
     model: Type[T]
     def __init__(self, session: Session):
         self.session = session
-    async def get(self, **data) -> Optional[List[T]]:
+    async def get(self, **data) -> List[T] | None:
         result = await self.session.execute(select(self.model).filter_by(**data))
         return [i[0] for i in result.all()]
-    async def get_one(self, **data) -> Optional[T]:
+    async def get_one(self, **data) -> T | None:
         stmt = select(self.model).filter_by(**data)
         res = await self.session.execute(stmt)
         res = res.first()
@@ -36,7 +38,7 @@ class Controller(Generic[T]):
         stmt = insert(self.model).values(**data)
         stmt = stmt.returning(self.model)
         return await self.session.scalar(stmt)
-    async def offset(self, offset: int = 0, limit: int = None, order = None, **data) -> Optional[List[T]]:
+    async def offset(self, offset: int = 0, limit: int = int | None, order = None, **data) -> List[T] | None:
         stmt = select(self.model).offset(offset).limit(limit).order_by(order).filter_by(**data)
         res = await self.session.execute(stmt)
         res = res.all()
