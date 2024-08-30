@@ -1,7 +1,6 @@
-from fastapi import Depends, Security
+from fastapi import Security
 from datetime import timedelta
-from t0d0d0d0.core.uow import UnitOfWork, infra
-from t0d0d0d0.jwt import JwtAccessCookie, JwtRefreshCookie
+from t0d0d0d0.backends.rest.jwt import JwtAccessCookie, JwtRefreshCookie
 from t0d0d0d0.core.exceptions import JWTException
 from t0d0d0d0.core.config import secret_key
 
@@ -17,9 +16,3 @@ def refreshSecure(a = Security(refresh)):
     if not a:
         raise JWTException(message="invalid jwt token")
     return a
-
-def anonuow(infra:infra):
-    return lambda:UnitOfWork(infra=infra)
-
-def uowdep(infra:infra):
-    return Depends(anonuow(infra=infra))

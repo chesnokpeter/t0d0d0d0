@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Security
-from t0d0d0d0.core.depends import uowdep
-from t0d0d0d0.backend.answer import Answer
+from t0d0d0d0.core.inversion import uowdep
+from t0d0d0d0.backends.rest.answer import Answer
 from t0d0d0d0.core.schemas.project import NewProjectSch
 from t0d0d0d0.core.services.project import ProjectService
-from t0d0d0d0.core.depends import accessSecure, infra
+from t0d0d0d0.core.inversion import infra
+from t0d0d0d0.backends.rest.depends import refreshSecure, access, refresh, accessSecure
 
 projectRouter = APIRouter(prefix='/project', tags=['project'])
 

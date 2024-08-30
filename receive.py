@@ -10,7 +10,7 @@ queue_name = result.method.queue
 channel.queue_bind(exchange='logs', queue=queue_name)
 
 def callback(ch, method, properties, body):
-    print(method)
+    print(properties)
     print(" [x] Received %r" % body)
 
 channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)

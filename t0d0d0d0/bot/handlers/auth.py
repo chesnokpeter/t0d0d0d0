@@ -7,7 +7,7 @@ from aiogram.utils.deep_linking import decode_payload
 from datetime import datetime
 from fastapi import Depends
 from t0d0d0d0.core.services.user import UserService
-from t0d0d0d0.core.depends import uowdep, infra, anonuow
+from t0d0d0d0.core.inversion import uowdep, infra, anonuow
 
 router = Router()
 

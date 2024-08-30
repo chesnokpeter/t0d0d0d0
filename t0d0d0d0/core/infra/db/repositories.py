@@ -1,18 +1,19 @@
 from typing import List, Type, TypeVar, Generic, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, update, insert, delete
-from t0d0d0d0.core.infra.db.models import USER, AbcModel, PROJECT, TASK
+from t0d0d0d0.core.infra.db.models import USER, AbsModel, PROJECT, TASK
 
 from abc import ABC, abstractmethod
 
-class AbsController(ABC):
-    model: AbcModel
-    @abstractmethod
-    def __init__(self): raise NotImplementedError
+class AbsRepository(ABC):
+    model: AbsModel
+    def __init__(self): ...
     @abstractmethod
     async def get(self): raise NotImplementedError
     @abstractmethod
     async def get_one(self): raise NotImplementedError
+    @abstractmethod
+    async def add(self): raise NotImplementedError
     @abstractmethod
     async def offset(self): raise NotImplementedError
     @abstractmethod
@@ -20,9 +21,9 @@ class AbsController(ABC):
     @abstractmethod
     async def delete(self): raise NotImplementedError
 
-T = TypeVar('T', bound=AbcModel)
+T = TypeVar('T', bound=AbsModel)
 
-class Controller(Generic[T]):   
+class Repository(Generic[T], AbsRepository):   
     model: Type[T]
     def __init__(self, session: Session):
         self.session = session
@@ -57,10 +58,10 @@ class Controller(Generic[T]):
 
 
 
-class UserController(Controller[USER]):
+class UserRepository(Repository[USER]):
     model = USER
 
-class TaskController(Controller[TASK]):
+class TaskRepository(Repository[TASK]):
     model = TASK
     async def get_by_date(self, offset: int = 0, limit: int = None, order = None, **data) -> Optional[List[TASK]]:
         stmt = select(self.model).offset(offset).limit(limit).order_by(self.model.date.desc()).filter_by(**data).filter(self.model.date.isnot(None))
@@ -69,6 +70,6 @@ class TaskController(Controller[TASK]):
         return [i[0] for i in res]
 
 
-class ProjectController(Controller[PROJECT]):
+class ProjectRepository(Repository[PROJECT]):
     model = PROJECT
 

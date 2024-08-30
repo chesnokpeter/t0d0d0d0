@@ -8,7 +8,7 @@ class SignUpSch(BaseModel):
 
 class UserSch(UserModel):...
 
-class NewUserModel(BaseModel):
+class NewUserSch(BaseModel):
     tgid: int
     tgusername: str
     name: str 

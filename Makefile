@@ -1,21 +1,18 @@
 bot:
 	python -m t0d0d0d0.bot
 back:
-	uvicorn t0d0d0d0.backend.app:app --reload --port 8011
+	uvicorn t0d0d0d0.backends.rest.app:app --reload --port 8011
 
 mypy:
 	mypy app.py
 
 front:
-	cd t0d0d0d0/frontend && npm run dev
+	cd t0d0d0d0/clients/frontend && npm run dev
 
 migration:
 	python -m alembic revision --autogenerate
 	python -m alembic upgrade head
 
-
-init:
-	source .bash
 
 npminstall:
 	cd t0d0d0d0/frontend

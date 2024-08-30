@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod, ABCMeta
+from abc import ABC, abstractmethod
 from datetime import datetime
 from datetime import date as datetype
 from datetime import time as timetype
@@ -8,7 +8,6 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy import inspect, BigInteger, ForeignKey, DateTime, Integer, String,  Date, Time
 from sqlalchemy import Enum as ORMEnum
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
-from sqlalchemy.ext.declarative import DeclarativeMeta
 
 class TaskStatus(Enum):
     backlog = 'backlog'
@@ -40,7 +39,7 @@ class ProjectModel(BaseModel):
     user_id: int
 
 
-class AbcModel:
+class AbsModel:
     id: int
     @abstractmethod
     def model(self): raise NotImplementedError
@@ -55,7 +54,7 @@ class Base(DeclarativeBase):
         return "<{0}(".format(self.__class__.__name__) + ", ".join(ent) + ")>"
 
 
-class USER(Base, AbcModel):
+class USER(Base, AbsModel):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(Integer(), unique=True, primary_key=True, autoincrement=True, nullable=False)
     tgid: Mapped[int] = mapped_column(BigInteger(), nullable=False)
@@ -74,7 +73,7 @@ class USER(Base, AbcModel):
         )
 
 
-class TASK(Base, AbcModel):
+class TASK(Base, AbsModel):
     __tablename__ = "task"
     id: Mapped[int] = mapped_column(Integer(), unique=True, primary_key=True, autoincrement=True, nullable=False)
     name: Mapped[str] = mapped_column(String(), nullable=False)
@@ -102,7 +101,7 @@ class TASK(Base, AbcModel):
         )
 
 
-class PROJECT(Base, AbcModel):
+class PROJECT(Base, AbsModel):
     __tablename__ = "project"
     id: Mapped[int] = mapped_column(Integer(), unique=True, primary_key=True, autoincrement=True, nullable=False)
     name: Mapped[str] = mapped_column(String(), nullable=False)

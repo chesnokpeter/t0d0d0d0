@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Type, TypeVar, Generic
 from asyncio_redis import RedisProtocol
 import json
@@ -6,7 +7,17 @@ from t0d0d0d0.core.infra.memory.models import AuthcodeModel, AbsModel
 
 T = TypeVar('T', bound=AbsModel)
 
-class Controller(Generic[T]):
+class AbsRepository(ABC):
+    model: AbsModel
+    def __init__(self): ...
+    @abstractmethod
+    def get(self): raise NotImplementedError
+    @abstractmethod
+    def add(self): raise NotImplementedError
+    @abstractmethod
+    def delete(self): raise NotImplementedError
+
+class Repository(Generic[T], AbsRepository):
     model: Type[T]
     def __init__(self, session: RedisProtocol):
         self.session = session
@@ -22,5 +33,5 @@ class Controller(Generic[T]):
     async def delete(self, key:str) -> None:
         await self.session.delete(keys=[key])
 
-class AuthcodeController(Controller[AuthcodeModel]):
+class AuthcodeRepository(Repository[AuthcodeModel]):
     model = AuthcodeModel

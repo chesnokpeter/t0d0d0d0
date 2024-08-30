@@ -2,7 +2,7 @@ from t0d0d0d0.core.services.abs_service import AbsService
 
 from t0d0d0d0.core.infra.db.models import UserModel
 from t0d0d0d0.core.infra.memory.models import AuthcodeModel
-from t0d0d0d0.core.schemas.user import NewUserModel
+from t0d0d0d0.core.schemas.user import NewUserSch
 from t0d0d0d0.core.schemas.user import SignUpSch
 from t0d0d0d0.core.uow import  UnitOfWork
 from t0d0d0d0.core.exceptions import AuthException, AuthCodeException
@@ -23,7 +23,7 @@ class UserService(AbsService):
             u = await self.uow.user.get(tgusername=c.tgusername)
             if u: raise AuthException('User already exist')
 
-            u = NewUserModel(tgid=c.tgid, tgusername=c.tgusername, name=data.name)
+            u = NewUserSch(tgid=c.tgid, tgusername=c.tgusername, name=data.name)
             u = await self.uow.user.add(**u.model_dump())
             await self.uow.commit()
             await self.uow.authcode.delete(data.authcode)

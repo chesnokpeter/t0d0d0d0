@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Security, Body
 from datetime import date as datetype
 from datetime import time as timetype
-from t0d0d0d0.core.depends import uowdep
+from t0d0d0d0.core.inversion import uowdep
 from t0d0d0d0.core.infra.db.models import TaskModel, TaskStatus
-from t0d0d0d0.backend.answer import Answer, AnswerResModel
+from t0d0d0d0.backends.rest.answer import Answer, AnswerResModel
 from t0d0d0d0.core.schemas.task import NewTaskSch, EditTaskSch
 from t0d0d0d0.core.services.task import TaskService
-from t0d0d0d0.core.depends import accessSecure, infra
+from t0d0d0d0.core.inversion import infra
+from t0d0d0d0.backends.rest.depends import refreshSecure, access, refresh, accessSecure
 
 taskRouter = APIRouter(prefix='/task', tags=['task'])
 

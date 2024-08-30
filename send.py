@@ -1,11 +1,30 @@
 import pika
+import json
 
+# Подключение к RabbitMQ
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
-channel.exchange_declare(exchange='logs', exchange_type='fanout')
 
-message = "Hello, RabbitMQ!"
-channel.basic_publish(exchange='logs', routing_key='', body=message)
-print(" [x] Sent %r" % message)
+# Объявление очереди (без указания durable=True)
+channel.queue_declare(queue='in')
 
+# Сообщение, которое вы хотите отправить
+message = {
+    "user": "John Doe",
+    "user_id": 123
+}
+
+# Преобразование сообщения в JSON-формат
+message_body = json.dumps(message)
+
+# Отправка сообщения в очередь
+channel.basic_publish(
+    exchange='',
+    routing_key='in',
+    body=message_body
+)
+
+print(" [x] Sent 'User registered'")
+
+# Закрытие соединения
 connection.close()
