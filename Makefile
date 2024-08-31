@@ -1,7 +1,7 @@
 bot:
 	python -m t0d0d0d0.bot
 back:
-	uvicorn t0d0d0d0.backends.rest.app:app --reload --port 8011
+	uvicorn t0d0d0d0.restback.app:app --reload --port 8011
 
 mypy:
 	mypy app.py

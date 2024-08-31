@@ -1,17 +1,25 @@
-from faststream import FastStream
-from faststream.rabbit import RabbitBroker
-# from faststream.rabbit import RabbitBroker
-# from faststream.nats import NatsBroker
-# from faststream.redis import RedisBroker
+import pika
 
-broker = RabbitBroker("amqp://guest:guest@localhost:5672/")
-# broker = NatsBroker("nats://localhost:4222/")
-# broker = RedisBroker("redis://localhost:6379/")
+# Параметры подключения к RabbitMQ
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+channel = connection.channel()
 
-app = FastStream(broker)
+# Объявляем очередь (если она не существует, она будет создана)
+channel.queue_declare(queue='authnotify', durable=True)
 
-@broker.subscriber("in")
-@broker.publisher("out")
-async def handle_msg(user: str, user_id: int) -> str:
-    print(user)
-    return f"User: {user_id} - {user} registered"
+# Сообщение, которое хотим отправить
+message = "notyf!!!!!!i"
+
+# Отправка сообщения в очередь
+channel.basic_publish(
+    exchange='',
+    routing_key='authnotify',
+    body=message,
+    properties=pika.BasicProperties(
+        delivery_mode=2,  # make message persistent
+    ))
+
+print(f" [x] Sent '{message}'")
+
+# Закрываем соединение
+connection.close()

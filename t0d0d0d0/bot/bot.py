@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from t0d0d0d0.core.config import bot_token
+from t0d0d0d0.coreback.config import bot_token
 from t0d0d0d0.bot.handlers.auth import router as messageRouter
 
 

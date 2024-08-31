@@ -7,7 +7,7 @@ from alembic import context
 
 import os
 
-from t0d0d0d0.core.infra.db.models import *
+from t0d0d0d0.coreback.infra.db.models import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

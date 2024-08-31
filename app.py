@@ -1,5 +1,5 @@
 import uvicorn
-from t0d0d0d0.backends.rest.app import app
+from t0d0d0d0.restback.app import app
 
 
 if __name__ == "__main__":
