@@ -76,17 +76,13 @@ class TaskService(AbsService):
             if data.get('time', None) or data.get('date', None):
                 combined_datetime = datetime.datetime.combine(t.date, t.time)
                 now = datetime.datetime.now()
-                current_time = datetime.datetime.combine(now.date(), datetime.time(now.hour, now.minute))
-                delaydelta = combined_datetime - current_time
+                # current_time = datetime.datetime.combine(now.date(), datetime.time(now.hour, now.minute))
+                delaydelta = combined_datetime - now
                 delay = delaydelta.total_seconds()
                 if delay > 0:
-                    tgid = await self.uow.user.get_one(id=t.user_id)
-                    if tgid:
-                        tgid = tgid.model().tgid
-                        tasknotify = TasknotifyModel(tgid=tgid, taskname=t.name)
-                        sheduler = ShedulernotifyModel(queue_after_delay=tasknotify.queue_name, delay=round(delay), message=tasknotify.model_dump_json())
-                        await self.uow.sheduler.send(sheduler)
-                        print('ОТПРАВЛЕНО')
+                    tasknotify = TasknotifyModel(tgid=u.tgid, taskname=t.name)
+                    sheduler = ShedulernotifyModel(queue_after_delay=tasknotify.queue_name, delay=round(delay), message=tasknotify.model_dump_json())
+                    await self.uow.sheduler.send(sheduler)
 
 
     async def delete(self, user_id:int, id:str) -> None:

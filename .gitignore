@@ -4,3 +4,4 @@ venv
 scripts/migrations/versions/*
 !scripts/migrations/versions/.gitkeep
 .mypy_cache
+sheduler

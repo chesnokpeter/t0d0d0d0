@@ -28,10 +28,12 @@ def pydantic_model_subscriber(queue: RabbitQueue, model: BaseModel):
 broker.pydantic_subscriber = pydantic_model_subscriber
 
 @broker.pydantic_subscriber(RabbitQueue('notifyauth'), AuthnotifyModel)
-async def handle_message(data: AuthnotifyModel):
+async def notyfiauth_handler(data: AuthnotifyModel):
     await bot.send_message(data.tgid, '🌐Был совершен вход в ваш аккаунт\n\nЕсли это не вы - то напишите в поддержку <b>@t0d0d0d0support</b>', parse_mode=ParseMode.HTML)
 
 
-
+@broker.subscriber(RabbitQueue('notifytask', durable=True))
+async def notifytask_handler(data):
+    print(data)
 
 
