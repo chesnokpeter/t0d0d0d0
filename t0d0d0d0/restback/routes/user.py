@@ -20,7 +20,7 @@ async def signup_user(data: SignUpSch, uow=uowdep(infra(memory=True))):
     return r.response
 
 @userRouter.post('/login')
-async def login_user(authcode:str = Body(embed=True), uow=uowdep(infra(memory=True))):
+async def login_user(authcode:str = Body(embed=True), uow=uowdep(infra(memory=True, broker=True))):
     payload = await UserService(uow).login(authcode)
     r = Answer.OkAnswer('user logged', 'user logged', [{}])
     access_token = access.create_access_token(subject={'id':payload.id})
@@ -30,7 +30,7 @@ async def login_user(authcode:str = Body(embed=True), uow=uowdep(infra(memory=Tr
     return r.response   
 
 @userRouter.get('/me') 
-async def me_user(uow=uowdep(infra(broker=True)), credentials = Security(accessSecure)):
+async def me_user(uow=uowdep(infra()), credentials = Security(accessSecure)):
     u = await UserService(uow).getOne(id=int(credentials["id"]))
     r = Answer.OkAnswerModel('user', 'user', data=u)
     return r.response

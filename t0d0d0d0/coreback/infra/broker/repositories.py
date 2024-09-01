@@ -2,23 +2,29 @@ from typing import Type, TypeVar, Generic
 from faststream.rabbit import RabbitBroker
 import json
 
-from t0d0d0d0.coreback.infra.broker.models import AbsModel, AuthnotifyModel
-
-T = TypeVar('T', bound=AbsModel)
+from t0d0d0d0.coreback.infra.broker.models import AbsModel, AuthnotifyModel, TasknotifyModel, ShedulernotifyModel
 
 class AbsRepository:
     model: AbsModel
     def __init__(self): ...
-    def get(self): raise NotImplementedError
-    def add(self): raise NotImplementedError
-    def delete(self): raise NotImplementedError
+    def send(self): raise NotImplementedError
+
+T = TypeVar('T', bound=AbsModel)
+
 
 class Repository(Generic[T], AbsRepository):
     model: Type[T]
     def __init__(self, session: RabbitBroker):
         self.session = session
-    async def send(self, data:str) -> None:
-        await self.session.publish(data, 'authnotify')
+    async def send(self, data:T) -> None:
+        print(json.dumps(data.model_dump()))
+        await self.session.publish(json.dumps(data.model_dump(exclude=['queue_name'])), data.queue_name)
 
 class AuthnotifyRepository(Repository[AuthnotifyModel]):
     model = AuthnotifyModel
+
+class TasknotifyRepository(Repository[TasknotifyModel]):
+    model = TasknotifyModel
+
+class ShedulernotifyRepository(Repository[ShedulernotifyModel]):
+    model = ShedulernotifyModel

@@ -1,6 +1,7 @@
 from t0d0d0d0.coreback.services.abs_service import AbsService
 
 from t0d0d0d0.coreback.infra.db.models import UserModel
+from t0d0d0d0.coreback.infra.broker.models import AuthnotifyModel
 from t0d0d0d0.coreback.infra.memory.models import AuthcodeModel
 from t0d0d0d0.coreback.schemas.user import NewUserSch
 from t0d0d0d0.coreback.schemas.user import SignUpSch
@@ -30,7 +31,7 @@ class UserService(AbsService):
             return u.model()
 
     async def login(self, authcode:str) -> UserModel:
-        """required: database, memory"""
+        """required: database, memory, broker"""
         async with self.uow:
             c = await self.uow.authcode.get(authcode)
             if not c:raise AuthCodeException('Authcode not found')
@@ -38,6 +39,9 @@ class UserService(AbsService):
             u = await self.uow.user.get_one(tgid=int(c.tgid))
             if not u: raise AuthException('User not found')
             await self.uow.authcode.delete(authcode)
+
+            await self.uow.authnotify.send(AuthnotifyModel(tgid=u.tgid))
+
             return u.model()
 
     async def newAuthcode(self, tgid:int, tgusername: str) -> int:
@@ -56,7 +60,6 @@ class UserService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=id)
             if not u: raise AuthException('User not found')
-            await self.uow.authnotify.send('123')
             return u.model()
 
 

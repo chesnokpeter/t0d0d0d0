@@ -44,13 +44,13 @@ async def edit_name(data:EditTaskSch[str], uow=uowdep(infra()), credentials = Se
     return r.response
 
 @taskRouter.patch('/edit/date') 
-async def edit_date(data:EditTaskSch[datetype], uow=uowdep(infra()), credentials = Security(accessSecure)):
+async def edit_date(data:EditTaskSch[datetype], uow=uowdep(infra(broker=True)), credentials = Security(accessSecure)):
     s = await TaskService(uow).edit(user_id=int(credentials["id"]), id=data.id, date=data.edit)
     r = Answer.OkAnswerModel('task', 'task', data=s)
     return r.response
 
 @taskRouter.patch('/edit/time') 
-async def edit_time(data:EditTaskSch[timetype], uow=uowdep(infra()), credentials = Security(accessSecure)):
+async def edit_time(data:EditTaskSch[timetype], uow=uowdep(infra(broker=True)), credentials = Security(accessSecure)):
     s = await TaskService(uow).edit(user_id=int(credentials["id"]), id=data.id, time=data.edit)
     r = Answer.OkAnswerModel('task', 'task', data=s)
     return r.response

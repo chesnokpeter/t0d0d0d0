@@ -3,11 +3,21 @@ from pydantic import BaseModel
 
 class AbsModel(ABC):
     queue_name: str
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-        cls.queue_name = cls.__name__
     @abstractmethod
     def model_dump(self): raise NotImplementedError
 
 class AuthnotifyModel(BaseModel, AbsModel):
+    queue_name: str = 'notifyauth'
     tgid: int
+
+class TasknotifyModel(BaseModel, AbsModel):
+    queue_name: str = 'notifytask'
+    tgid: int
+    taskname: str
+
+
+class ShedulernotifyModel(BaseModel, AbsModel):
+    queue_name: str = 'sheduler'
+    message: str
+    queue_after_delay: str
+    delay: int

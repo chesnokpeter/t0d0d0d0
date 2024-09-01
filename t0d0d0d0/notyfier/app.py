@@ -1,13 +1,37 @@
-# consumer_service.py
 from faststream import FastStream
-from faststream.rabbit import RabbitBroker
+from faststream.rabbit import RabbitBroker, RabbitQueue
+from t0d0d0d0.coreback.config import rabbit_url
 
-broker = RabbitBroker("amqp://guest:guest@localhost:5672/")
+from t0d0d0d0.coreback.infra.broker.models import AuthnotifyModel
+from pydantic import BaseModel, ValidationError
+
+from aiogram import Bot
+from aiogram.enums import ParseMode
+from t0d0d0d0.coreback.config import bot_token
+
+broker = RabbitBroker(rabbit_url)
 app = FastStream(broker)
+bot = Bot(bot_token)
 
-@broker.subscriber("authnotify")
-async def handle_message(message: str):
-    print(f"Received message: {message}")
+def pydantic_model_subscriber(queue: RabbitQueue, model: BaseModel):
+    def decorator(func):
+        @broker.subscriber(queue)
+        async def wrapper(message: str):
+            try:
+                parsed_message = model.model_validate_json(message)
+            except ValidationError as e:
+                raise e
+            await func(parsed_message)
+        return wrapper
+    return decorator
 
-if __name__ == "__main__":
-    app.run()
+broker.pydantic_subscriber = pydantic_model_subscriber
+
+@broker.pydantic_subscriber(RabbitQueue('notifyauth'), AuthnotifyModel)
+async def handle_message(data: AuthnotifyModel):
+    await bot.send_message(data.tgid, '🌐Был совершен вход в ваш аккаунт\n\nЕсли это не вы - то напишите в поддержку <b>@t0d0d0d0support</b>', parse_mode=ParseMode.HTML)
+
+
+
+
+

@@ -7,7 +7,7 @@ mypy:
 	mypy app.py
 
 front:
-	cd t0d0d0d0/clients/frontend && npm run dev
+	cd t0d0d0d0/frontend && npm run dev
 
 migration:
 	python -m alembic revision --autogenerate
@@ -16,3 +16,8 @@ migration:
 
 npminstall:
 	cd t0d0d0d0/frontend
+
+notyfier:
+	faststream run t0d0d0d0.notyfier.app:app
+
+sheluder:
