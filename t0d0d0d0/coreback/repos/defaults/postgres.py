@@ -1,21 +1,13 @@
-from typing import List, Type, TypeVar, Generic, Optional
+from typing import List, Type, TypeVar, Generic
 from sqlalchemy.orm import Session
 from sqlalchemy import select, update, insert, delete
-from t0d0d0d0.coreback.infra.db.models import USER, AbsModel, PROJECT, TASK
 
-class AbsRepo:
-    model: AbsModel
-    def __init__(self): ...
-    async def get(self): raise NotImplementedError
-    async def get_one(self): raise NotImplementedError
-    async def add(self): raise NotImplementedError
-    async def offset(self): raise NotImplementedError
-    async def update(self): raise NotImplementedError
-    async def delete(self): raise NotImplementedError
+from t0d0d0d0.coreback.repos.abstract import DbAbsRepo
+from t0d0d0d0.coreback.infra.abstract import DbAbsTable
 
-T = TypeVar('T', bound=AbsModel)
+T = TypeVar('T', bound=DbAbsTable)
 
-class Repo(Generic[T], AbsRepo):   
+class PostgresDefaultRepo(Generic[T], DbAbsRepo):   
     model: Type[T]
     def __init__(self, session: Session):
         self.session = session
@@ -47,21 +39,3 @@ class Repo(Generic[T], AbsRepo):
     async def delete(self, id:int):
         stmt = (delete(self.model).where(self.model.id==id)) # type: ignore
         await self.session.execute(stmt) # type: ignore
-
-
-
-class UserRepo(Repo[USER]):
-    model = USER
-
-class TaskRepo(Repo[TASK]):
-    model = TASK
-    async def get_by_date(self, offset: int = 0, limit: int | None = None, order = None, **data) -> Optional[List[TASK]]:
-        stmt = select(self.model).offset(offset).limit(limit).order_by(self.model.date.desc()).filter_by(**data).filter(self.model.date.isnot(None))
-        res = await self.session.execute(stmt) # type: ignore
-        res = res.all()
-        return [i[0] for i in res]
-
-
-class ProjectRepo(Repo[PROJECT]):
-    model = PROJECT
-

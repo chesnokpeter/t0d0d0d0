@@ -4,7 +4,7 @@ import json
 
 from t0d0d0d0.coreback.infra.broker.models import AbsModel, AuthnotifyModel, TasknotifyModel, ShedulernotifyModel
 
-class AbsRepository:
+class AbsRepo:
     model: AbsModel
     def __init__(self): ...
     def send(self): raise NotImplementedError
@@ -12,7 +12,7 @@ class AbsRepository:
 T = TypeVar('T', bound=AbsModel)
 
 
-class Repository(Generic[T], AbsRepository):
+class Repo(Generic[T], AbsRepo):
     model: Type[T]
     def __init__(self, session: RabbitBroker):
         self.session = session
@@ -20,11 +20,11 @@ class Repository(Generic[T], AbsRepository):
         print(json.dumps(data.model_dump()))
         await self.session.publish(json.dumps(data.model_dump(exclude=['queue_name'])), data.queue_name)
 
-class AuthnotifyRepository(Repository[AuthnotifyModel]):
+class AuthnotifyRepo(Repo[AuthnotifyModel]):
     model = AuthnotifyModel
 
-class TasknotifyRepository(Repository[TasknotifyModel]):
+class TasknotifyRepo(Repo[TasknotifyModel]):
     model = TasknotifyModel
 
-class ShedulernotifyRepository(Repository[ShedulernotifyModel]):
+class ShedulernotifyRepo(Repo[ShedulernotifyModel]):
     model = ShedulernotifyModel

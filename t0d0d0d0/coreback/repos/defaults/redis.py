@@ -2,18 +2,11 @@ from typing import Type, TypeVar, Generic
 from asyncio_redis import RedisProtocol
 import json
 
-from t0d0d0d0.coreback.infra.memory.models import AuthcodeModel, AbsModel
+from t0d0d0d0.coreback.repos.abstract import MemoryAbsRepo, MemoryAbsModel
 
-T = TypeVar('T', bound=AbsModel)
+T = TypeVar('T', bound=MemoryAbsModel)
 
-class AbsRepo:
-    model: AbsModel
-    def __init__(self): ...
-    def get(self): raise NotImplementedError
-    def add(self): raise NotImplementedError
-    def delete(self): raise NotImplementedError
-
-class Repo(Generic[T], AbsRepo):
+class RedisDefaultRepo(Generic[T], MemoryAbsRepo):
     model: Type[T]
     def __init__(self, session: RedisProtocol):
         self.session = session
@@ -28,6 +21,3 @@ class Repo(Generic[T], AbsRepo):
         await self.session.set(key, json.dumps(data.model_dump())) # type: ignore
     async def delete(self, key:str) -> None:
         await self.session.delete(keys=[key]) # type: ignore
-
-class AuthcodeRepo(Repo[AuthcodeModel]):
-    model = AuthcodeModel
