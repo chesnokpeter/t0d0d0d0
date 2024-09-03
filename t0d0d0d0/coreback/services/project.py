@@ -1,12 +1,12 @@
-from t0d0d0d0.coreback.services.abs_service import AbsService
+from t0d0d0d0.coreback.services.abstract import AbsService
 
 from t0d0d0d0.coreback.infra.db.models import ProjectModel 
 from t0d0d0d0.coreback.schemas.project import NewProjectSch
-from t0d0d0d0.coreback.uow import UnitOfWork
+from t0d0d0d0.coreback.uow import BaseUnitOfWork
 from t0d0d0d0.coreback.exceptions import AuthException, ProjectException
 
 class ProjectService(AbsService): 
-    def __init__(self, uow: UnitOfWork) -> None:
+    def __init__(self, uow: BaseUnitOfWork) -> None:
         self.uow = uow
 
     async def new(self, user_id:int, data:NewProjectSch) -> ProjectModel:

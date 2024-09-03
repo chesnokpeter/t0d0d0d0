@@ -6,7 +6,7 @@ from t0d0d0d0.coreback.repos.abstract import BrokerAbsRepo, BrokerAbsModel
 
 T = TypeVar('T', bound=BrokerAbsModel)
 
-class RabbitmqDefaultRepo(BrokerAbsRepo[RabbitBroker], Generic[T]):
+class RabbitmqDefaultRepo(Generic[T], BrokerAbsRepo[RabbitBroker]):
     model: Type[T]
     async def send(self, data:T) -> None:
         await self.session.publish(json.dumps(data.model_dump(exclude=['queue_name'])), data.queue_name)

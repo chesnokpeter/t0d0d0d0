@@ -1,17 +1,17 @@
-from t0d0d0d0.coreback.services.abs_service import AbsService
+from t0d0d0d0.coreback.services.abstract import AbsService
 from datetime import date as datetype
 import datetime
 
 from t0d0d0d0.coreback.infra.db.models import TaskModel
 from t0d0d0d0.coreback.schemas.task import NewTaskSch, NameTaskSch
 from t0d0d0d0.coreback.schemas.task import NewTaskSch
-from t0d0d0d0.coreback.uow import UnitOfWork
+from t0d0d0d0.coreback.uow import BaseUnitOfWork
 from t0d0d0d0.coreback.exceptions import AuthException, ProjectException, TaskException
 
 from t0d0d0d0.coreback.infra.broker.models import TasknotifyModel, ShedulernotifyModel
 
 class TaskService(AbsService): 
-    def __init__(self, uow: UnitOfWork) -> None:
+    def __init__(self, uow: BaseUnitOfWork) -> None:
         self.uow = uow
 
     async def new(self, user_id:int, data:NewTaskSch) -> TaskModel:
@@ -58,6 +58,7 @@ class TaskService(AbsService):
             u = await self.uow.user.get_one(id=user_id)
             if not u: raise AuthException('User not found')
             t = await self.uow.task.get_one(user_id=user_id, id=id)
+            
             if t:return t.model()
             return None
 
@@ -66,23 +67,28 @@ class TaskService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u: raise AuthException('User not found')
+            
             t = await self.uow.task.get_one(id=id)
+            
             if not t: raise TaskException('task not found')
+
+            
+
             if t.user_id != user_id: raise AuthException
             t = await self.uow.task.update(id, **data)
+            
             t = t.model()
             await self.uow.commit()
 
             if data.get('time', None) or data.get('date', None):
                 combined_datetime = datetime.datetime.combine(t.date, t.time)
                 now = datetime.datetime.now()
-                # current_time = datetime.datetime.combine(now.date(), datetime.time(now.hour, now.minute))
                 delaydelta = combined_datetime - now
                 delay = delaydelta.total_seconds()
                 if delay > 0:
                     tasknotify = TasknotifyModel(tgid=u.tgid, taskname=t.name)
                     sheduler = ShedulernotifyModel(queue_after_delay=tasknotify.queue_name, delay=round(delay), message=tasknotify.model_dump_json())
-                    await self.uow.sheduler.send(sheduler)
+                    await self.uow.shedulernotify.send(sheduler)
 
 
     async def delete(self, user_id:int, id:str) -> None:

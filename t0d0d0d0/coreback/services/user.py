@@ -1,16 +1,16 @@
-from t0d0d0d0.coreback.services.abs_service import AbsService
+from t0d0d0d0.coreback.services.abstract import AbsService
 
-from t0d0d0d0.coreback.infra.db.models import UserModel
-from t0d0d0d0.coreback.infra.broker.models import AuthnotifyModel
-from t0d0d0d0.coreback.infra.memory.models import AuthcodeModel
+from t0d0d0d0.coreback.models.user import UserModel
+from t0d0d0d0.coreback.models.authnotify import AuthnotifyModel
+from t0d0d0d0.coreback.models.authcode import AuthcodeModel
 from t0d0d0d0.coreback.schemas.user import NewUserSch
 from t0d0d0d0.coreback.schemas.user import SignUpSch
-from t0d0d0d0.coreback.uow import  UnitOfWork
+from t0d0d0d0.coreback.uow import BaseUnitOfWork
 from t0d0d0d0.coreback.exceptions import AuthException, AuthCodeException
 from t0d0d0d0.coreback.utils import genAuthCode
 
 class UserService(AbsService): 
-    def __init__(self, uow: UnitOfWork) -> None:
+    def __init__(self, uow: BaseUnitOfWork) -> None:
         self.uow = uow
 
     async def signup(self, data:SignUpSch) -> UserModel:

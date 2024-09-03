@@ -16,7 +16,7 @@ class PostgresConnector(AbsConnector):
     async def rollback(self):
         self._session.rollback()
     async def close(self):
-        self._session.close()
+        await self._session.close()
     @property
-    def sesion(self):
+    def session(self):
         return self._session

@@ -17,5 +17,5 @@ class RabbitConnector(AbsConnector):
     async def close(self):
         self._session.close()
     @property
-    def sesion(self):
+    def session(self):
         return self._session

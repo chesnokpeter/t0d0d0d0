@@ -6,7 +6,7 @@ from t0d0d0d0.coreback.repos.abstract import MemoryAbsRepo, MemoryAbsModel
 
 T = TypeVar('T', bound=MemoryAbsModel)
 
-class RedisDefaultRepo(MemoryAbsRepo[RedisProtocol], Generic[T]):
+class RedisDefaultRepo(Generic[T], MemoryAbsRepo[RedisProtocol]):
     model: Type[T]
     async def get(self, key:str) -> T | None:
         data = await self.session.get(key) # type: ignore

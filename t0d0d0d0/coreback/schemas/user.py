@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from t0d0d0d0.coreback.infra.db.models import UserModel
+from t0d0d0d0.coreback.models.user import UserModel
 
 class SignUpSch(BaseModel):
     name: str

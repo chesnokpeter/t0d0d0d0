@@ -1,12 +1,13 @@
-from fastapi import FastAPI, APIRouter
+from os import umask
+from fastapi import FastAPI, APIRouter, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from t0d0d0d0.coreback.exceptions import BaseException
 from t0d0d0d0.restback.answer import Answer
 
-from t0d0d0d0.restback.routes.user import userRouter
-from t0d0d0d0.restback.routes.task import taskRouter, inboxRouter
-from t0d0d0d0.restback.routes.project import projectRouter
+# from t0d0d0d0.restback.routes.user import userRouter
+# from t0d0d0d0.restback.routes.task import taskRouter, inboxRouter
+# from t0d0d0d0.restback.routes.project import projectRouter
 
 
 app = FastAPI(title='t0d0d0d0 api')
@@ -29,12 +30,18 @@ apiRouter = APIRouter(prefix='/api', tags=['api'])
 async def ping():
     return 'pong'
 
+from t0d0d0d0.coreback.services.user import UserService
+from t0d0d0d0.restback.depends import uowdep
 
+@apiRouter.get('/a')
+async def a(uow = Depends(uowdep)):
+    u = await UserService(uow).getOne(6)
+    print(u)
 
-apiRouter.include_router(userRouter)
-apiRouter.include_router(taskRouter)
-apiRouter.include_router(projectRouter)
-apiRouter.include_router(inboxRouter)
+# apiRouter.include_router(userRouter)
+# apiRouter.include_router(taskRouter)
+# apiRouter.include_router(projectRouter)
+# apiRouter.include_router(inboxRouter)
 
 @app.exception_handler(BaseException)
 async def exception_handler(res, exc: BaseException):  

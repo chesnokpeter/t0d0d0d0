@@ -3,7 +3,7 @@ from typing import Any, TypeAlias
 
 AbsModel: TypeAlias = Any
 
-class MemoryAbsModel(ABC, AbsModel):
+class MemoryAbsModel(ABC):
     memory_model_name: str
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -11,12 +11,12 @@ class MemoryAbsModel(ABC, AbsModel):
     @abstractmethod
     def model_dump(self): raise NotImplementedError
 
-class BrokerAbsModel(ABC, AbsModel):
+class BrokerAbsModel(ABC):
     queue_name: str
     @abstractmethod
     def model_dump(self): raise NotImplementedError
 
-class DbAbsModel(ABC, AbsModel):
+class DbAbsModel(ABC):
     id: int
     @abstractmethod
     def model_dump(self): raise NotImplementedError
