@@ -7,10 +7,8 @@ from t0d0d0d0.coreback.infra.abstract import DbAbsTable
 
 T = TypeVar('T', bound=DbAbsTable)
 
-class PostgresDefaultRepo(Generic[T], DbAbsRepo):   
+class PostgresDefaultRepo(DbAbsRepo[Session], Generic[T]):   
     model: Type[T]
-    def __init__(self, session: Session):
-        self.session = session
     async def get(self, **data) -> List[T] | None:
         result = await self.session.execute(select(self.model).filter_by(**data)) # type: ignore
         return [i[0] for i in result.all()]

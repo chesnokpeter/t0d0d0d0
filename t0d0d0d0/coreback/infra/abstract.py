@@ -1,12 +1,14 @@
-from abc import ABC, abstractmethod, abs
+from abc import ABC, abstractmethod
 
-class DbAbsTable():
+class DbAbsTable:
     id: int
     @abstractmethod
     def model(self): raise NotImplementedError
 
 
-class AbsAdapter(ABC):
+class AbsConnector(ABC):
+    _session = None
+    connector_name = None
     @abstractmethod
     def __init__(self): raise NotImplementedError
     @abstractmethod

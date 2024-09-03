@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Any
 from t0d0d0d0.coreback.infra.db.repositories import UserRepo, TaskRepo, ProjectRepo
 from t0d0d0d0.coreback.infra.memory.repositories import AuthcodeRepo
 from t0d0d0d0.coreback.infra.memory import get_async_conn_redis
@@ -80,33 +81,24 @@ class UnitOfWork(AbsUnitOfWork):
             await self.session_postgres.rollback()
 
 
+from t0d0d0d0.coreback.infra.abstract import AbsConnector
+from t0d0d0d0.coreback.repos.abstract import AbsRepo
+from t0d0d0d0.coreback.exceptions import NoConnectorForRepo
 
-
-
-@dataclass
 class UnitOfWork:
-    get_postgres_conn = None
-    get_redis_conn = None
-    get_rabbit_conn = None
+    def __init__(self, connectors: list[AbsConnector], repos: list[AbsRepo]):
+        self.connectors = connectors
+        self.repos_names = [repo.reponame for repo in repos]
+        [setattr(self, repo.reponame, repo) for repo in repos]
+        for r in repos:
+            if r.require_connector not in {c.connector_name for c in connectors}:
+                raise NoConnectorForRepo(f'No Connector For Repo "{r.reponame}"')
 
     async def __aenter__(self):
+        for repo_name in self.repos_names:
+            repo: AbsRepo = getattr(self, repo_name)
+            for c in self.connectors:
+                if repo.require_connector == c.connector_name:
+                    session = await c.connect()
+                    await repo.__call__(session)
 
-        if self.get_postgres_conn:
-            self.postgres_session = self.get_postgres_conn()
-
-        if self.get_redis_conn:
-            self.redis_session = await self.get_redis_conn()
-
-        if self.get_rabbit_conn:
-            self.rabbit_session = self.get_rabbit_conn()
-            await self.rabbit_session.connect()
-
-
-    async def __aexit__(self, *args):
-        if self.get_postgres_conn:
-            await self.rollback()
-            await self.postgres_session.close()
-        if self.get_redis_conn:
-            self.redis_session.close()
-        if self.get_rabbit_conn:
-            await self.rabbit_session.close()

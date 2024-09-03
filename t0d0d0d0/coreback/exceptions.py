@@ -24,3 +24,11 @@ class ProjectException(BaseException):
 class TaskException(BaseException):
     errType = 'Task Error'
 
+
+
+
+class CoreException(Exception):...
+
+class UOWException(CoreException):...
+
+class NoConnectorForRepo(UOWException):... 

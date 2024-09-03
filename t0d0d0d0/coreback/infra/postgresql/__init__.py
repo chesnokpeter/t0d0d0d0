@@ -1,14 +1,14 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from t0d0d0d0.coreback.infra.abstract import AbsAdapter
+from t0d0d0d0.coreback.infra.abstract import AbsConnector
 
 def get_async_conn_postgres(postgres_url: str) -> async_sessionmaker:
     engine = create_async_engine(postgres_url)
     return async_sessionmaker(engine, expire_on_commit=False)
 
-class PostgresAdapter(AbsAdapter):
-    _session = None
-    def __init__(self, postgres_url: str):
+class PostgresConnector(AbsConnector):
+    def __init__(self, connector_name: str, postgres_url: str):
         self.maker = get_async_conn_postgres(postgres_url)
+        self.connector_name = connector_name
     async def connect(self):
         self._session = self.maker()
     async def commit(self):
