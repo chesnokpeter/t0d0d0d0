@@ -9,7 +9,7 @@ def get_async_conn_redis(redis_host: str, redis_port: int) -> Callable[[], Redis
 
 
 class RedisConnector(AbsConnector):
-    def __init__(self, connector_name: str, redis_host: str, redis_port: int):
+    def __init__(self, redis_host: str, redis_port: int, connector_name: str = 'redis'):
         self.maker = get_async_conn_redis(redis_host, redis_port)
         self.connector_name = connector_name
     async def connect(self):

@@ -1,6 +1,6 @@
 from t0d0d0d0.coreback.services.abstract import AbsService
 
-from t0d0d0d0.coreback.infra.db.models import ProjectModel 
+from t0d0d0d0.coreback.models.project import ProjectModel 
 from t0d0d0d0.coreback.schemas.project import NewProjectSch
 from t0d0d0d0.coreback.uow import BaseUnitOfWork
 from t0d0d0d0.coreback.exceptions import AuthException, ProjectException

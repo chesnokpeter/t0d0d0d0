@@ -6,7 +6,7 @@ def get_async_conn_postgres(postgres_url: str) -> async_sessionmaker:
     return async_sessionmaker(engine, expire_on_commit=False)
 
 class PostgresConnector(AbsConnector):
-    def __init__(self, connector_name: str, postgres_url: str):
+    def __init__(self, postgres_url: str, connector_name: str = 'postgres'):
         self.maker = get_async_conn_postgres(postgres_url)
         self.connector_name = connector_name
     async def connect(self):

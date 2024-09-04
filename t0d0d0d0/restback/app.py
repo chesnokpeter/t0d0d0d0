@@ -33,9 +33,11 @@ async def ping():
 from t0d0d0d0.coreback.services.user import UserService
 from t0d0d0d0.restback.depends import uowdep
 
+from t0d0d0d0.restback.depends import user, authcode
+
 @apiRouter.get('/a')
-async def a(uow = Depends(uowdep)):
-    u = await UserService(uow).getOne(6)
+async def a(uow = Depends(uowdep(user, authcode))):
+    u = await UserService(uow).getOne(14)
     print(u)
 
 # apiRouter.include_router(userRouter)

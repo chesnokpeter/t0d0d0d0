@@ -1,17 +1,22 @@
-from t0d0d0d0.coreback.services.abstract import AbsService
 from datetime import date as datetype
 import datetime
 
-from t0d0d0d0.coreback.infra.db.models import TaskModel
+from t0d0d0d0.coreback.services.abstract import AbsService
+from t0d0d0d0.coreback.models.task import TaskModel
 from t0d0d0d0.coreback.schemas.task import NewTaskSch, NameTaskSch
 from t0d0d0d0.coreback.schemas.task import NewTaskSch
-from t0d0d0d0.coreback.uow import BaseUnitOfWork
+from t0d0d0d0.coreback.uow import UnitOfWork, BaseUnitOfWork
 from t0d0d0d0.coreback.exceptions import AuthException, ProjectException, TaskException
 
-from t0d0d0d0.coreback.infra.broker.models import TasknotifyModel, ShedulernotifyModel
+from t0d0d0d0.coreback.models.tasknotify import TasknotifyModel
+from t0d0d0d0.coreback.models.shedulernotify import ShedulernotifyModel
+
+from typing import Annotated, TypeAlias
+
+UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
 
 class TaskService(AbsService): 
-    def __init__(self, uow: BaseUnitOfWork) -> None:
+    def __init__(self, uow: UnitOfWork) -> None:
         self.uow = uow
 
     async def new(self, user_id:int, data:NewTaskSch) -> TaskModel:

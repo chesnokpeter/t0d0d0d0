@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from functools import wraps
 
 from t0d0d0d0.coreback.infra.abstract import AbsConnector
 from t0d0d0d0.coreback.repos.abstract import AbsRepo, DbAbsRepo, MemoryAbsRepo, BrokerAbsRepo
@@ -9,7 +10,8 @@ from t0d0d0d0.coreback.repos.user import UserRepo
 from t0d0d0d0.coreback.repos.task import TaskRepo
 from t0d0d0d0.coreback.repos.shedulernotify import ShedulernotifyRepo
 from t0d0d0d0.coreback.repos.tasknotify import TasknotifyRepo
-from t0d0d0d0.coreback.exceptions import NoConnectorForRepo
+from t0d0d0d0.coreback.exceptions import NoConnectorForRepo, NoAccessForRepo
+from t0d0d0d0.coreback.services.abstract import AbsService
 
 
 class AbsUnitOfWork(ABC):
@@ -26,7 +28,7 @@ class AbsUnitOfWork(ABC):
 
 
 class UnitOfWork(AbsUnitOfWork):
-    def __init__(self, connectors: list[AbsConnector], repos: list[AbsRepo]):
+    def __init__(self, repos: list[AbsRepo], connectors: list[AbsConnector]):
         self.connectors = connectors
         self.repos_names = [repo.reponame for repo in repos]
         [setattr(self, repo.reponame, repo) for repo in repos]
@@ -53,10 +55,22 @@ class UnitOfWork(AbsUnitOfWork):
 
 
 class BaseUnitOfWork(AbsUnitOfWork, ABC):
-    user = UserRepo
-    task = TaskRepo
-    project = ProjectRepo
-    authcode = AuthcodeRepo
-    authnotify = AuthnotifyRepo
-    shedulernotify = ShedulernotifyRepo
-    tasknotify = TasknotifyRepo
+    user: UserRepo
+    task: TaskRepo
+    project: ProjectRepo
+    authcode: AuthcodeRepo
+    authnotify: AuthnotifyRepo
+    shedulernotify: ShedulernotifyRepo
+    tasknotify: TasknotifyRepo
+
+
+def uowaccess(*access: str):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(self, *args, **kwargs):
+            for i in access:
+                if not getattr(self.uow, i, False):
+                    raise NoAccessForRepo(f'No Access For Repo \"{i}\"')
+            return await func(self, *args, **kwargs)
+        return wrapper
+    return decorator

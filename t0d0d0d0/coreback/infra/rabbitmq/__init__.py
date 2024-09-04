@@ -6,7 +6,7 @@ def get_async_conn_rabbit(rabbit_url: str) -> RabbitBroker:
     return lambda:RabbitBroker(rabbit_url)
 
 class RabbitConnector(AbsConnector):
-    def __init__(self, connector_name: str, rabbit_url: str):
+    def __init__(self, rabbit_url: str, connector_name: str = 'rabbit'):
         self.maker = get_async_conn_rabbit(rabbit_url)
         self.connector_name = connector_name
     async def connect(self):
