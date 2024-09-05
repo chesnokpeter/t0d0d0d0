@@ -1,4 +1,4 @@
-#TAKEN FROM https://github.com/k4black/fastapi-jwt
+# TAKEN FROM https://github.com/k4black/fastapi-jwt
 
 import warnings
 from typing import Any, Dict, Optional
@@ -14,13 +14,15 @@ from .abstract_backend import AbstractJWTBackend, BackendException
 
 class PythonJoseJWTBackend(AbstractJWTBackend):
     def __init__(self, algorithm: Optional[str] = None) -> None:
-        assert jose is not None, "To use PythonJoseJWTBackend, you need to install python-jose"
-        warnings.warn("PythonJoseJWTBackend is deprecated as python-jose library is not maintained anymore.")
+        assert jose is not None, 'To use PythonJoseJWTBackend, you need to install python-jose'
+        warnings.warn(
+            'PythonJoseJWTBackend is deprecated as python-jose library is not maintained anymore.'
+        )
 
         self._algorithm = algorithm or self.default_algorithm
         assert (
             hasattr(jose.jwt.ALGORITHMS, self._algorithm) is True  # type: ignore[attr-defined]
-        ), f"{algorithm} algorithm is not supported by python-jose library"
+        ), f'{algorithm} algorithm is not supported by python-jose library'
 
     @property
     def default_algorithm(self) -> str:
@@ -39,10 +41,10 @@ class PythonJoseJWTBackend(AbstractJWTBackend):
                 token,
                 secret_key,
                 algorithms=[self._algorithm],
-                options={"leeway": 10},
+                options={'leeway': 10},
             )
             return payload
         except jose.jwt.ExpiredSignatureError as e:  # type: ignore[attr-defined]
-            raise BackendException(f"Token time expired: {e}")
+            raise BackendException(f'Token time expired: {e}')
         except jose.jwt.JWTError as e:  # type: ignore[attr-defined]
-            raise BackendException(f"Invalid token: {e}")
+            raise BackendException(f'Invalid token: {e}')

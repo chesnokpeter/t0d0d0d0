@@ -1,9 +1,11 @@
-from pydantic import BaseModel, ConfigDict
-from datetime import datetime
 from datetime import date as datetype
+from datetime import datetime
 from datetime import time as timetype
 
+from pydantic import BaseModel, ConfigDict
+
 from t0d0d0d0.coreback.models.enums import TaskStatus
+
 
 class TaskModel(BaseModel):
     id: int

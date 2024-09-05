@@ -21,3 +21,8 @@ notyfier:
 	faststream run t0d0d0d0.notyfier.app:app
 
 sheluder:
+
+
+ruff:
+	ruff check --select I --fix
+	ruff format

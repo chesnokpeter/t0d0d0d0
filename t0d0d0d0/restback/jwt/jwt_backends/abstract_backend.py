@@ -1,4 +1,4 @@
-#TAKEN FROM https://github.com/k4black/fastapi-jwt
+# TAKEN FROM https://github.com/k4black/fastapi-jwt
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional

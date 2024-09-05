@@ -1,4 +1,4 @@
-#TAKEN FROM https://github.com/k4black/fastapi-jwt
+# TAKEN FROM https://github.com/k4black/fastapi-jwt
 
 from . import abstract_backend, authlib_backend, python_jose_backend  # noqa: F401
 from .abstract_backend import AbstractJWTBackend  # noqa: F401

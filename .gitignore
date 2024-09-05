@@ -5,3 +5,5 @@ scripts/migrations/versions/*
 !scripts/migrations/versions/.gitkeep
 .mypy_cache
 sheduler
+.ruff_cache
+.vscode

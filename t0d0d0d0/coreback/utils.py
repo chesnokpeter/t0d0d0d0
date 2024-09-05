@@ -1,7 +1,5 @@
-import random, string
 import random
 import string
-
 
 
 def genAuthCode(length=4):
