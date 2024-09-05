@@ -4,8 +4,8 @@ from typing import TypeVar, Generic
 from datetime import date as datetype
 from datetime import time as timetype
 
-from t0d0d0d0.coreback.infra.db.models import TaskStatus
-from t0d0d0d0.coreback.infra.db.models import TaskModel
+from t0d0d0d0.coreback.models.enums import TaskStatus
+from t0d0d0d0.coreback.models.task import TaskModel
 
 T = TypeVar('T')
 

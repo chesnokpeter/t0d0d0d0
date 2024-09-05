@@ -48,5 +48,4 @@ shedulernotify = ShedulernotifyRepo()
 def uowdep(*repos: AbsRepo):
     connectors_name = {i.require_connector for i in repos}
     connectors_done = [i for i in connectors if i.connector_name in connectors_name]
-    print(connectors_done)
     return lambda: UnitOfWork(repos, connectors_done)

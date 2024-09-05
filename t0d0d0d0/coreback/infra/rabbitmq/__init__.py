@@ -15,7 +15,7 @@ class RabbitConnector(AbsConnector):
     async def commit(self):...
     async def rollback(self):...
     async def close(self):
-        self._session.close()
+        await self._session.close()
     @property
     def session(self):
         return self._session
