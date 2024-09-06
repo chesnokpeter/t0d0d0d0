@@ -5,7 +5,7 @@ from faststream.rabbit import RabbitBroker, RabbitQueue
 from pydantic import BaseModel, ValidationError
 
 from t0d0d0d0.coreback.config import bot_token, rabbit_url
-from t0d0d0d0.coreback.infra.broker.models import AuthnotifyModel
+from t0d0d0d0.coreback.models.authnotify import AuthnotifyModel
 
 broker = RabbitBroker(rabbit_url)
 app = FastStream(broker)

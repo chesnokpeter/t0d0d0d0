@@ -9,6 +9,7 @@ from t0d0d0d0.coreback.config import (
     redis_port,
     secret_key,
 )
+
 from t0d0d0d0.coreback.exceptions import JWTException
 from t0d0d0d0.coreback.infra.postgresql import PostgresConnector
 from t0d0d0d0.coreback.infra.rabbitmq import RabbitConnector

@@ -7,3 +7,6 @@ scripts/migrations/versions/*
 sheduler
 .ruff_cache
 .vscode
+scripts/envs/*
+!scripts/envs/.gitkeep
+scripts/secrets.bash
