@@ -1,0 +1,43 @@
+from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from t0d0d0d0.coreback.exceptions import BaseException
+from t0d0d0d0.restback.answer import Answer
+from t0d0d0d0.restback.routes.project import projectRouter
+from t0d0d0d0.restback.routes.task import inboxRouter, taskRouter
+from t0d0d0d0.restback.routes.user import userRouter
+
+app = FastAPI(title='t0d0d0d0 api')
+
+origins = ['*']
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
+
+apiRouter = APIRouter(prefix='/api', tags=['api'])
+
+
+@apiRouter.get('/ping')
+async def ping():
+    return 'pong'
+
+
+apiRouter.include_router(userRouter)
+apiRouter.include_router(taskRouter)
+apiRouter.include_router(projectRouter)
+apiRouter.include_router(inboxRouter)
+
+
+@app.exception_handler(BaseException)
+async def exception_handler(res, exc: BaseException):
+    return Answer.ErrAnswer(
+        message=exc.errType, desc=exc.message, statuscode=exc.statuscode
+    ).make_resp()
+
+
+app.include_router(apiRouter)

@@ -1,0 +1,14 @@
+.bash
+__pycache__
+venv
+scripts/migrations/versions/*
+!scripts/migrations/versions/.gitkeep
+.mypy_cache
+.ruff_cache
+.vscode
+scripts/envs/*
+!scripts/envs/.gitkeep
+scripts/secrets.bash
+test.py
+
+t0d0d0d0/sheduler/sheduler
