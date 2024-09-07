@@ -16,7 +16,9 @@ class PostgresDefaultRepo(Generic[T], DbAbsRepo[Session]):
     model: Type[T]
 
     async def get(self, **data) -> List[T] | None:
-        result = await self.session.execute(select(self.model).order_by(self.model.id.desc()).filter_by(**data))  # type: ignore
+        result = await self.session.execute(
+            select(self.model).order_by(self.model.id.desc()).filter_by(**data)
+        )  # type: ignore
         return [i[0] for i in result.all()]
 
     async def get_one(self, **data) -> T | None:

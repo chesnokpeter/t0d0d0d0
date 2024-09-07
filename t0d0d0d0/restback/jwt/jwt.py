@@ -11,7 +11,11 @@ from fastapi.responses import Response
 from fastapi.security import APIKeyCookie, HTTPBearer
 from starlette.status import HTTP_401_UNAUTHORIZED
 
-from .jwt_backends import AbstractJWTBackend, authlib_backend, python_jose_backend
+from .jwt_backends import (
+    AbstractJWTBackend,
+    authlib_backend,
+    python_jose_backend,
+)
 from .jwt_backends.abstract_backend import BackendException
 
 DEFAULT_JWT_BACKEND: Optional[Type[AbstractJWTBackend]] = None
@@ -64,13 +68,21 @@ class JwtAuthBase(ABC):
     class JwtAccessCookie(APIKeyCookie):
         def __init__(self, *args: Any, **kwargs: Any):
             APIKeyCookie.__init__(
-                self, *args, name='access_token_cookie', auto_error=False, **kwargs
+                self,
+                *args,
+                name='access_token_cookie',
+                auto_error=False,
+                **kwargs,
             )
 
     class JwtRefreshCookie(APIKeyCookie):
         def __init__(self, *args: Any, **kwargs: Any):
             APIKeyCookie.__init__(
-                self, *args, name='refresh_token_cookie', auto_error=False, **kwargs
+                self,
+                *args,
+                name='refresh_token_cookie',
+                auto_error=False,
+                **kwargs,
             )
 
     class JwtAccessBearer(HTTPBearer):
@@ -195,7 +207,9 @@ class JwtAuthBase(ABC):
 
     @staticmethod
     def set_access_cookie(
-        response: Response, access_token: str, expires_delta: Optional[timedelta] = None
+        response: Response,
+        access_token: str,
+        expires_delta: Optional[timedelta] = None,
     ) -> None:
         seconds_expires: Optional[int] = (
             int(expires_delta.total_seconds()) if expires_delta else None
@@ -404,7 +418,8 @@ class JwtRefreshBearer(JwtRefresh):
         )
 
     async def __call__(
-        self, bearer: JwtAuthBase.JwtRefreshBearer = Security(JwtRefresh._bearer)
+        self,
+        bearer: JwtAuthBase.JwtRefreshBearer = Security(JwtRefresh._bearer),
     ) -> Optional[JwtAuthorizationCredentials]:
         return await self._get_credentials(bearer=bearer, cookie=None)
 

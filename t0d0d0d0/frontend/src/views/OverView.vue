@@ -327,7 +327,7 @@ body{
 .calday-task {
     max-width: 150px;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
     text-overflow: ellipsis;
     position: relative;
     border: var(--gray-color) solid 1px;
@@ -341,6 +341,7 @@ body{
     }
 }
 
+
 .inbox-item:hover{
     background-color: var(--white-color);
     color: var(--black-color);
@@ -349,13 +350,16 @@ body{
 .calday-task:hover{
     background-color: var(--white-color);
     color: var(--black-color);
-
+    border: var(--white-color) solid 1px;
+    overflow: visible;
     &.isdonetask{
         background-color: var(--black-color);
         color: var(--green-color);
+        border: var(--green-color) solid 1px;
     }
     &.isstoptask{
         background-color: var(--red-color);
+        border: var(--red-color) solid 1px;
     }
 }
 

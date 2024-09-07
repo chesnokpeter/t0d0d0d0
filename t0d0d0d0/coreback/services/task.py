@@ -2,7 +2,11 @@ import datetime
 from datetime import date as datetype
 from typing import Annotated, TypeAlias
 
-from t0d0d0d0.coreback.exceptions import AuthException, ProjectException, TaskException
+from t0d0d0d0.coreback.exceptions import (
+    UserException,
+    ProjectException,
+    TaskException,
+)
 from t0d0d0d0.coreback.models.shedulernotify import ShedulernotifyModel
 from t0d0d0d0.coreback.models.task import TaskModel
 from t0d0d0d0.coreback.models.tasknotify import TasknotifyModel
@@ -22,11 +26,13 @@ class TaskService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
-                raise AuthException('User not found')
+                raise UserException('user not found')
+
             if data.project_id:
                 p = await self.uow.project.get_one(id=data.project_id)
                 if not p:
-                    raise ProjectException('Project not found')
+                    raise ProjectException('project not found')
+
             t = await self.uow.task.add(**data.model_dump(), user_id=user_id)
             await self.uow.commit()
             return t.model()
@@ -36,7 +42,8 @@ class TaskService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
-                raise AuthException('User not found')
+                raise UserException('user not found')
+
             t = await self.uow.task.get(user_id=user_id, project_id=None, date=None, time=None)
             return [TaskModel(**i.model().model_dump()) for i in t]
 
@@ -45,7 +52,8 @@ class TaskService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
-                raise AuthException('User not found')
+                raise UserException('user not found')
+
             t = await self.uow.task.get_by_date(user_id=user_id)
             r = [
                 NameTaskSch(**i.model().model_dump(), project_name=i.project.name)
@@ -60,7 +68,8 @@ class TaskService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
-                raise AuthException('User not found')
+                raise UserException('user not found')
+
             t = await self.uow.task.get(user_id=user_id, date=date)
             r = [
                 NameTaskSch(**i.model().model_dump(), project_name=i.project.name)
@@ -75,9 +84,9 @@ class TaskService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
-                raise AuthException('User not found')
-            t = await self.uow.task.get_one(user_id=user_id, id=id)
+                raise UserException('user not found')
 
+            t = await self.uow.task.get_one(user_id=user_id, id=id)
             if t:
                 return t.model()
             return None
@@ -87,17 +96,16 @@ class TaskService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
-                raise AuthException('User not found')
+                raise UserException('user not found')
 
             t = await self.uow.task.get_one(id=id)
-
             if not t:
                 raise TaskException('task not found')
 
             if t.user_id != user_id:
-                raise AuthException
-            t = await self.uow.task.update(id, **data)
+                raise UserException('user has no control of the task')
 
+            t = await self.uow.task.update(id, **data)
             t = t.model()
             await self.uow.commit()
 
@@ -120,11 +128,14 @@ class TaskService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
-                raise AuthException('User not found')
+                raise UserException('user not found')
+
             t = await self.uow.task.get_one(id=id)
             if not t:
                 raise TaskException('task not found')
+
             if t.user_id != user_id:
-                raise AuthException
+                raise UserException('user has no control of the task')
+
             await self.uow.task.delete(id=id)
             await self.uow.commit()

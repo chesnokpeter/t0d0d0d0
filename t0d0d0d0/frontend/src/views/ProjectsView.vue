@@ -3,9 +3,12 @@
         <logo class="logo"></logo>
         <menu-comp sel="projects" class="menu"></menu-comp>
         <div class="content">
-            <div class="project" v-for="(project, index) in projects" :key="index">{{ project }}</div>
+            <input class="project-new" type="button" value="+" @click="addNewProject()"> <div class="project" v-for="(project, index) in projects" :key="index" @click="openModal(project.name, project.id)">{{ project.name }}</div>
         </div>
     </div>
+
+    <ProjectModal v-if="showModal" @close="closeModal" :id="idModal" :name="nameModal"/>
+
 </template>
 
 
@@ -14,18 +17,42 @@ import Logo from '../components/Logo.vue'
 import { request } from '@/modules/requester'
 import MenuComp from '../components/MenuComp.vue'
 import { onMounted, ref } from 'vue';
+import ProjectModal from '@/components/ProjectModal.vue';
 
-let projects = ref([])
+const showModal = ref(false)
+const idModal = ref()
+const nameModal = ref()
+
+const projects = ref([])
 
 onMounted(async ()=> {
-    let r = await request('/project/get/all', 'GET', {}, true)
+    let r = await request('/project/get/', 'GET', {}, true)
     for (let i = 0; i < r.data.length; i++) {
-        projects.value.push(r.data[i].name)
-        
+        projects.value.push(r.data[i])
     }
 })
 
+async function addNewProject() {
+    const r = await request('/project/new', 'POST', {name:'project'}, true)
+    showModal.value = true
+    nameModal.value = r.data[0].name
+    idModal.value = r.data[0].id
+}
 
+function openModal(name, id) {
+    showModal.value = true
+    nameModal.value = name
+    idModal.value = id
+}
+
+async function closeModal() {
+    showModal.value = false
+    projects.value = []
+    let r = await request('/project/get/', 'GET', {}, true)
+    for (let i = 0; i < r.data.length; i++) {
+        projects.value.push(r.data[i])
+    }
+}
 
 
 
@@ -47,7 +74,6 @@ onMounted(async ()=> {
 
 .inbox {
     display: flex;
-    /* flex-direction: column; */
     color: var(--white-color);
     gap: 10px;
     }
@@ -89,8 +115,32 @@ onMounted(async ()=> {
 .project {
     outline:1px solid var(--gray-color);
     outline-offset:-1px;
-    padding: 3.5px;
+    padding: 10px;
 }
+
+.project:hover{
+    background-color: var(--white-color);
+    color: var(--black-color);
+    outline: 1px solid var(--white-color);
+}
+
+input{
+    background-color: var(--black-color);
+    border: none;
+    outline: 1px solid var(--gray-color);
+    outline-offset:-1px;
+
+    color: var(--white-color);
+    font-family: "Source Code Pro", monospace;
+    font-size: 16px;
+
+}
+
+input:hover{
+    background-color: var(--white-color);
+    color: var(--black-color);
+    outline: 1px solid var(--white-color);
+}  
 
 @media (max-width: 750px) {
     .container {

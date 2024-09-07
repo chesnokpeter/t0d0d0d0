@@ -62,6 +62,7 @@ sheduler:
 
 
 
+
 migration:
 	python -m alembic revision --autogenerate
 	python -m alembic upgrade head

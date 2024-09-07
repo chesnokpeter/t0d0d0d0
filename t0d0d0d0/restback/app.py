@@ -1,7 +1,9 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from t0d0d0d0.coreback.exceptions import BaseException
+from t0d0d0d0.coreback.exceptions import CoreException
+from t0d0d0d0.restback.exceptions import JWTExceptions
+
 from t0d0d0d0.restback.answer import Answer
 from t0d0d0d0.restback.routes.project import projectRouter
 from t0d0d0d0.restback.routes.task import inboxRouter, taskRouter
@@ -33,11 +35,14 @@ apiRouter.include_router(projectRouter)
 apiRouter.include_router(inboxRouter)
 
 
-@app.exception_handler(BaseException)
-async def exception_handler(res, exc: BaseException):
-    return Answer.ErrAnswer(
-        message=exc.errType, desc=exc.message, statuscode=exc.statuscode
-    ).make_resp()
+@app.exception_handler(JWTExceptions)
+async def exception_handler(res, exc: JWTExceptions):
+    return Answer.ErrAnswer(message='JWT Error', desc=exc.message, statuscode=401).make_resp()
+
+
+@app.exception_handler(CoreException)
+async def exception_handler(res, exc: CoreException):
+    return Answer.ErrAnswer(message=exc.desc, desc=exc.error, statuscode=400).make_resp()
 
 
 app.include_router(apiRouter)

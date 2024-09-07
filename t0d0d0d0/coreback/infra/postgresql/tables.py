@@ -34,17 +34,27 @@ class Base(DeclarativeBase):
 class USER(Base, DbAbsTable):
     __tablename__ = 'user'
     id: Mapped[int] = mapped_column(
-        Integer(), unique=True, primary_key=True, autoincrement=True, nullable=False
+        Integer(),
+        unique=True,
+        primary_key=True,
+        autoincrement=True,
+        nullable=False,
     )
     tgid: Mapped[int] = mapped_column(BigInteger(), nullable=False)
     tgusername: Mapped[str] = mapped_column(String(), nullable=False)
     name: Mapped[str] = mapped_column(String(), nullable=False)
 
     tasks: Mapped[list['TASK']] = relationship(
-        'TASK', back_populates='user', cascade='all, delete-orphan', lazy='subquery'
+        'TASK',
+        back_populates='user',
+        cascade='all, delete-orphan',
+        lazy='subquery',
     )
     projects: Mapped[list['PROJECT']] = relationship(
-        'PROJECT', back_populates='user', cascade='all, delete-orphan', lazy='subquery'
+        'PROJECT',
+        back_populates='user',
+        cascade='all, delete-orphan',
+        lazy='subquery',
     )
 
     def model(self):
@@ -59,7 +69,11 @@ class USER(Base, DbAbsTable):
 class TASK(Base, DbAbsTable):
     __tablename__ = 'task'
     id: Mapped[int] = mapped_column(
-        Integer(), unique=True, primary_key=True, autoincrement=True, nullable=False
+        Integer(),
+        unique=True,
+        primary_key=True,
+        autoincrement=True,
+        nullable=False,
     )
     name: Mapped[str] = mapped_column(String(), nullable=False)
     createdat: Mapped[datetime] = mapped_column(DateTime(), nullable=False, default=datetime.now())
@@ -70,7 +84,9 @@ class TASK(Base, DbAbsTable):
     )
 
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('user.id'), nullable=False)
-    project_id: Mapped[int] = mapped_column(Integer, ForeignKey('project.id'), nullable=True)
+    project_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey('project.id', ondelete='CASCADE'), nullable=True
+    )
 
     user: Mapped['USER'] = relationship('USER', back_populates='tasks', lazy='subquery')
     project: Mapped['PROJECT'] = relationship('PROJECT', back_populates='tasks', lazy='subquery')
@@ -91,7 +107,11 @@ class TASK(Base, DbAbsTable):
 class PROJECT(Base, DbAbsTable):
     __tablename__ = 'project'
     id: Mapped[int] = mapped_column(
-        Integer(), unique=True, primary_key=True, autoincrement=True, nullable=False
+        Integer(),
+        unique=True,
+        primary_key=True,
+        autoincrement=True,
+        nullable=False,
     )
     name: Mapped[str] = mapped_column(String(), nullable=False)
     createdat: Mapped[datetime] = mapped_column(DateTime(), nullable=False, default=datetime.now())
@@ -100,7 +120,10 @@ class PROJECT(Base, DbAbsTable):
 
     user: Mapped['USER'] = relationship('USER', back_populates='projects', lazy='subquery')
     tasks: Mapped[list['TASK']] = relationship(
-        'TASK', back_populates='project', cascade='all, delete-orphan', lazy='subquery'
+        'TASK',
+        back_populates='project',
+        cascade='all, delete-orphan',
+        lazy='subquery',
     )
 
     def model(self):

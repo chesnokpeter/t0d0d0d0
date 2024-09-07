@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Generic, List, Literal, Optional, Type, TypeVar
 
 from fastapi.encoders import jsonable_encoder
@@ -40,7 +40,13 @@ class Answer:
 
     @staticmethod
     def OkAnswer(message: str, desc: str, data: List[dict[str, Any]]):
-        return Answer(type='success', message=message, desc=desc, data=data, statuscode=200)
+        return Answer(
+            type='success',
+            message=message,
+            desc=desc,
+            data=data,
+            statuscode=200,
+        )
 
     @staticmethod
     def OkAnswerModel(message: str, desc: str, data: List[BaseModel] | BaseModel):
@@ -51,7 +57,13 @@ class Answer:
 
     @staticmethod
     def ErrAnswer(message: str, desc: str, statuscode: int):
-        return Answer(type='error', message=message, desc=desc, data=[{}], statuscode=statuscode)
+        return Answer(
+            type='error',
+            message=message,
+            desc=desc,
+            data=[{}],
+            statuscode=statuscode,
+        )
 
 
 class AnswerResModel(BaseModel, Generic[T]):

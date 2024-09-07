@@ -6,6 +6,7 @@ from pydantic import BaseModel, ValidationError
 
 from t0d0d0d0.coreback.config import bot_token, rabbit_url
 from t0d0d0d0.coreback.models.authnotify import AuthnotifyModel
+from t0d0d0d0.coreback.models.tasknotify import TasknotifyModel
 
 broker = RabbitBroker(rabbit_url)
 app = FastStream(broker)
@@ -39,6 +40,6 @@ async def notyfiauth_handler(data: AuthnotifyModel):
     )
 
 
-@broker.subscriber(RabbitQueue('notifytask', durable=True))
-async def notifytask_handler(data):
-    print(data)
+@broker.pydantic_subscriber(RabbitQueue('notifytask', durable=True), TasknotifyModel)
+async def notifytask_handler(data: TasknotifyModel):
+    await bot.send_message(data.tgid, 'слыш пёс, таска просрочена')

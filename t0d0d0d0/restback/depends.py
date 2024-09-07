@@ -10,7 +10,6 @@ from t0d0d0d0.coreback.config import (
     secret_key,
 )
 
-from t0d0d0d0.coreback.exceptions import JWTException
 from t0d0d0d0.coreback.infra.postgresql import PostgresConnector
 from t0d0d0d0.coreback.infra.rabbitmq import RabbitConnector
 from t0d0d0d0.coreback.infra.redis import RedisConnector
@@ -24,19 +23,25 @@ from t0d0d0d0.coreback.repos.user import UserRepo
 from t0d0d0d0.coreback.uow import UnitOfWork
 from t0d0d0d0.restback.jwt import JwtAccessCookie, JwtRefreshCookie
 
+from t0d0d0d0.restback.exceptions import (
+    JWTAccessExceptions,
+    JWTRefreshExceptions,
+)
+
+
 access = JwtAccessCookie(secret_key, False, access_expires_delta=timedelta(minutes=15))
 refresh = JwtRefreshCookie(secret_key, False, refresh_expires_delta=timedelta(days=7))
 
 
 def accessSecure(a=Security(access)):
     if not a:
-        raise JWTException(message='invalid jwt token')
+        raise JWTAccessExceptions(message='invalid jwt token')
     return a
 
 
 def refreshSecure(a=Security(refresh)):
     if not a:
-        raise JWTException(message='invalid jwt token')
+        raise JWTRefreshExceptions(message='invalid jwt token')
     return a
 
 

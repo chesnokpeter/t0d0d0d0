@@ -30,7 +30,8 @@ async def signup_user(data: SignUpSch, uow=Depends(uowdep(user, authcode))):
 
 @userRouter.post('/login')
 async def login_user(
-    authcode: str = Body(embed=True), uow=Depends(uowdep(user, authcode, authnotify))
+    authcode: str = Body(embed=True),
+    uow=Depends(uowdep(user, authcode, authnotify)),
 ):
     payload = await UserService(uow).login(authcode)
     response = Answer.OkAnswer('user logged', 'user logged', [{}])
@@ -52,7 +53,9 @@ async def me_user(uow=Depends(uowdep(user)), credentials=Security(accessSecure))
 async def refresh_token(uow=Depends(uowdep(user)), credentials=Security(refreshSecure)):
     user = await UserService(uow).getOne(id=credentials['id'])
     response = Answer.OkAnswer(
-        'access token has been updated', 'access token has been updated', data=[{}]
+        'access token has been updated',
+        'access token has been updated',
+        data=[{}],
     )
     access_token = access.create_access_token(subject={'id': credentials['id']})
     access.set_access_cookie(response.response, access_token)

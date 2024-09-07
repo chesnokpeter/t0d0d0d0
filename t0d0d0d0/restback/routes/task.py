@@ -42,7 +42,7 @@ async def delete_task(
 
 
 @taskRouter.post('/get/byDate', response_model=AnswerResModel[TaskModel])
-async def get_task_by_date(
+async def get_tasks_by_date(
     date: datetype = Body(embed=True),
     uow=Depends(uowdep(user, task)),
     credentials=Security(accessSecure),
@@ -53,7 +53,7 @@ async def get_task_by_date(
 
 
 @taskRouter.post('/get/byId', response_model=AnswerResModel[TaskModel])
-async def get_task_by_date(
+async def get_tasks_by_date(
     id: int = Body(embed=True),
     uow=Depends(uowdep(user, task)),
     credentials=Security(accessSecure),

@@ -1,6 +1,6 @@
 from typing import Annotated, TypeAlias
 
-from t0d0d0d0.coreback.exceptions import AuthCodeException, AuthException
+from t0d0d0d0.coreback.exceptions import UserException
 from t0d0d0d0.coreback.models.authcode import AuthcodeModel
 from t0d0d0d0.coreback.models.authnotify import AuthnotifyModel
 from t0d0d0d0.coreback.models.user import UserModel
@@ -21,14 +21,14 @@ class UserService(AbsService):
         async with self.uow:
             c = await self.uow.authcode.get(data.authcode)
             if not c:
-                raise AuthCodeException('Authcode not found')
+                raise UserException('authcode not found')
 
             u = await self.uow.user.get(tgid=c.tgid)
             if u:
-                raise AuthException('User already exist')
+                raise UserException('user already exist')
             u = await self.uow.user.get(tgusername=c.tgusername)
             if u:
-                raise AuthException('User already exist')
+                raise UserException('user already exist')
 
             u = NewUserSch(tgid=c.tgid, tgusername=c.tgusername, name=data.name)
             u = await self.uow.user.add(**u.model_dump())
@@ -41,11 +41,13 @@ class UserService(AbsService):
         async with self.uow:
             c = await self.uow.authcode.get(authcode)
             if not c:
-                raise AuthCodeException('Authcode not found')
+                raise UserException('authcode not found')
+
             await self.uow.authcode.delete(authcode)
             u = await self.uow.user.get_one(tgid=int(c.tgid))
             if not u:
-                raise AuthException('User not found')
+                raise UserException('user not found')
+
             await self.uow.authcode.delete(authcode)
             await self.uow.authnotify.send(AuthnotifyModel(tgid=u.tgid))
             return u.model()
@@ -69,13 +71,5 @@ class UserService(AbsService):
         async with self.uow:
             u = await self.uow.user.get_one(id=id)
             if not u:
-                raise AuthException('User not found')
+                raise UserException('user not found')
             return u.model()
-
-    # @uowaccess('task')
-    # async def test(self) -> UserModel:
-    #     async with self.uow:
-    #         u = await self.uow.task.get()
-    #         a = await self.uow.user.get()
-    #         # await self.uow.commit()
-    #         # return u.model()

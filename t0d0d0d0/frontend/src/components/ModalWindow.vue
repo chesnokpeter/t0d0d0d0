@@ -139,7 +139,7 @@ export default defineComponent({
         }));
 
         onMounted(async ()=> {
-            let r = await request('/project/get/all', 'GET', {}, true)
+            let r = await request('/project/get/', 'GET', {}, true)
             projects.value = r.data.map(item => ({
                 ...item,
                 label: item.name,
