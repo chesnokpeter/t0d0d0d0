@@ -5,7 +5,7 @@
     <div class="content">
         <div class="inboxs">
             inbox //
-            <div class="inbox"> <input class="calday-new" type="button" value="+" @click="addNewInbox()"> <div @click="openModal(inbox.name, inbox.project_id, inbox.date, inbox.time, inbox.status, inbox.id, undefined, 'inbox')" class="inbox-item" v-for="(inbox, index) in inboxs" :key="index" @dragstart="onDragStart($event, inbox)" draggable="true">{{ inbox.name }}</div></div>
+            <div class="inbox"> <input class="calday-new" type="button" value="+" @click="addNewInbox()"> <div @click="openModal(inbox.name, inbox.project_id, inbox.date, inbox.time, inbox.status, inbox.id, undefined, 'inbox')" class="inbox-item" v-for="(inbox, index) in inboxs" :key="index" @dragstart="onDragStart($event, inbox)" @touchstart="onDragStart($event, inbox)" draggable="true">{{ inbox.name }}</div></div>
         </div>
         <div class="calendar-nav">
             <div class="backcal" @click="backcal"><</div>
@@ -326,8 +326,8 @@ body{
 
 .calday-task {
     max-width: 150px;
-    white-space: nowrap;
-    overflow: visible;
+    // white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
     position: relative;
     border: var(--gray-color) solid 1px;
