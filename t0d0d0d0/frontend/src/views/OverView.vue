@@ -127,6 +127,7 @@ async function backcal() {
         calendar.value[i].backDay()
         calendar.value[i].backDay()
         calendar.value[i].backDay()
+        calendar.value[i].backDay()
         const t = await gettasksbydate(calendar.value[i].y_m_d())
         calendar.value[i].setTasks(t)
     }
@@ -135,6 +136,7 @@ async function backcal() {
 
 async function nextcal() {
     for (let i = 0; i < calendar.value.length; i++) {
+        calendar.value[i].nextDay()
         calendar.value[i].nextDay()
         calendar.value[i].nextDay()
         calendar.value[i].nextDay()
@@ -246,6 +248,10 @@ onMounted(async ()=> {
     today.nextDay()
     t = await gettasksbydate(today.y_m_d())
     calendar.value.push(reactive(new calday(today.y_m_d(), t)))
+    today.nextDay()
+    t = await gettasksbydate(today.y_m_d())
+    calendar.value.push(reactive(new calday(today.y_m_d(), t)))
+    today.nextDay()
 
 })
 
@@ -262,6 +268,12 @@ body{
 </style>
 
 <style scoped lang="scss">
+.content{
+    margin-left: 150px;
+    
+}
+
+
 .inboxs {
     display: flex;
     flex-direction: column;
@@ -287,11 +299,13 @@ body{
 
 .container {
     position: relative;
-    margin-top: 150px; 
+    margin-top: 100px; 
+    width: 100%;
 }
 
 .logo {
-    display: block;
+    display: flex;
+
     width: 100%; 
     /* height: 100%; */
     margin: 0 auto;
@@ -299,11 +313,11 @@ body{
 
 .menu {
     position: absolute;
-    left: -100px;
+    left: 50px;
 }
 
 .inbox {
-    max-width: 600px;
+    max-width: 1000px;
     display: flex;
     flex-wrap: wrap;
 }
@@ -311,6 +325,7 @@ body{
 .calendar {
     display: flex;
     justify-content: space-between;
+    max-width: 1000px;
 }
 
 .calday, .calday-tasks {
@@ -380,6 +395,7 @@ body{
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+    max-width: 1000px;
 }
 
 .calendar-nav-title {
@@ -431,6 +447,8 @@ input:hover{
         left: 0;
         flex-direction: row;
         justify-content: space-between;
+    }.content {
+        margin: 0;
     }
 
 }

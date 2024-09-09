@@ -65,6 +65,11 @@ async function closeModal() {
 </style>
 
 <style scoped>
+.content{
+    margin-left: 150px;
+    margin-top: 20px;
+}
+
 .inboxs {
     display: flex;
     flex-direction: column;
@@ -89,11 +94,12 @@ async function closeModal() {
 
 .container {
     position: relative;
-    margin-top: 150px; 
+    margin-top: 100px; 
+    width: 100%;
 }
 
 .logo {
-    display: block;
+    display: flex;
     width: 100%; 
     /* height: 100%; */
     margin: 0 auto;
@@ -101,7 +107,7 @@ async function closeModal() {
 
 .menu {
     position: absolute;
-    left: -100px;
+    left: 50px;
 }
 
 .content {
@@ -158,6 +164,8 @@ input:hover{
         left: 0;
         flex-direction: row;
         justify-content: space-between;
+    }.content {
+        margin: 0;
     }
     
 

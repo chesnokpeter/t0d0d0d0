@@ -50,6 +50,8 @@ async function signup() {
     </style>
 
 <style scoped>
+
+
     .logo{
     margin-top: 150px;
     margin-bottom: 20px;

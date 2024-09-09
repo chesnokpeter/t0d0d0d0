@@ -69,6 +69,11 @@ onMounted(async ()=> {
 </style>
 
 <style scoped>
+.content{
+    margin-left: 150px;
+    /* margin-top: 20px; */
+}
+
 
 .taskmanager{
     display: flex;
@@ -76,16 +81,17 @@ onMounted(async ()=> {
 
 .menu {
     position: absolute;
-    left: -100px;
+    left: 50px;
 }
 
 .container {
     position: relative;
-    margin-top: 150px; 
+    margin-top: 100px; 
+    width: 100%;
 }
 
 .logo {
-    display: block;
+    display: flex;
     width: 100%; 
     margin: 0 auto;
 }
@@ -106,6 +112,8 @@ onMounted(async ()=> {
         left: 0;
         flex-direction: row;
         justify-content: space-between;
+    }.content {
+        margin: 0;
     }
     
 
