@@ -4,17 +4,20 @@
         <menu-comp sel="tasks" class="menu"></menu-comp>
         <div class="content">
             <div class="taskmanager">
-                <div class="backlog-manager"> 
+                <div class="taskgroup backlog-manager">
+                    <div class="taskgroup-title">backlog</div>
                     <div class="backlog" v-for="(t, i) in today[0].tasks" :key="i" >
                         <div class="backlog-task" v-if="t.status == 'backlog'">{{ t.name }}</div>
                     </div> 
                 </div>
-                <div class="done-manager">
+                <div class="taskgroup done-manager">
+                    <div class="taskgroup-title">done</div>
                     <div class="done" v-for="(t, i) in today[0].tasks" :key="i" >
                         <div class="done-task" v-if="t.status == 'done'">{{ t.name }}</div>
                     </div> 
                 </div>
-                <div class="stop-manager">
+                <div class="taskgroup stop-manager">
+                    <div class="taskgroup-title">stop</div>
                     <div class="stop" v-for="(t, i) in today[0].tasks" :key="i" >
                         <div class="stop-task" v-if="t.status == 'stop'">{{ t.name }}</div>
                     </div> 
@@ -74,9 +77,15 @@ onMounted(async ()=> {
     /* margin-top: 20px; */
 }
 
+.taskgroup-title{
+    background-color: var(--white-color);
+    color: var(--black-color);
+}
+
 
 .taskmanager{
     display: flex;
+    justify-content: space-between;
 }
 
 .menu {
