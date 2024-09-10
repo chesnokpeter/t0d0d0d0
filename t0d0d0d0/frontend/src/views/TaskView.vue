@@ -3,23 +3,25 @@
         <logo class="logo"></logo>
         <menu-comp sel="tasks" class="menu"></menu-comp>
         <div class="content">
+            <div class="titles">
+                <div class="title">backlog</div>
+                <div class="title">done</div>
+                <div class="title">stop</div>
+            </div>
             <div class="taskmanager">
                 <div class="taskgroup backlog-manager">
-                    <div class="taskgroup-title">backlog</div>
                     <div class="backlog" v-for="(t, i) in today[0].tasks" :key="i" >
-                        <div class="backlog-task" v-if="t.status == 'backlog'">{{ t.name }}</div>
+                        <div class="one-task" v-if="t.status == 'backlog'">{{ t.name }}</div>
                     </div> 
                 </div>
                 <div class="taskgroup done-manager">
-                    <div class="taskgroup-title">done</div>
                     <div class="done" v-for="(t, i) in today[0].tasks" :key="i" >
-                        <div class="done-task" v-if="t.status == 'done'">{{ t.name }}</div>
+                        <div class="one-task" v-if="t.status == 'done'">{{ t.name }}</div>
                     </div> 
                 </div>
                 <div class="taskgroup stop-manager">
-                    <div class="taskgroup-title">stop</div>
                     <div class="stop" v-for="(t, i) in today[0].tasks" :key="i" >
-                        <div class="stop-task" v-if="t.status == 'stop'">{{ t.name }}</div>
+                        <div class="one-task" v-if="t.status == 'stop'">{{ t.name }}</div>
                     </div> 
                 </div>
             </div>
@@ -72,9 +74,20 @@ onMounted(async ()=> {
 </style>
 
 <style scoped>
+.titles{
+    display: flex;
+    justify-content: space-between;
+    max-width: 1000px;
+    background-color: var(--white-color);
+    color: var(--black-color);
+}
+
 .content{
     margin-left: 150px;
-    /* margin-top: 20px; */
+}
+
+.one-task{
+    max-width: 150px;
 }
 
 .taskgroup-title{
@@ -86,6 +99,7 @@ onMounted(async ()=> {
 .taskmanager{
     display: flex;
     justify-content: space-between;
+    max-width: 1000px;
 }
 
 .menu {
