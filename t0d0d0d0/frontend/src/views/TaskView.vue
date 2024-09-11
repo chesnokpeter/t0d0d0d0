@@ -9,19 +9,19 @@
                 <div class="title">stop</div>
             </div>
             <div class="taskmanager">
-                <div class="taskgroup backlog-manager">
-                    <div class="backlog" v-for="(t, i) in today[0].tasks" :key="i" >
-                        <div class="one-task" v-if="t.status == 'backlog'">{{ t.name }}</div>
+                <div class="taskgroup">
+                    <div :class="['one-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in today[0]?.tasks?.filter(task => task.status == 'backlog')" :key="i" >
+                        {{ t.name }}
                     </div> 
                 </div>
-                <div class="taskgroup done-manager">
-                    <div class="done" v-for="(t, i) in today[0].tasks" :key="i" >
-                        <div class="one-task" v-if="t.status == 'done'">{{ t.name }}</div>
+                <div class="taskgroup">
+                    <div :class="['one-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in today[0]?.tasks?.filter(task => task.status == 'done')" :key="i" >
+                        {{ t.name }}
                     </div> 
                 </div>
-                <div class="taskgroup stop-manager">
-                    <div class="stop" v-for="(t, i) in today[0].tasks" :key="i" >
-                        <div class="one-task" v-if="t.status == 'stop'">{{ t.name }}</div>
+                <div class="taskgroup">
+                    <div :class="['one-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" v-for="(t, i) in today[0]?.tasks?.filter(task => task.status == 'stop')" :key="i" >
+                        {{ t.name }}
                     </div> 
                 </div>
             </div>
@@ -48,6 +48,17 @@ function todaydate() {
     return `${year}-${month}-${day}`
 }
 
+function isdonetask(task) {
+    if (task.status == 'done') {
+        return true
+    } return false
+}
+
+function isstoptask(task) {
+    if (task.status == 'stop') {
+        return true
+    } return false
+}
 
 async function gettasksbydate(date) {
     let r = await request('/task/get/byDate', 'POST', {date:date}, true)
@@ -74,7 +85,27 @@ onMounted(async ()=> {
 }
 </style>
 
-<style scoped>
+<style scoped lang="scss">
+.one-task {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    border: var(--gray-color) solid 1px;
+    &.isdonetask{
+        border: var(--green-color) solid 1px;
+        background-color: var(--green-color);
+        color: var(--black-color);
+    }
+    &.isstoptask{
+        border: var(--red-color) solid 1px;
+    }
+}
+
+.title {
+    min-width: 150px;
+}
+
 .titles{
     display: flex;
     justify-content: space-between;
@@ -96,11 +127,19 @@ onMounted(async ()=> {
     color: var(--black-color);
 }
 
+.taskgroup{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 150px;
+}
+
 
 .taskmanager{
     display: flex;
     justify-content: space-between;
     max-width: 1000px;
+    margin-top: 10px;
 }
 
 .menu {
