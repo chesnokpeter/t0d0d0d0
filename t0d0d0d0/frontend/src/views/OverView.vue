@@ -107,7 +107,7 @@ async function closeModal() {
         }
     }
 
-    
+
 }
 
 async function gettasksbydate(date) {
