@@ -46,6 +46,7 @@ import { onMounted, ref } from 'vue';
 import { calday } from '@/modules/calday'
 import ModalWindow from '@/components/ModalWindow.vue';
 
+'.'
 
 const today = ref([new calday(todaydate())])
 
