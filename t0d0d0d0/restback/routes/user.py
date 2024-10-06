@@ -12,13 +12,15 @@ from t0d0d0d0.restback.depends import (
     refreshSecure,
     uowdep,
     user,
+    task,
+    project
 )
 
 userRouter = APIRouter(prefix='/user', tags=['user'])
 
 
 @userRouter.post('/signup')
-async def signup_user(data: SignUpSch, uow=Depends(uowdep(user, authcode))):
+async def signup_user(data: SignUpSch, uow=Depends(uowdep(user, authcode, task, project))):
     user = await UserService(uow).signup(data)
     response = Answer.OkAnswer('user registered', 'user registered', [{}])
     access_token = access.create_access_token(subject={'id': user.id})

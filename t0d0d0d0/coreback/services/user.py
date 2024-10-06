@@ -4,19 +4,24 @@ from t0d0d0d0.coreback.exceptions import UserException
 from t0d0d0d0.coreback.models.authcode import AuthcodeModel
 from t0d0d0d0.coreback.models.authnotify import AuthnotifyModel
 from t0d0d0d0.coreback.models.user import UserModel
+from t0d0d0d0.coreback.schemas.project import NewProjectSch
+from t0d0d0d0.coreback.schemas.task import NewTaskSch
 from t0d0d0d0.coreback.schemas.user import NewUserSch, SignUpSch
 from t0d0d0d0.coreback.services.abstract import AbsService
 from t0d0d0d0.coreback.uow import BaseUnitOfWork, UnitOfWork, uowaccess
 from t0d0d0d0.coreback.utils import genAuthCode
 
+from datetime import date, datetime
+
 UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
+
 
 
 class UserService(AbsService):
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
 
-    @uowaccess('user', 'authcode')
+    @uowaccess('user', 'project', 'task', 'authcode')
     async def signup(self, data: SignUpSch) -> UserModel:
         async with self.uow:
             c = await self.uow.authcode.get(data.authcode)
@@ -29,9 +34,11 @@ class UserService(AbsService):
             u = await self.uow.user.get(tgusername=c.tgusername)
             if u:
                 raise UserException('user already exist')
-
             u = NewUserSch(tgid=c.tgid, tgusername=c.tgusername, name=data.name)
             u = await self.uow.user.add(**u.model_dump())
+            p = await self.uow.project.add(name='first project', user_id=u.id)
+            await self.uow.task.add(name='an in inbox!', user_id=u.id)
+            await self.uow.task.add(name='today task!', date=date.today(), time=datetime.now().time(), project_id=p.id, user_id=u.id)
             await self.uow.commit()
             await self.uow.authcode.delete(data.authcode)
             return u.model()
