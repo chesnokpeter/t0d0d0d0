@@ -417,10 +417,8 @@ body{
 
 input{
     border-color: none;
-    // padding: 10px;
     background-color: var(--black-color);
     border: none;
-    // border: var(--gray-color) solid 1px;
     color: var(--white-color);
     font-family: "Source Code Pro", monospace;
     font-size: 16px;

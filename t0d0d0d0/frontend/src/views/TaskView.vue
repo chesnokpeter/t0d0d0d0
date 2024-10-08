@@ -18,16 +18,19 @@
                     <div :class="['one-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" @click="openModal(t.name, t.project_id, t.date, t.time, t.status, t.id, i, 'task')" v-for="(t, i) in today[0]?.tasks?.filter(task => task.status == 'backlog')" :key="i" >
                         {{ t.name }}
                     </div> 
+                <input class="tak-new" type="button" value="+" @click="addNewTask('backlog')">
                 </div>
                 <div class="taskgroup">
                     <div :class="['one-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" @click="openModal(t.name, t.project_id, t.date, t.time, t.status, t.id, i, 'task')" v-for="(t, i) in today[0]?.tasks?.filter(task => task.status == 'done')" :key="i" >
                         {{ t.name }}
                     </div> 
+                <input class="task-new" type="button" value="+" @click="addNewTask('done')">
                 </div>
                 <div class="taskgroup">
                     <div :class="['one-task',{'isdonetask': isdonetask(t), 'isstoptask':isstoptask(t)}]" @click="openModal(t.name, t.project_id, t.date, t.time, t.status, t.id, i, 'task')" v-for="(t, i) in today[0]?.tasks?.filter(task => task.status == 'stop')" :key="i" >
                         {{ t.name }}
                     </div> 
+                <input class="tak-new" type="button" value="+" @click="addNewTask('stop')">
                 </div>
             </div>
         </div>
@@ -45,8 +48,6 @@ import MenuComp from '../components/MenuComp.vue'
 import { onMounted, ref } from 'vue';
 import { calday } from '@/modules/calday'
 import ModalWindow from '@/components/ModalWindow.vue';
-
-
 
 const today = ref([new calday(todaydate())])
 
@@ -87,10 +88,27 @@ function openModal(name, project, date, time, status, id, idc, kind) {
     dateModal.value = date
     timeModal.value = time
     showModal.value = true
+    
     statusModal.value = status
     idModal.value = id
     idCalday.value = idc
     kindModal.value = kind
+}
+
+async function addNewTask(status) {
+    const r = await request('/task/new', 'POST', {name:'task', date:today.value[0].y_m_d(), 'status':status}, true)
+    let t = await gettasksbydate(today.value[0].y_m_d())
+    today.value[0].setTasks(t)
+    const task = r.data[0]
+    nameModal.value = task.name
+    projectModal.value = task.project
+    dateModal.value = task.date
+    timeModal.value = task.time
+    showModal.value = true
+    statusModal.value = task.status
+    idModal.value = task.id
+    idCalday.value = 0
+    kindModal.value = 'task'
 }
 
 async function closeModal() {
@@ -159,6 +177,23 @@ onMounted(async ()=> {
 </style>
 
 <style scoped lang="scss">
+.one-task:hover{
+    background-color: var(--white-color);
+    color: var(--black-color);
+    border: var(--white-color) solid 1px;
+    overflow: visible;
+    &.isdonetask{
+        background-color: var(--black-color);
+        color: var(--green-color);
+        border: var(--green-color) solid 1px;
+    }
+    &.isstoptask{
+        background-color: var(--red-color);
+        border: var(--red-color) solid 1px;
+    }
+}
+
+
 .day-picker{
     display: inline-flex;
     gap: 10px;
@@ -183,6 +218,7 @@ onMounted(async ()=> {
 
 .title {
     min-width: 150px;
+    text-align: center;
 }
 
 .titles{
@@ -238,6 +274,22 @@ onMounted(async ()=> {
     width: 100%; 
     margin: 0 auto;
 }
+
+input{
+    border-color: none;
+    // padding: 10px;
+    background-color: var(--black-color);
+    border: none;
+    // border: var(--gray-color) solid 1px;
+    color: var(--white-color);
+    font-family: "Source Code Pro", monospace;
+    font-size: 16px;
+}
+
+input:hover{
+    background-color: var(--gray-color);
+    color: var(--black-color);
+}  
 
 @media (max-width: 750px) {
     .container {

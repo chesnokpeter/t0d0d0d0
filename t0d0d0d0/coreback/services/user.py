@@ -80,3 +80,12 @@ class UserService(AbsService):
             if not u:
                 raise UserException('user not found')
             return u.model()
+
+
+    @uowaccess('user')
+    async def getfromTG(self, tgid: int) -> UserModel:
+        async with self.uow:
+            u = await self.uow.user.get_one(tgid=tgid)
+            if not u:
+                raise UserException('user not found')
+            return u.model()

@@ -45,7 +45,7 @@ export async function request(path, method, data, jwtcheck=false) {
             const req = await fetch(`/api/user/refresh`, {method: 'POST', headers:new Headers().append("Content-Type", "application/json")})
             const res2 = await req.json()
             if (res2.type === 'error' && res2.message == 'JWT Error') {
-                window.location = '/'
+                window.location = '/login'
             } else{
                 const response = await axios({
                     method: method,
