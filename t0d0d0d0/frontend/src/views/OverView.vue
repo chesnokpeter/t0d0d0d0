@@ -430,6 +430,12 @@ input:hover{
 }  
 
 @media (max-width: 750px) {
+    .calday-title{
+        text-align: center;
+    }
+    .calendar {
+        flex-direction: column;
+    }
     .container {
         margin-top: 0px; 
     }
