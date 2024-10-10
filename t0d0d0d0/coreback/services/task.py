@@ -105,8 +105,8 @@ class TaskService(AbsService):
             if t.user_id != user_id:
                 raise UserException('user has no control of the task')
 
-            t = await self.uow.task.update(id, **data)
-            t = t.model()
+            rawt = await self.uow.task.update(id, **data)
+            t = rawt.model()
             await self.uow.commit()
 
             if data.get('time', None):
@@ -115,7 +115,7 @@ class TaskService(AbsService):
                 delaydelta = combined_datetime - now
                 delay = delaydelta.total_seconds()
                 if delay > 0:
-                    tasknotify = TasknotifyModel(tgid=u.tgid, taskname=t.name)
+                    tasknotify = TasknotifyModel(tgid=u.tgid, taskname=t.name, projname=rawt.project.name)
                     sheduler = ShedulernotifyModel(
                         queue_after_delay=tasknotify.queue_name,
                         delay=round(delay),

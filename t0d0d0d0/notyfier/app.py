@@ -1,4 +1,4 @@
-from aiogram import Bot
+from aiogram import Bot, enums
 from aiogram.enums import ParseMode
 from faststream import FastStream
 from faststream.rabbit import RabbitBroker, RabbitQueue
@@ -42,4 +42,4 @@ async def notyfiauth_handler(data: AuthnotifyModel):
 
 @broker.pydantic_subscriber(RabbitQueue('notifytask', durable=True), TasknotifyModel)
 async def notifytask_handler(data: TasknotifyModel):
-    await bot.send_message(data.tgid, 'слыш пёс, таска просрочена')
+    await bot.send_message(data.tgid, f'{data.taskname}\n\nexpired task for\n{data.projname}')

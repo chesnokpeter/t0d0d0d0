@@ -30,7 +30,6 @@ async def command_task_handler(message: Message, state: FSMContext) -> None:
     tasks = await TaskService(uow()).getByDate(user.id, datetime.now().date())
     taskstr = ''
     for i in tasks:
-        print(i)
         tasks+=i.name+'<b>: '+i.status.value+'</b>\n'
 
     await message.answer(

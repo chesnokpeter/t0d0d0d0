@@ -7,3 +7,4 @@ class TasknotifyModel(BaseModel, BrokerAbsModel):
     queue_name: str = 'notifytask'
     tgid: int
     taskname: str
+    projname: str
