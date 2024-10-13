@@ -1,4 +1,4 @@
-from aiogram import Bot, enums
+from aiogram import Bot
 from aiogram.enums import ParseMode
 from faststream import FastStream
 from faststream.rabbit import RabbitBroker, RabbitQueue
