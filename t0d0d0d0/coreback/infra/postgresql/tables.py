@@ -44,6 +44,9 @@ class USER(Base, DbAbsTable):
     tgusername: Mapped[str] = mapped_column(String(), nullable=False)
     name: Mapped[str] = mapped_column(String(), nullable=False)
 
+    aes_private_key: Mapped[str] = mapped_column(String(), nullable=False)
+    public_key: Mapped[str] = mapped_column(String(), nullable=False)
+
     tasks: Mapped[list['TASK']] = relationship(
         'TASK',
         back_populates='user',
@@ -63,6 +66,8 @@ class USER(Base, DbAbsTable):
             tgid=self.tgid,
             tgusername=self.tgusername,
             name=self.name,
+            aes_private_key=self.aes_private_key,
+            public_key=self.public_key
         )
 
 

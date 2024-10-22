@@ -22,7 +22,7 @@ class UserService(AbsService):
         self.uow = uow
 
     @uowaccess('user', 'project', 'task', 'authcode')
-    async def signup(self, data: SignUpSch) -> UserModel:
+    async def signup(self, data: SignUpSch) -> UserModel: #! ADD SECURITY AES RSA
         async with self.uow:
             c = await self.uow.authcode.get(data.authcode)
             if not c:
@@ -44,7 +44,7 @@ class UserService(AbsService):
             return u.model()
 
     @uowaccess('user', 'authcode', 'authnotify')
-    async def login(self, authcode: str) -> UserModel:
+    async def login(self, authcode: str) -> UserModel: #! ADD SECURITY AES RSA
         async with self.uow:
             c = await self.uow.authcode.get(authcode)
             if not c:
