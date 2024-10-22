@@ -9,7 +9,7 @@ from t0d0d0d0.coreback.schemas.task import NewTaskSch
 from t0d0d0d0.coreback.schemas.user import NewUserSch, SignUpSch
 from t0d0d0d0.coreback.services.abstract import AbsService
 from t0d0d0d0.coreback.uow import BaseUnitOfWork, UnitOfWork, uowaccess
-from t0d0d0d0.coreback.utils import genAuthCode
+from t0d0d0d0.coreback.utils import genAuthCode, rsa_generate_keys, aes_decrypt
 
 from datetime import date, datetime
 
@@ -34,6 +34,10 @@ class UserService(AbsService):
             u = await self.uow.user.get(tgusername=c.tgusername)
             if u:
                 raise UserException('user already exist')
+
+            private_key, public_key = rsa_generate_keys()
+            aes_private_key  = aes_decrypt(private_key, )
+
             u = NewUserSch(tgid=c.tgid, tgusername=c.tgusername, name=data.name)
             u = await self.uow.user.add(**u.model_dump())
             p = await self.uow.project.add(name='first project', user_id=u.id)
