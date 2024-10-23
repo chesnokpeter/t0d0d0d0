@@ -14,6 +14,9 @@ def genAuthCode(length=4):
     return random_string
 
 
+def convert_tgid_to_aes_key(tgid: int, len:int=32) -> bytes:
+    return tgid.to_bytes(len)
+
 def aes_encrypt(message: str, key: str) -> bytes:
     key = key.encode('utf-8')
     salt = b'\x00' * 16
