@@ -11,8 +11,9 @@ from sqlalchemy import (
     String,
     Time,
     inspect,
-    
+    LargeBinary
 )
+
 from sqlalchemy import Enum as ORMEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -43,7 +44,7 @@ class USER(Base, DbAbsTable):
     )
     tgid: Mapped[int] = mapped_column(BigInteger(), nullable=False)
     tgusername: Mapped[str] = mapped_column(String(), nullable=False)
-    name: Mapped[str] = mapped_column(String(), nullable=False)
+    name: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
 
     aes_private_key: Mapped[str] = mapped_column(String(), nullable=False)
     public_key: Mapped[str] = mapped_column(String(), nullable=False)
@@ -81,7 +82,7 @@ class TASK(Base, DbAbsTable):
         autoincrement=True,
         nullable=False,
     )
-    name: Mapped[str] = mapped_column(String(), nullable=False)
+    name: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
     createdat: Mapped[datetime] = mapped_column(DateTime(), nullable=False, default=datetime.now())
     date: Mapped[datetype] = mapped_column(Date(), nullable=True)
     time: Mapped[timetype] = mapped_column(Time(), nullable=True)
@@ -119,7 +120,7 @@ class PROJECT(Base, DbAbsTable):
         autoincrement=True,
         nullable=False,
     )
-    name: Mapped[str] = mapped_column(String(), nullable=False)
+    name: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
     createdat: Mapped[datetime] = mapped_column(DateTime(), nullable=False, default=datetime.now())
 
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('user.id'), nullable=False)
