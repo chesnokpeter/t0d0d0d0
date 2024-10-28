@@ -46,6 +46,35 @@ def rsa_keys() -> tuple[rsa.RSAPrivateKey, rsa.RSAPublicKey]:
 
 
 
+def rsa_private_serial(private_key: rsa.RSAPrivateKey) -> bytes:
+    private_key_pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()  
+    )
+    return private_key_pem
+
+def rsa_public_serial(public_key: rsa.RSAPublicKey) -> bytes:
+    public_key_pem = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    return public_key_pem
+
+
+def rsa_private_deserial(private_key_pem: bytes) -> rsa.RSAPrivateKey:
+    return serialization.load_pem_private_key(
+        password=None,
+        backend=default_backend()
+    )
+
+def rsa_public_deserial(public_key_pem: bytes) -> rsa.RSAPublicKey:
+    return serialization.load_pem_public_key(
+        backend=default_backend()
+    )
+
+
+
 def rsa_encrypt(message: str, public_key: rsa.RSAPublicKey) -> bytes:
     ciphertext = public_key.encrypt(
         message.encode(),
@@ -69,3 +98,10 @@ def rsa_decrypt(message: bytes, private_key: rsa.RSAPrivateKey) -> str:
         )
     )
     return plaintext.decode()
+
+
+
+def hashed(message: str, algorithm: hashes.HashAlgorithm = hashes.SHA256()) -> bytes:
+    digest = hashes.Hash(algorithm, backend=default_backend())
+    digest.update(message.encode())
+    return digest.finalize()

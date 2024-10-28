@@ -9,7 +9,8 @@ from t0d0d0d0.coreback.schemas.task import NewTaskSch
 from t0d0d0d0.coreback.schemas.user import NewUserSch, SignUpSch
 from t0d0d0d0.coreback.services.abstract import AbsService
 from t0d0d0d0.coreback.uow import BaseUnitOfWork, UnitOfWork, uowaccess
-from t0d0d0d0.coreback.utils import genAuthCode, rsa_generate_keys, aes_decrypt
+from t0d0d0d0.coreback.utils import genAuthCode, convert_tgid_to_aes_key
+from t0d0d0d0.coreback.encryption import aes_decrypt, aes_encrypt, rsa_keys, rsa_encrypt, rsa_decrypt, rsa_private_serial, rsa_private_deserial, rsa_public_serial, rsa_public_deserial, hashed
 
 from datetime import date, datetime
 
@@ -35,8 +36,9 @@ class UserService(AbsService):
             if u:
                 raise UserException('user already exist')
 
-            private_key, public_key = rsa_generate_keys()
-            aes_private_key  = aes_decrypt(private_key, )
+            private_key, public_key = rsa_keys()
+            private_key_pem = rsa_private_serial(private_key)
+            aes_private_key  = aes_encrypt(private_key_pem, convert_tgid_to_aes_key(c.tgid))
 
             u = NewUserSch(tgid=c.tgid, tgusername=c.tgusername, name=data.name)
             u = await self.uow.user.add(**u.model_dump())
@@ -45,6 +47,7 @@ class UserService(AbsService):
             await self.uow.task.add(name='today task!', date=date.today(), time=datetime.now().time(), project_id=p.id, user_id=u.id)
             await self.uow.commit()
             await self.uow.authcode.delete(data.authcode)
+            
             return u.model()
 
     @uowaccess('user', 'authcode', 'authnotify')
