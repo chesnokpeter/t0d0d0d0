@@ -41,6 +41,7 @@ async def login_user(
     refresh_token = refresh.create_refresh_token(subject={'id': payload.id})
     access.set_access_cookie(response.response, access_token)
     refresh.set_refresh_cookie(response.response, refresh_token)
+    print(payload)
     return response.response
 
 

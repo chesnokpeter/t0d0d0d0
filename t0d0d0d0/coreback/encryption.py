@@ -20,7 +20,7 @@ def aes_encrypt(message: str, key: bytes) -> bytes:
 
 
 
-def aes_decrypt(message: bytes, key: bytes) -> str:
+def aes_decrypt(message: bytes, key: bytes) -> bytes:
     iv = message[:16]
     message = message[16:]
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
@@ -28,7 +28,7 @@ def aes_decrypt(message: bytes, key: bytes) -> str:
     padded_plaintext = decryptor.update(message) + decryptor.finalize()
     unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
     plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
-    return plaintext.decode()
+    return plaintext
 
 
 
@@ -64,12 +64,14 @@ def rsa_public_serial(public_key: rsa.RSAPublicKey) -> bytes:
 
 def rsa_private_deserial(private_key_pem: bytes) -> rsa.RSAPrivateKey:
     return serialization.load_pem_private_key(
+        private_key_pem,
         password=None,
         backend=default_backend()
     )
 
 def rsa_public_deserial(public_key_pem: bytes) -> rsa.RSAPublicKey:
     return serialization.load_pem_public_key(
+        public_key_pem,
         backend=default_backend()
     )
 

@@ -45,7 +45,6 @@ class UserService(AbsService):
             if u:
                 raise UserException('user already exist')
 
-
             u = await self.uow.user.add(name=name, tgid=tgid, tgusername=tgusername, aes_private_key=aes_private_key, public_key=public_key_pem)
             p = await self.uow.project.add(name=rsa_encrypt('first project', public_key), user_id=u.id)
             await self.uow.task.add(name=rsa_encrypt('an in inbox!', public_key=public_key), user_id=u.id)
@@ -56,25 +55,24 @@ class UserService(AbsService):
             return u.model()
 
     @uowaccess('user', 'authcode', 'authnotify')
-    async def login(self, authcode: str) -> UserModel: #! ADD SECURITY AES RSA
+    async def login(self, authcode: str) -> UserModel: 
         async with self.uow:
             c = await self.uow.authcode.get(authcode)
             if not c:
                 raise UserException('authcode not found')
-
             await self.uow.authcode.delete(authcode)
-            u = await self.uow.user.get_one(tgid=int(c.tgid))
+            u = await self.uow.user.get_one(tgid=hashed(str(c.tgid)))
             if not u:
                 raise UserException('user not found')
+            await self.uow.authnotify.send(AuthnotifyModel(tgid=c.tgid))
 
-            await self.uow.authcode.delete(authcode)
-            await self.uow.authnotify.send(AuthnotifyModel(tgid=u.tgid))
+
+            private_key = rsa_private_deserial(aes_decrypt(u.aes_private_key, convert_tgid_to_aes_key(c.tgid)))
             return u.model()
 
     @uowaccess('authcode')
     async def newAuthcode(self, tgid: int, tgusername: str) -> int:
         async with self.uow:
-
             async def checkCode(code: str) -> str:
                 check = await self.uow.authcode.get(code)
                 if check:
