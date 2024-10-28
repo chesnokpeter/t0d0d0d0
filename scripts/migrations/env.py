@@ -16,7 +16,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 config.set_main_option('sqlalchemy.url', os.environ.get('POSTGRES_URL') + '?async_fallback=True')
-
+print(os.environ.get('POSTGRES_URL'))
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel

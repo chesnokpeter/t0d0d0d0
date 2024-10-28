@@ -42,12 +42,12 @@ class USER(Base, DbAbsTable):
         autoincrement=True,
         nullable=False,
     )
-    tgid: Mapped[int] = mapped_column(BigInteger(), nullable=False)
-    tgusername: Mapped[str] = mapped_column(String(), nullable=False)
+    tgid: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
+    tgusername: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
     name: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
 
-    aes_private_key: Mapped[str] = mapped_column(String(), nullable=False)
-    public_key: Mapped[str] = mapped_column(String(), nullable=False)
+    aes_private_key: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
+    public_key: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
 
     tasks: Mapped[list['TASK']] = relationship(
         'TASK',

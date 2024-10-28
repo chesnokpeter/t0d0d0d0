@@ -1,4 +1,5 @@
-PY ?= python3
+.PHONY: back
+PY ?= python3.11
 
 install_rest:
 	$(PY) -m venv ./scripts/envs/restback
@@ -19,7 +20,8 @@ install_bot:
 	$(PY) -m venv ./scripts/envs/bot
 	@(\
 		. scripts/envs/bot/bin/activate && \
-		pip install -r t0d0d0d0/bot/requirements.txt \
+		pip install -r t0d0d0d0/bot/requirements.txt && \
+		pip install cryptography \
 	)
 
 bot:

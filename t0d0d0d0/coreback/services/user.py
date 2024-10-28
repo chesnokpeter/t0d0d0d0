@@ -23,31 +23,36 @@ class UserService(AbsService):
         self.uow = uow
 
     @uowaccess('user', 'project', 'task', 'authcode')
-    async def signup(self, data: SignUpSch) -> UserModel: #! ADD SECURITY AES RSA
+    async def signup(self, data: SignUpSch) -> UserModel: 
         async with self.uow:
             c = await self.uow.authcode.get(data.authcode)
             if not c:
                 raise UserException('authcode not found')
 
-            u = await self.uow.user.get(tgid=c.tgid)
-            if u:
-                raise UserException('user already exist')
-            u = await self.uow.user.get(tgusername=c.tgusername)
-            if u:
-                raise UserException('user already exist')
-
             private_key, public_key = rsa_keys()
             private_key_pem = rsa_private_serial(private_key)
-            aes_private_key  = aes_encrypt(private_key_pem, convert_tgid_to_aes_key(c.tgid))
+            public_key_pem = rsa_public_serial(public_key)
+            aes_private_key  = aes_encrypt(private_key_pem.decode(), convert_tgid_to_aes_key(c.tgid))
 
-            u = NewUserSch(tgid=c.tgid, tgusername=c.tgusername, name=data.name)
-            u = await self.uow.user.add(**u.model_dump())
-            p = await self.uow.project.add(name='first project', user_id=u.id)
-            await self.uow.task.add(name='an in inbox!', user_id=u.id)
-            await self.uow.task.add(name='today task!', date=date.today(), time=datetime.now().time(), project_id=p.id, user_id=u.id)
+            name = rsa_encrypt(data.name, public_key)
+            tgid = hashed(str(c.tgid))
+            tgusername = rsa_encrypt(c.tgusername, public_key)
+
+            u = await self.uow.user.get(tgid=tgid)
+            if u:
+                raise UserException('user already exist')
+            u = await self.uow.user.get(tgusername=tgusername)
+            if u:
+                raise UserException('user already exist')
+
+
+            u = await self.uow.user.add(name=name, tgid=tgid, tgusername=tgusername, aes_private_key=aes_private_key, public_key=public_key_pem)
+            p = await self.uow.project.add(name=rsa_encrypt('first project', public_key), user_id=u.id)
+            await self.uow.task.add(name=rsa_encrypt('an in inbox!', public_key=public_key), user_id=u.id)
+            await self.uow.task.add(name=rsa_encrypt('today task!', public_key=public_key), date=date.today(), time=datetime.now().time(), project_id=p.id, user_id=u.id)
             await self.uow.commit()
             await self.uow.authcode.delete(data.authcode)
-            
+
             return u.model()
 
     @uowaccess('user', 'authcode', 'authnotify')

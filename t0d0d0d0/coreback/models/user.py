@@ -3,9 +3,9 @@ from pydantic import BaseModel
 
 class UserModel(BaseModel):
     id: int
-    tgid: int
-    tgusername: str
-    name: str
+    tgid: bytes
+    tgusername: bytes
+    name: bytes
 
-    aes_private_key: str
-    public_key: str
+    aes_private_key: bytes
+    public_key: bytes
