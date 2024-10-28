@@ -23,7 +23,7 @@ class UserService(AbsService):
         self.uow = uow
 
     @uowaccess('user', 'project', 'task', 'authcode')
-    async def signup(self, data: SignUpSch) -> UserModel: 
+    async def signup(self, data: SignUpSch) -> tuple[UserModel, bytes]: 
         async with self.uow:
             c = await self.uow.authcode.get(data.authcode)
             if not c:
@@ -51,11 +51,10 @@ class UserService(AbsService):
             await self.uow.task.add(name=rsa_encrypt('today task!', public_key=public_key), date=date.today(), time=datetime.now().time(), project_id=p.id, user_id=u.id)
             await self.uow.commit()
             await self.uow.authcode.delete(data.authcode)
-
-            return u.model()
+            return u.model(), private_key_pem
 
     @uowaccess('user', 'authcode', 'authnotify')
-    async def login(self, authcode: str) -> UserModel: 
+    async def login(self, authcode: str) -> tuple[UserModel, bytes]: 
         async with self.uow:
             c = await self.uow.authcode.get(authcode)
             if not c:
@@ -65,10 +64,8 @@ class UserService(AbsService):
             if not u:
                 raise UserException('user not found')
             await self.uow.authnotify.send(AuthnotifyModel(tgid=c.tgid))
-
-
-            private_key = rsa_private_deserial(aes_decrypt(u.aes_private_key, convert_tgid_to_aes_key(c.tgid)))
-            return u.model()
+            private_key = aes_decrypt(u.aes_private_key, convert_tgid_to_aes_key(c.tgid))
+            return u.model(), private_key
 
     @uowaccess('authcode')
     async def newAuthcode(self, tgid: int, tgusername: str) -> int:
@@ -89,6 +86,7 @@ class UserService(AbsService):
             u = await self.uow.user.get_one(id=id)
             if not u:
                 raise UserException('user not found')
+            print(u)
             return u.model()
 
 

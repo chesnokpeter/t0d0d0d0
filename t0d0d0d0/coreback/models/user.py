@@ -9,3 +9,7 @@ class UserModel(BaseModel):
 
     aes_private_key: bytes
     public_key: bytes
+
+
+class UserModelWithPrivateKey(UserModel):
+    private_key: bytes

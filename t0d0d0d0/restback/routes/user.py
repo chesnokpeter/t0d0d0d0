@@ -21,8 +21,8 @@ userRouter = APIRouter(prefix='/user', tags=['user'])
 
 @userRouter.post('/signup')
 async def signup_user(data: SignUpSch, uow=Depends(uowdep(user, authcode, task, project))):
-    user = await UserService(uow).signup(data)
-    response = Answer.OkAnswer('user registered', 'user registered', [{}])
+    user, private_key = await UserService(uow).signup(data)
+    response = Answer.OkAnswer('user registered', 'user registered', [{'private_key':private_key.decode()}])
     access_token = access.create_access_token(subject={'id': user.id})
     refresh_token = refresh.create_refresh_token(subject={'id': user.id})
     access.set_access_cookie(response.response, access_token)
@@ -35,13 +35,12 @@ async def login_user(
     authcode: str = Body(embed=True),
     uow=Depends(uowdep(user, authcode, authnotify)),
 ):
-    payload = await UserService(uow).login(authcode)
-    response = Answer.OkAnswer('user logged', 'user logged', [{}])
+    payload, private_key = await UserService(uow).login(authcode)
+    response = Answer.OkAnswer('user logged', 'user logged', [{'private_key':private_key.decode()}])
     access_token = access.create_access_token(subject={'id': payload.id})
     refresh_token = refresh.create_refresh_token(subject={'id': payload.id})
     access.set_access_cookie(response.response, access_token)
     refresh.set_refresh_cookie(response.response, refresh_token)
-    print(payload)
     return response.response
 
 

@@ -9,7 +9,7 @@ from t0d0d0d0.coreback.models.enums import TaskStatus
 
 class TaskModel(BaseModel):
     id: int
-    name: str
+    name: bytes
     createdat: datetime
     date: datetype | None
     time: timetype | None

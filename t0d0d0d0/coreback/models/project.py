@@ -5,6 +5,6 @@ from pydantic import BaseModel
 
 class ProjectModel(BaseModel):
     id: int
-    name: str
+    name: bytes
     createdat: datetime
     user_id: int
