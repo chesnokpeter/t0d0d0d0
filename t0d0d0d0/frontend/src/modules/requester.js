@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { decrypt } from './decrypt';
 
 async function jwtChecker(response, isRefresh=false) {
     if (response.type === 'error' && response.message == 'JWT Error') {
@@ -33,7 +33,7 @@ export async function request(path, method, data, jwtcheck=false) {
         });
         const res = response.data;
 
-        return res
+        return decrypt(res.data, res.encrypted)
         
     } catch (error) {
         console.log(error);
@@ -57,7 +57,7 @@ export async function request(path, method, data, jwtcheck=false) {
                 return res
             }
         }
-        return res
+        return decrypt(res.data, res.encrypted)
     } 
 
 

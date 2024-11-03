@@ -86,7 +86,6 @@ class UserService(AbsService):
             u = await self.uow.user.get_one(id=id)
             if not u:
                 raise UserException('user not found')
-            print(u)
             return u.model()
 
 

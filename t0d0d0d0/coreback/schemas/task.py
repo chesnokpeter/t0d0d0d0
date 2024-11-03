@@ -14,7 +14,7 @@ class TaskSch(TaskModel): ...
 
 
 class NewTaskSch(BaseModel):
-    name: str
+    name: str | bytes
     date: datetype | None = None
     time: timetype | None = None
     status: TaskStatus = TaskStatus.backlog

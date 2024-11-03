@@ -15,14 +15,14 @@ async def new_project(
     credentials = Security(accessSecure),
 ):
     s = await ProjectService(uow).new(user_id=int(credentials['id']), data=data)
-    r = Answer.OkAnswerModel('project', 'project', data=s)
+    r = Answer.OkAnswerModel('project', 'project', data=s, encrypted=['name'])
     return r.response
 
 
 @projectRouter.get('/get')
 async def get_user_projects(uow=Depends(uowdep(user, project)), credentials=Security(accessSecure)):
     s = await ProjectService(uow).getAll(user_id=int(credentials['id']))
-    r = Answer.OkAnswerModel('project', 'project', data=s)
+    r = Answer.OkAnswerModel('project', 'project', data=s, encrypted=['name'])
     return r.response
 
 

@@ -26,9 +26,12 @@ const error = ref('')
 
 async function login() {
     let r = await request('/user/login', 'POST', {authcode:authcode.value})
+    console.log(r);
+    
     if (r.type === 'error' && r.message === 'Auth Code Error' | r.message === 'Auth Error') {
         error.value = r.desc
     } else {
+        localStorage.setItem('private_key', r.data[0].private_key)
         error.value = ''
         window.location = '/overview'
     }

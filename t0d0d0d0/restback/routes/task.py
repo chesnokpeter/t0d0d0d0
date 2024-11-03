@@ -26,7 +26,7 @@ async def new_task(
     credentials=Security(accessSecure),
 ):
     s = await TaskService(uow).new(user_id=int(credentials['id']), data=data)
-    r = Answer.OkAnswerModel('task', 'task', data=s)
+    r = Answer.OkAnswerModel('task', 'task', data=s, encrypted=['name'])
     return r.response
 
 
@@ -48,7 +48,7 @@ async def get_tasks_by_date(
     credentials=Security(accessSecure),
 ):
     s = await TaskService(uow).getByDate(user_id=int(credentials['id']), date=date)
-    r = Answer.OkAnswerModel('task', 'task', data=s)
+    r = Answer.OkAnswerModel('task', 'task', data=s, encrypted=['name'])
     return r.response
 
 
@@ -59,7 +59,7 @@ async def get_tasks_by_date(
     credentials=Security(accessSecure),
 ):
     s = await TaskService(uow).getById(user_id=int(credentials['id']), id=id)
-    r = Answer.OkAnswerModel('task', 'task', data=s)
+    r = Answer.OkAnswerModel('task', 'task', data=s, encrypted=['name'])
     return r.response
 
 
@@ -70,7 +70,7 @@ async def edit_name(
     credentials=Security(accessSecure),
 ):
     s = await TaskService(uow).edit(user_id=int(credentials['id']), id=data.id, name=data.edit)
-    r = Answer.OkAnswerModel('task', 'task', data=s)
+    r = Answer.OkAnswer('task', 'task', data=[{}])
     return r.response
 
 
@@ -81,7 +81,7 @@ async def edit_date(
     credentials=Security(accessSecure),
 ):
     s = await TaskService(uow).edit(user_id=int(credentials['id']), id=data.id, date=data.edit)
-    r = Answer.OkAnswerModel('task', 'task', data=s)
+    r = Answer.OkAnswer('task', 'task', data=[{}])
     return r.response
 
 
@@ -92,7 +92,7 @@ async def edit_time(
     credentials=Security(accessSecure),
 ):
     s = await TaskService(uow).edit(user_id=int(credentials['id']), id=data.id, time=data.edit)
-    r = Answer.OkAnswerModel('task', 'task', data=s)
+    r = Answer.OkAnswer('task', 'task', data=[{}])
     return r.response
 
 
@@ -103,7 +103,7 @@ async def edit_status(
     credentials=Security(accessSecure),
 ):
     s = await TaskService(uow).edit(user_id=int(credentials['id']), id=data.id, status=data.edit)
-    r = Answer.OkAnswerModel('task', 'task', data=s)
+    r = Answer.OkAnswer('task', 'task', data=[{}])
     return r.response
 
 
@@ -116,7 +116,7 @@ async def edit_project(
     s = await TaskService(uow).edit(
         user_id=int(credentials['id']), id=data.id, project_id=data.edit
     )
-    r = Answer.OkAnswerModel('task', 'task', data=s)
+    r = Answer.OkAnswer('task', 'task', data=[{}])
     return r.response
 
 
@@ -126,5 +126,5 @@ inboxRouter = APIRouter(prefix='/inbox', tags=['task'])
 @inboxRouter.get('/get', response_model=AnswerResModel[TaskModel])
 async def get_inbox(uow=Depends(uowdep(user, task)), credentials=Security(accessSecure)):
     s = await TaskService(uow).getInbox(user_id=int(credentials['id']))
-    r = Answer.OkAnswerModel('task', 'task', data=s)
+    r = Answer.OkAnswerModel('task', 'task', data=s, encrypted=['name'])
     return r.response

@@ -112,9 +112,17 @@ async function closeModal() {
 
 async function gettasksbydate(date) {
     let r = await request('/task/get/byDate', 'POST', {date:date}, true)
+    console.log(r);
+    
     if (Object.keys(r.data[0]).length === 0) {
         return []
     }
+
+
+
+
+
+
     return r.data
 }
 async function gettasksbyid(data) {
@@ -235,11 +243,15 @@ async function onDrop(e, date) {
 }
 
 onMounted(async ()=> {
+    if (localStorage.getItem('private_key')) {
+        
+    } else {
+        window.location = '/login'
+    }
     let r = await request('/inbox/get', 'GET', {}, true)
     for (let i = 0; i < r.data.length; i++) {
         inboxs.value.push(r.data[i])
     }
-
     let t = await gettasksbydate(today.y_m_d())
     calendar.value.push(reactive(new calday(today.y_m_d(), t)))
     today.nextDay()

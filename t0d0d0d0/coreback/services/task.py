@@ -14,6 +14,8 @@ from t0d0d0d0.coreback.schemas.task import NameTaskSch, NewTaskSch
 from t0d0d0d0.coreback.services.abstract import AbsService
 from t0d0d0d0.coreback.uow import BaseUnitOfWork, UnitOfWork, uowaccess
 
+from t0d0d0d0.coreback.encryption import aes_decrypt, aes_encrypt, rsa_keys, rsa_encrypt, rsa_decrypt, rsa_private_serial, rsa_private_deserial, rsa_public_serial, rsa_public_deserial, hashed
+
 UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
 
 
@@ -32,8 +34,8 @@ class TaskService(AbsService):
                 p = await self.uow.project.get_one(id=data.project_id)
                 if not p:
                     raise ProjectException('project not found')
-
-            t = await self.uow.task.add(**data.model_dump(), user_id=user_id)
+            name = rsa_encrypt(data.name, rsa_public_deserial(u.public_key))
+            t = await self.uow.task.add(**data.model_dump(exclude=['name']), name=name, user_id=user_id)
             await self.uow.commit()
             return t.model()
 
@@ -71,6 +73,7 @@ class TaskService(AbsService):
                 raise UserException('user not found')
 
             t = await self.uow.task.get(user_id=user_id, date=date)
+            print(t)  #! FIX!!
             r = [
                 NameTaskSch(**i.model().model_dump(), project_name=i.project.name)
                 if i.project
@@ -92,7 +95,7 @@ class TaskService(AbsService):
             return None
 
     @uowaccess('user', 'task', 'shedulernotify')
-    async def edit(self, user_id: int, id: str, **data) -> None:
+    async def edit(self, user_id: int, id: str, **data) -> None: #! FIX!!
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
@@ -104,7 +107,8 @@ class TaskService(AbsService):
 
             if t.user_id != user_id:
                 raise UserException('user has no control of the task')
-
+            if data.get('name'):
+                data['name'] = rsa_encrypt(data['name'], rsa_public_deserial(u.public_key))
             rawt = await self.uow.task.update(id, **data)
             t = rawt.model()
             await self.uow.commit()

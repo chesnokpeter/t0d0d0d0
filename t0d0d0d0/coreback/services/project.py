@@ -6,6 +6,9 @@ from t0d0d0d0.coreback.schemas.project import NewProjectSch
 from t0d0d0d0.coreback.services.abstract import AbsService
 from t0d0d0d0.coreback.uow import BaseUnitOfWork, UnitOfWork, uowaccess
 
+from t0d0d0d0.coreback.encryption import aes_decrypt, aes_encrypt, rsa_keys, rsa_encrypt, rsa_decrypt, rsa_private_serial, rsa_private_deserial, rsa_public_serial, rsa_public_deserial, hashed
+
+
 UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
 
 
@@ -20,7 +23,8 @@ class ProjectService(AbsService):
             if not u:
                 raise UserException('user not found')
 
-            p = await self.uow.project.add(**data.model_dump(), user_id=user_id)
+            name = rsa_encrypt(data.name, rsa_public_deserial(u.public_key))
+            p = await self.uow.project.add(**data.model_dump(exclude=['name']), name=name, user_id=user_id)
             await self.uow.commit()
             return ProjectModel(**p.model().model_dump())
 
@@ -42,6 +46,8 @@ class ProjectService(AbsService):
             p = await self.uow.project.get_one(id=project_id)
             if not p:
                 raise ProjectException('project not found')
+            if data.get('name'):
+                data['name'] = rsa_encrypt(data['name'], rsa_public_deserial(u.public_key))
             await self.uow.project.update(project_id, **data)
             await self.uow.commit()
 
