@@ -24,7 +24,6 @@ class PostgresConnector(AbsConnector):
         await self._session.rollback()
 
     async def close(self):
-        print('CLOSE!')
         if self._session:
             try:
                 await self._session.close()
