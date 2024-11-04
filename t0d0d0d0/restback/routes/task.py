@@ -48,7 +48,7 @@ async def get_tasks_by_date(
     credentials=Security(accessSecure),
 ):
     s = await TaskService(uow).getByDate(user_id=int(credentials['id']), date=date)
-    r = Answer.OkAnswerModel('task', 'task', data=s, encrypted=['name'])
+    r = Answer.OkAnswerModel('task', 'task', data=s, encrypted=['name', 'project_name'])
     return r.response
 
 

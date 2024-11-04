@@ -8,8 +8,7 @@ export function decrypt(objs, encrypted) {
     for (let i = 0; i < objs.length; i++) {
         let obj = {}
         for (let [name, val] of Object.entries(objs[i])) {
-            if (encrypted.includes(name)) {
-                console.log(btoa(val));
+            if (encrypted.includes(name) && val) {
                 val = decryptRSA(val, localStorage.getItem('private_key'))
             }
             obj[name] = val

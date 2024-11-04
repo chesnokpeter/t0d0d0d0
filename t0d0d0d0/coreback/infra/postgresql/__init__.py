@@ -9,6 +9,7 @@ def get_async_conn_postgres(postgres_url: str) -> async_sessionmaker:
 
 
 class PostgresConnector(AbsConnector):
+    _session = None
     def __init__(self, postgres_url: str, connector_name: str = 'postgres'):
         self.maker = get_async_conn_postgres(postgres_url)
         self.connector_name = connector_name
@@ -23,7 +24,14 @@ class PostgresConnector(AbsConnector):
         await self._session.rollback()
 
     async def close(self):
-        await self._session.close()
+        print('CLOSE!')
+        if self._session:
+            try:
+                await self._session.close()
+            except Exception as e:
+                print(f"Error closing session: {e}")
+            finally:
+                self._session = None
 
     @property
     def session(self):

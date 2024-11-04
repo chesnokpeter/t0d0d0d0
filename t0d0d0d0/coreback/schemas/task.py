@@ -27,4 +27,4 @@ class EditTaskSch(BaseModel, Generic[T]):
 
 
 class NameTaskSch(TaskSch):
-    project_name: str | None
+    project_name: None | bytes

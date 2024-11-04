@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import wraps
-
+import asyncio
 from t0d0d0d0.coreback.exceptions import NoAccessForRepo, NoConnectorForRepo
 from t0d0d0d0.coreback.infra.abstract import AbsConnector
 from t0d0d0d0.coreback.repos.abstract import AbsRepo
@@ -56,8 +56,13 @@ class UnitOfWork(AbsUnitOfWork):
         return self
 
     async def __aexit__(self, *args):
-        await self.rollback()
+        # await asyncio.gather(*(c.close() for c in self.connectors))
+
+        # await self.rollback()
+        # print(self.connectors)
         for c in self.connectors:  # asyncio.gather not works(
+            # # print()
+            await asyncio.sleep(0.1)
             await c.close()
 
     async def commit(self):

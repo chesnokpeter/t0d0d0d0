@@ -26,7 +26,7 @@ const nameModal = ref()
 const projects = ref([])
 
 onMounted(async ()=> {
-    let r = await request('/project/get/', 'GET', {}, true)
+    let r = await request('/project/get', 'GET', {}, true)
     for (let i = 0; i < r.data.length; i++) {
         projects.value.push(r.data[i])
     }
@@ -48,7 +48,7 @@ function openModal(name, id) {
 async function closeModal() {
     showModal.value = false
     projects.value = []
-    let r = await request('/project/get/', 'GET', {}, true)
+    let r = await request('/project/get', 'GET', {}, true)
     for (let i = 0; i < r.data.length; i++) {
         projects.value.push(r.data[i])
     }

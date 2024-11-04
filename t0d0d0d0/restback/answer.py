@@ -76,7 +76,6 @@ class Answer:
             ret = []
             for o in data:
                 item = {}
-                print(data)
                 for name, val in o:
                     item[name] = process_value(val)
                 ret.append(item)

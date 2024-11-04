@@ -37,7 +37,7 @@ class TaskService(AbsService):
             name = rsa_encrypt(data.name, rsa_public_deserial(u.public_key))
             t = await self.uow.task.add(**data.model_dump(exclude=['name']), name=name, user_id=user_id)
             await self.uow.commit()
-            return t.model()
+        return t.model()
 
     @uowaccess('user', 'task')
     async def getInbox(self, user_id: int) -> list[TaskModel]:
@@ -47,10 +47,10 @@ class TaskService(AbsService):
                 raise UserException('user not found')
 
             t = await self.uow.task.get(user_id=user_id, project_id=None, date=None, time=None)
-            return [TaskModel(**i.model().model_dump()) for i in t]
+        return [TaskModel(**i.model().model_dump()) for i in t]
 
     @uowaccess('user', 'task')
-    async def getAll(self, user_id: int) -> list[TaskModel]:
+    async def getAll(self, user_id: int) -> list[NameTaskSch]:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
@@ -66,21 +66,21 @@ class TaskService(AbsService):
             return r
 
     @uowaccess('user', 'task')
-    async def getByDate(self, user_id: int, date: datetype) -> list[TaskModel]:
+    async def getByDate(self, user_id: int, date: datetype) -> list[NameTaskSch]:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
                 raise UserException('user not found')
 
             t = await self.uow.task.get(user_id=user_id, date=date)
-            print(t)  #! FIX!!
+            # print(t)  #! FIX!!
             r = [
                 NameTaskSch(**i.model().model_dump(), project_name=i.project.name)
                 if i.project
                 else NameTaskSch(**i.model().model_dump(), project_name=None)
                 for i in t
             ]
-            return r
+        return r
 
     @uowaccess('user', 'task')
     async def getById(self, user_id: int, id: str) -> TaskModel | None:
@@ -92,10 +92,10 @@ class TaskService(AbsService):
             t = await self.uow.task.get_one(user_id=user_id, id=id)
             if t:
                 return t.model()
-            return None
+        return None
 
     @uowaccess('user', 'task', 'shedulernotify')
-    async def edit(self, user_id: int, id: str, **data) -> None: #! FIX!!
+    async def edit(self, user_id: int, id: str, **kwargs) -> None: #! FIX!!
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
@@ -107,8 +107,13 @@ class TaskService(AbsService):
 
             if t.user_id != user_id:
                 raise UserException('user has no control of the task')
-            if data.get('name'):
+            # print(type(kwargs))
+            data = dict(kwargs)
+            if kwargs.get('name'):
+                if data['name'] == '':
+                    data['name'] = ' '
                 data['name'] = rsa_encrypt(data['name'], rsa_public_deserial(u.public_key))
+                    
             rawt = await self.uow.task.update(id, **data)
             t = rawt.model()
             await self.uow.commit()
