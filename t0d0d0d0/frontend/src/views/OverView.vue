@@ -79,7 +79,6 @@ async function closeModal() {
                     const tt = await gettasksbydate(calendar.value[i].y_m_d())
                     calendar.value[i].setTasks(tt)
                 }
-                
             }
             if (t.date != calendar.value[idCalday.value].y_m_d()) {        
                 t = await gettasksbydate(calendar.value[idCalday.value].y_m_d())
@@ -102,7 +101,6 @@ async function closeModal() {
                 if (idModal.value == inboxs.value[i].id) {
                     inboxs.value.splice(i, 1)
                 }
-                
             }
         }
     }
@@ -112,7 +110,6 @@ async function closeModal() {
 
 async function gettasksbydate(date) {
     let r = await request('/task/get/byDate', 'POST', {date:date}, true)
-    console.log(r);
     
     if (Object.keys(r.data[0]).length === 0) {
         return []
@@ -465,6 +462,10 @@ input:hover{
         justify-content: space-between;
     }.content {
         margin: 0;
+    }.calday-task {
+        max-width: calc(100vw - 10px);
+        margin-left: 5px;
+        padding-left: 5px;
     }
 
 }

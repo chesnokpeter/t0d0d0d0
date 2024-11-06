@@ -56,22 +56,13 @@ class UnitOfWork(AbsUnitOfWork):
         return self
 
     async def __aexit__(self, *args):
-        # await asyncio.gather(*(c.close() for c in self.connectors))
-
-        # await self.rollback()
-        # print(self.connectors)
-        for c in self.connectors:  # asyncio.gather not works(
-            # # print()
-            await asyncio.sleep(0.1)
-            await c.close()
+        await asyncio.gather(*(c.close() for c in self.connectors))
 
     async def commit(self):
-        for c in self.connectors:  # asyncio.gather not works(
-            await c.commit()
+        await asyncio.gather(*(c.commit() for c in self.connectors))
 
     async def rollback(self):
-        for c in self.connectors:  # asyncio.gather not works(
-            await c.rollback()
+        await asyncio.gather(*(c.rollback() for c in self.connectors))
 
 
 class BaseUnitOfWork(AbsUnitOfWork, ABC):

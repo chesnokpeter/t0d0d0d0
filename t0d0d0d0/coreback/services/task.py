@@ -14,7 +14,7 @@ from t0d0d0d0.coreback.schemas.task import NameTaskSch, NewTaskSch
 from t0d0d0d0.coreback.services.abstract import AbsService
 from t0d0d0d0.coreback.uow import BaseUnitOfWork, UnitOfWork, uowaccess
 
-from t0d0d0d0.coreback.encryption import aes_decrypt, aes_encrypt, rsa_keys, rsa_encrypt, rsa_decrypt, rsa_private_serial, rsa_private_deserial, rsa_public_serial, rsa_public_deserial, hashed
+from t0d0d0d0.coreback.encryption import rsa_encrypt, rsa_public_deserial
 
 UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
 
@@ -95,7 +95,7 @@ class TaskService(AbsService):
         return None
 
     @uowaccess('user', 'task', 'shedulernotify')
-    async def edit(self, user_id: int, id: str, **data) -> None: #! FIX!!
+    async def edit(self, user_id: int, id: str, **data) -> None:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
