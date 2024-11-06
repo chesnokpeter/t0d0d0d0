@@ -14,7 +14,7 @@ async function jwtChecker(response, isRefresh=false) {
 }
 
 
-export async function request(path, method, data, jwtcheck=false) {
+export async function request(path, method, data, jwtcheck=false, decrypte=true) {
     // const body = JSON.stringify(data)
     // console.log(data, JSON.parse(body));
     // const headers = new Headers().append("Content-Type", "application/json;charset=utf-8")
@@ -32,8 +32,9 @@ export async function request(path, method, data, jwtcheck=false) {
             headers: {'Content-Type': 'application/json;charset=utf-8'}
         });
         const res = response.data;
-
-        return decrypt(res.data, res.encrypted)
+        if (decrypte) {
+            return decrypt(res.data, res.encrypted)
+        } return res
         
     } catch (error) {
         console.log(error);
@@ -57,7 +58,9 @@ export async function request(path, method, data, jwtcheck=false) {
                 return res
             }
         }
-        return decrypt(res.data, res.encrypted)
+        if (decrypte) {
+            return decrypt(res.data, res.encrypted)
+        } return res
     } 
 
 

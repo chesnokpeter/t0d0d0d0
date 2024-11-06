@@ -25,7 +25,7 @@ const authcode = ref('')
 const error = ref('') 
 
 async function login() {
-    let r = await request('/user/login', 'POST', {authcode:authcode.value})
+    let r = await request('/user/login', 'POST', {authcode:authcode.value}, false, false)
     console.log(r);
     
     if (r.type === 'error' && r.message === 'Auth Code Error' | r.message === 'Auth Error') {

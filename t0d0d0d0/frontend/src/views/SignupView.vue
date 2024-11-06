@@ -28,16 +28,15 @@ const name = ref('')
 const error = ref('') 
 
 async function signup() {
-    console.log(authcode);
-    let r = await request('/user/signup', 'POST', {name:name.value, authcode:authcode.value})
+    let r = await request('/user/signup', 'POST', {name:name.value, authcode:authcode.value}, false, false)
     if (r.type === 'error' && r.message === 'Auth Code Error' | r.message === 'Auth Error') {
         error.value = r.desc
     } else {
+        localStorage.setItem('private_key', r.data[0].private_key)
         error.value = ''
         window.location = '/overview'
     }
 }
-
 
 
 </script>

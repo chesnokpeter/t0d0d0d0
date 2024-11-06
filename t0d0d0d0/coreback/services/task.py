@@ -95,7 +95,7 @@ class TaskService(AbsService):
         return None
 
     @uowaccess('user', 'task', 'shedulernotify')
-    async def edit(self, user_id: int, id: str, **kwargs) -> None: #! FIX!!
+    async def edit(self, user_id: int, id: str, **data) -> None: #! FIX!!
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
             if not u:
@@ -107,9 +107,8 @@ class TaskService(AbsService):
 
             if t.user_id != user_id:
                 raise UserException('user has no control of the task')
-            # print(type(kwargs))
-            data = dict(kwargs)
-            if kwargs.get('name'):
+
+            if data.get('name'):
                 if data['name'] == '':
                     data['name'] = ' '
                 data['name'] = rsa_encrypt(data['name'], rsa_public_deserial(u.public_key))

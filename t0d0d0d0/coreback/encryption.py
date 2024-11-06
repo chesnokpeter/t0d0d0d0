@@ -79,7 +79,7 @@ def rsa_public_deserial(public_key_pem: bytes) -> rsa.RSAPublicKey:
 
 def rsa_encrypt(message: str, public_key: rsa.RSAPublicKey) -> bytes:
     ciphertext = public_key.encrypt(
-        message.encode(),
+        message.encode('utf-8'),
         paddingasy.OAEP(
             mgf=paddingasy.MGF1(algorithm=hashes.SHA256()),
             algorithm=hashes.SHA256(),
@@ -99,7 +99,7 @@ def rsa_decrypt(message: bytes, private_key: rsa.RSAPrivateKey) -> str:
             label=None
         )
     )
-    return plaintext.decode()
+    return plaintext.decode('utf-8')
 
 
 

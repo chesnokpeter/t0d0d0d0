@@ -22,9 +22,12 @@ export function decrypt(objs, encrypted) {
 function decryptRSA(encryptedData, privateKeyPem) {
     const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
     const encryptedBytes = forge.util.decode64(encryptedData);
-    const decrypted = privateKey.decrypt(encryptedBytes, 'RSA-OAEP', {
-        md: forge.md.sha256.create(),
-        mgf1: { md: forge.md.sha256.create() }
-    });
+    const decryptedBytes = privateKey.decrypt(encryptedBytes, 'RSA-OAEP', {
+    md: forge.md.sha256.create(),
+    mgf1: { md: forge.md.sha256.create() }
+});
+
+const decrypted = forge.util.decodeUtf8(decryptedBytes);
+
     return decrypted;
 }
