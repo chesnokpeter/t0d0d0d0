@@ -1,28 +1,20 @@
-from typing import Annotated, TypeAlias
-
 from t0d0d0d0.coreback.exceptions import UserException
 from t0d0d0d0.coreback.models.authcode import AuthcodeModel
 from t0d0d0d0.coreback.models.authnotify import AuthnotifyModel
 from t0d0d0d0.coreback.models.user import UserModel
-from t0d0d0d0.coreback.schemas.project import NewProjectSch
-from t0d0d0d0.coreback.schemas.task import NewTaskSch
-from t0d0d0d0.coreback.schemas.user import NewUserSch, SignUpSch
+from t0d0d0d0.coreback.schemas.user import SignUpSch
 from t0d0d0d0.coreback.services.abstract import AbsService
-from t0d0d0d0.coreback.uow import BaseUnitOfWork, UnitOfWork, uowaccess
+from t0d0d0d0.coreback.uow import uowaccess
 from t0d0d0d0.coreback.utils import genAuthCode, convert_tgid_to_aes_key
 from t0d0d0d0.coreback.encryption import aes_decrypt, aes_encrypt, rsa_keys, rsa_encrypt, rsa_private_serial, rsa_public_serial, hashed
+from t0d0d0d0.coreback.state import Repos
 
 from datetime import date, datetime
-
-UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
 
 
 
 class UserService(AbsService):
-    def __init__(self, uow: UnitOfWork):
-        self.uow = uow
-
-    @uowaccess('user', 'project', 'task', 'authcode')
+    @uowaccess(Repos.USER, Repos.PROJECT, Repos.TASK, Repos.AUTHCODE)
     async def signup(self, data: SignUpSch) -> tuple[UserModel, bytes]: 
         async with self.uow:
             c = await self.uow.authcode.get(data.authcode)
@@ -53,7 +45,7 @@ class UserService(AbsService):
             await self.uow.authcode.delete(data.authcode)
             return u.model(), private_key_pem
 
-    @uowaccess('user', 'authcode', 'authnotify')
+    @uowaccess(Repos.USER, Repos.AUTHCODE, Repos.AUTHNOTIFY)
     async def login(self, authcode: str) -> tuple[UserModel, bytes]: 
         async with self.uow:
             c = await self.uow.authcode.get(authcode)
@@ -67,7 +59,7 @@ class UserService(AbsService):
             private_key = aes_decrypt(u.aes_private_key, convert_tgid_to_aes_key(c.tgid))
             return u.model(), private_key
 
-    @uowaccess('authcode')
+    @uowaccess(Repos.AUTHCODE)
     async def newAuthcode(self, tgid: int, tgusername: str) -> int:
         async with self.uow:
             async def checkCode(code: str) -> str:
@@ -80,7 +72,7 @@ class UserService(AbsService):
             await self.uow.authcode.add(code, AuthcodeModel(tgid=tgid, tgusername=tgusername))
             return code
 
-    @uowaccess('user')
+    @uowaccess(Repos.USER)
     async def getOne(self, id: int) -> UserModel:
         async with self.uow:
             u = await self.uow.user.get_one(id=id)
@@ -89,7 +81,7 @@ class UserService(AbsService):
             return u.model()
 
 
-    @uowaccess('user')
+    @uowaccess(Repos.USER)
     async def getfromTG(self, tgid: int) -> UserModel:
         async with self.uow:
             u = await self.uow.user.get_one(tgid=tgid)

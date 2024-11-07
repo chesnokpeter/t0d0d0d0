@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from functools import wraps
-import asyncio
+from asyncio import gather
+from typing import ParamSpecArgs
+
 from t0d0d0d0.coreback.exceptions import NoAccessForRepo, NoConnectorForRepo
 from t0d0d0d0.coreback.infra.abstract import AbsConnector
 from t0d0d0d0.coreback.repos.abstract import AbsRepo
@@ -11,7 +13,7 @@ from t0d0d0d0.coreback.repos.shedulernotify import ShedulernotifyRepo
 from t0d0d0d0.coreback.repos.task import TaskRepo
 from t0d0d0d0.coreback.repos.tasknotify import TasknotifyRepo
 from t0d0d0d0.coreback.repos.user import UserRepo
-from t0d0d0d0.coreback.services.abstract import AbsService
+from t0d0d0d0.coreback.state import Repos
 
 
 class AbsUnitOfWork(ABC):
@@ -56,16 +58,16 @@ class UnitOfWork(AbsUnitOfWork):
         return self
 
     async def __aexit__(self, *args):
-        await asyncio.gather(*(c.close() for c in self.connectors))
+        await gather(*(c.close() for c in self.connectors))
 
     async def commit(self):
-        await asyncio.gather(*(c.commit() for c in self.connectors))
+        await gather(*(c.commit() for c in self.connectors))
 
     async def rollback(self):
-        await asyncio.gather(*(c.rollback() for c in self.connectors))
+        await gather(*(c.rollback() for c in self.connectors))
 
 
-class BaseUnitOfWork(AbsUnitOfWork, ABC):
+class ALLRepoUnitOfWork(AbsUnitOfWork, ABC):
     user: UserRepo
     task: TaskRepo
     project: ProjectRepo
@@ -75,18 +77,18 @@ class BaseUnitOfWork(AbsUnitOfWork, ABC):
     tasknotify: TasknotifyRepo
 
 
-class AbsService(AbsService):
+class AbsService:
     uow: UnitOfWork
 
 
-def uowaccess(*access: str):
+def uowaccess(*access: Repos):
     """this decorator checks access to repositories inside a unit of work"""
 
     def decorator(func):
         @wraps(func)
         async def wrapper(self: AbsService, *args, **kwargs):
             for i in access:
-                if not getattr(self.uow, i, False):
+                if not getattr(self.uow, i.value, False):
                     raise NoAccessForRepo(f'No Access For Repo "{i}"')
             return await func(self, *args, **kwargs)
 

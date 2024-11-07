@@ -1,7 +1,5 @@
 import datetime
 from datetime import date as datetype
-from typing import Annotated, TypeAlias
-
 from t0d0d0d0.coreback.exceptions import (
     UserException,
     ProjectException,
@@ -12,18 +10,14 @@ from t0d0d0d0.coreback.models.task import TaskModel
 from t0d0d0d0.coreback.models.tasknotify import TasknotifyModel
 from t0d0d0d0.coreback.schemas.task import NameTaskSch, NewTaskSch
 from t0d0d0d0.coreback.services.abstract import AbsService
-from t0d0d0d0.coreback.uow import BaseUnitOfWork, UnitOfWork, uowaccess
-
+from t0d0d0d0.coreback.uow import uowaccess
 from t0d0d0d0.coreback.encryption import rsa_encrypt, rsa_public_deserial
 
-UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
+from t0d0d0d0.coreback.state import Repos
 
 
 class TaskService(AbsService):
-    def __init__(self, uow: UnitOfWork) -> None:
-        self.uow = uow
-
-    @uowaccess('user', 'task', 'project')
+    @uowaccess(Repos.USER, Repos.TASK, Repos.PROJECT)
     async def new(self, user_id: int, data: NewTaskSch) -> TaskModel:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
@@ -39,7 +33,7 @@ class TaskService(AbsService):
             await self.uow.commit()
         return t.model()
 
-    @uowaccess('user', 'task')
+    @uowaccess(Repos.USER, Repos.TASK)
     async def getInbox(self, user_id: int) -> list[TaskModel]:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
@@ -49,7 +43,7 @@ class TaskService(AbsService):
             t = await self.uow.task.get(user_id=user_id, project_id=None, date=None, time=None)
         return [TaskModel(**i.model().model_dump()) for i in t]
 
-    @uowaccess('user', 'task')
+    @uowaccess(Repos.USER, Repos.TASK)
     async def getAll(self, user_id: int) -> list[NameTaskSch]:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
@@ -65,7 +59,7 @@ class TaskService(AbsService):
             ]
             return r
 
-    @uowaccess('user', 'task')
+    @uowaccess(Repos.USER, Repos.TASK)
     async def getByDate(self, user_id: int, date: datetype) -> list[NameTaskSch]:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
@@ -73,7 +67,6 @@ class TaskService(AbsService):
                 raise UserException('user not found')
 
             t = await self.uow.task.get(user_id=user_id, date=date)
-            # print(t)  #! FIX!!
             r = [
                 NameTaskSch(**i.model().model_dump(), project_name=i.project.name)
                 if i.project
@@ -82,7 +75,7 @@ class TaskService(AbsService):
             ]
         return r
 
-    @uowaccess('user', 'task')
+    @uowaccess(Repos.USER, Repos.TASK)
     async def getById(self, user_id: int, id: str) -> TaskModel | None:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
@@ -94,7 +87,7 @@ class TaskService(AbsService):
                 return t.model()
         return None
 
-    @uowaccess('user', 'task', 'shedulernotify')
+    @uowaccess(Repos.USER, Repos.TASK, Repos.SHEDULERNOTIFY)
     async def edit(self, user_id: int, id: str, **data) -> None:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
@@ -131,7 +124,7 @@ class TaskService(AbsService):
                     )
                     await self.uow.shedulernotify.send(sheduler)
 
-    @uowaccess('user', 'task')
+    @uowaccess(Repos.USER, Repos.TASK)
     async def delete(self, user_id: int, id: str) -> None:
         async with self.uow:
             u = await self.uow.user.get_one(id=user_id)
