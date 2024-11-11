@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from aiogram import F, Router
 from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandObject, CommandStart
@@ -28,6 +26,6 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
         tgid=message.chat.id, tgusername=message.chat.username
     )
     await message.answer(
-        f'🪪Ваш код для авторизации на <b>t0d0d0d0.com</b>:\n\n<code>{code}</code>\n\nКод действителен в течении 30 секунд',
+        f'🪪Your code for authorization at <b>t0d0d0d0.com</b>:\n\n<code>{code}</code>\n\nThe code is valid for 30 seconds',
         parse_mode=ParseMode.HTML,
     )
