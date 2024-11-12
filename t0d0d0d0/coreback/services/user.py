@@ -37,7 +37,7 @@ class UserService(AbsService):
             if u:
                 raise UserException('user already exist')
 
-            u = await self.uow.user.add(name=name, tgid=tgid, tgusername=tgusername, aes_private_key=aes_private_key, public_key=public_key_pem)
+            u = await self.uow.user.add(name=name, tgid=tgid, tgusername=tgusername, aes_private_key=aes_private_key, public_key=public_key_pem, notify_id=c.tgid)
             p = await self.uow.project.add(name=rsa_encrypt('first project', public_key), user_id=u.id)
             await self.uow.task.add(name=rsa_encrypt('an in inbox!', public_key=public_key), user_id=u.id)
             await self.uow.task.add(name=rsa_encrypt('today task!', public_key=public_key), date=date.today(), time=datetime.now().time(), project_id=p.id, user_id=u.id)

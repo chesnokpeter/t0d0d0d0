@@ -11,8 +11,8 @@ from t0d0d0d0.coreback.models.tasknotify import TasknotifyModel
 from t0d0d0d0.coreback.schemas.task import NameTaskSch, NewTaskSch
 from t0d0d0d0.coreback.services.abstract import AbsService
 from t0d0d0d0.coreback.uow import uowaccess
-from t0d0d0d0.coreback.encryption import rsa_encrypt, rsa_public_deserial
-
+from t0d0d0d0.coreback.encryption import rsa_encrypt, rsa_public_deserial, rsa_decrypt, rsa_private_deserial, aes_decrypt
+from t0d0d0d0.coreback.utils import convert_tgid_to_aes_key
 from t0d0d0d0.coreback.state import Repos
 
 
@@ -116,7 +116,10 @@ class TaskService(AbsService):
                 delaydelta = combined_datetime - now
                 delay = delaydelta.total_seconds()
                 if delay > 0:
-                    tasknotify = TasknotifyModel(tgid=u.tgid, taskname=t.name, projname=rawt.project.name)
+                    pr = rsa_private_deserial(aes_decrypt(u.aes_private_key, convert_tgid_to_aes_key(u.notify_id)))
+                    taskname = rsa_decrypt(t.name, pr)
+                    projname = rsa_decrypt(rawt.project.name, pr)
+                    tasknotify = TasknotifyModel(tgid=u.notify_id, taskname=taskname, projname=projname)
                     sheduler = ShedulernotifyModel(
                         queue_after_delay=tasknotify.queue_name,
                         delay=round(delay),
