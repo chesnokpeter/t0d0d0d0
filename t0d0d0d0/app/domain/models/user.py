@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-@dataclass(slots=True)
+@dataclass(eq=False, slots=True)
 class UserModel:
     id: int
     tgid: bytes
@@ -9,3 +9,4 @@ class UserModel:
 
     aes_private_key: bytes
     public_key: bytes
+    notify_id: int

@@ -13,7 +13,7 @@ class AbsProjectRepo(ABC):
     async def get(self, key: Any) -> ProjectModel | None: raise NotImplementedError
 
     @abstractmethod
-    async def get_all(self, key: Any) -> list[ProjectModel] | None: raise NotImplementedError
+    async def get_all(self, **data) -> list[ProjectModel] | None: raise NotImplementedError
 
     @abstractmethod
     async def update(self, key: Any, data: AddProject) -> ProjectModel: raise NotImplementedError

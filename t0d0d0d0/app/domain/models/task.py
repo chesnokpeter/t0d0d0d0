@@ -4,7 +4,7 @@ from datetime import date as datetype, time as timetype, datetime
 from ..shared.enum import TaskStatus
 
 
-@dataclass(slots=True)
+@dataclass(eq=False, slots=True)
 class TaskModel:
     id: int
     name: bytes
