@@ -1,1 +1,1 @@
-from .user import SignUp
+from .user import SignUpSch

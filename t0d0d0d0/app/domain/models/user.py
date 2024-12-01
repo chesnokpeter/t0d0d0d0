@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 
+
+from .base import BaseModel
+
 @dataclass(eq=False, slots=True)
-class UserModel:
+class UserModel(BaseModel):
     id: int
     tgid: bytes
     tgusername: bytes

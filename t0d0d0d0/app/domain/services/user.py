@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 
+from datetime import date, datetime
+
+from .exceptions import NotFoundError, ConflictError
 from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo, AbsMemoryRepo
 from ..models import UserModel
 from ..entities import AddUser, AddProject, AddTask, AuthcodeMemory
-from .exceptions import NotFoundError, ConflictError
-from ..schemas import SignUp
+from ..schemas import SignUpSch
 
 @dataclass(eq=False, slots=True)
 class UserService:
@@ -15,7 +17,7 @@ class UserService:
     broker_repo: AbsBrokerRepo
     memory_repo: AbsMemoryRepo
 
-    async def signup(self, data: SignUp) -> tuple[UserModel, bytes]: 
+    async def signup(self, data: SignUpSch) -> tuple[UserModel, bytes]: 
         reg = await self.memory_repo.get(data.authcode, AuthcodeMemory)
         if not reg:
             raise NotFoundError('authcode not found')
@@ -36,13 +38,33 @@ class UserService:
         if exist:
             raise ConflictError('user already exist')
 
-        user = AddUser(tgid=tgid, tgusername=tgusername, name=name, aes_private_key=aes_private_key, public_key=public_key_pem, notify_id=reg.tgid)
-        project = AddProject(name=self.encryption_repo.rsa_encrypt('first project'))
+        user = AddUser(
+            tgid=tgid,
+            tgusername=tgusername,
+            name=name,
+            aes_private_key=aes_private_key,
+            public_key=public_key_pem,
+            notify_id=reg.tgid
+        )
+        user = await self.user_repo.add(user)
+        project = AddProject(
+            name=self.encryption_repo.rsa_encrypt('first project', public_key), 
+            user_id=user.id
+        )
+        project = await self.project_repo.add(project)
+        task = AddTask(
+            name=self.encryption_repo.rsa_encrypt('an in inbox!', public_key),
+            user_id=user.id
+        )
+        task = await self.task_repo.add(task)
+        task = AddTask(
+            name=self.encryption_repo.rsa_encrypt('today task!', public_key),
+            date=date.today(), 
+            time=datetime.now().time(),
+            project_id=project.id,
+            user_id=user.id
+        )
+        task = await self.task_repo.add(task)
 
-        u = await self.uow.user.add(name=name, tgid=tgid, tgusername=tgusername, aes_private_key=aes_private_key, public_key=public_key_pem, notify_id=c.tgid)
-        p = await self.uow.project.add(name=rsa_encrypt('first project', public_key), user_id=u.id)
-        await self.uow.task.add(name=rsa_encrypt('an in inbox!', public_key=public_key), user_id=u.id)
-        await self.uow.task.add(name=rsa_encrypt('today task!', public_key=public_key), date=date.today(), time=datetime.now().time(), project_id=p.id, user_id=u.id)
-        await self.uow.commit()
-        await self.uow.authcode.delete(data.authcode)
-        return u.model(), private_key_pem
+        await self.memory_repo.delete(data.authcode)
+        return user, private_key_pem

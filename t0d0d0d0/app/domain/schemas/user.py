@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass(eq=False, slots=True)
-class SignUp:
+class SignUpSch:
     name: str
     authcode: int
 
