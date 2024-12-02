@@ -3,10 +3,11 @@ from dataclasses import dataclass
 from datetime import date, datetime
 
 from .exceptions import NotFoundError, ConflictError
-from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo, AbsMemoryRepo
+from ..interfaces import AbsBrokerMessage
 from ..models import UserModel
-from ..entities import AddUser, AddProject, AddTask, AuthcodeMemory
+from ..entities import AddUser, AddProject, AddTask, AuthcodeMemory, AuthnotifyBroker
 from ..schemas import SignUpSch
+from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo, AbsMemoryRepo
 
 @dataclass(eq=False, slots=True)
 class UserService:
@@ -17,7 +18,7 @@ class UserService:
     broker_repo: AbsBrokerRepo
     memory_repo: AbsMemoryRepo
 
-    async def signup(self, data: SignUpSch) -> tuple[UserModel, bytes]: 
+    async def signup(self, data: SignUpSch) -> tuple[UserModel, bytes, int]: 
         reg = await self.memory_repo.get(data.authcode, AuthcodeMemory)
         if not reg:
             raise NotFoundError('authcode not found')
@@ -67,4 +68,20 @@ class UserService:
         task = await self.task_repo.add(task)
 
         await self.memory_repo.delete(data.authcode)
-        return user, private_key_pem
+        return user, private_key_pem, user.id
+
+
+    async def login(self, authcode: str) -> tuple[UserModel, bytes, int]: 
+        login = await self.memory_repo.get(authcode, AuthcodeMemory)
+        if not login:
+            raise NotFoundError('authcode not found')
+
+        user = await self.user_repo.get_all(tgid=self.encryption_repo.hashed(str(login.tgid)))
+        if not user:
+            raise NotFoundError('user not found')
+        user = user[0]
+
+        await self.broker_repo.send(AuthnotifyBroker(tgid=login.tgid))
+        private_key = self.encryption_repo.aes_decrypt(user.aes_private_key, self.encryption_repo.convert_tgid_to_aes_key(login.tgid))
+        await self.memory_repo.delete(authcode)
+        return user, private_key, user.id

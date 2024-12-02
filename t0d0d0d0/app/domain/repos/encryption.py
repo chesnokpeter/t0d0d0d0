@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar
 
+from .base import BaseRepo
+
 RSAPrivate = TypeVar('RsaPrivate')
 RSAPublic = TypeVar('RsaPublic')
 
 
-class AbsEncryptionRepo(ABC):
+class AbsEncryptionRepo(BaseRepo, ABC):
     @abstractmethod
     def aes_encrypt(self, message: str, key: bytes) -> bytes:raise NotImplementedError
 

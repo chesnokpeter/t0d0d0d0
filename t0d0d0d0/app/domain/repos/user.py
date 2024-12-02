@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Any
-
+from .base import BaseRepo
 from ..entities import AddUser
 from ..models import UserModel
 
-class AbsUserRepo(ABC):
+class AbsUserRepo(BaseRepo, ABC):
 
     @abstractmethod
     async def add(self, data: AddUser) -> UserModel: raise NotImplementedError

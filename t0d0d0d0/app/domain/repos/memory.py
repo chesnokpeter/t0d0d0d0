@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Any
 from ..interfaces import AbsMemoryMessage
-
+from .base import BaseRepo
 from typing import Type, TypeVar
 
 T = TypeVar('T', bound=AbsMemoryMessage)
 
-class AbsMemoryRepo(ABC):
+class AbsMemoryRepo(BaseRepo, ABC):
 
     @abstractmethod
     async def add(self, data: AbsMemoryMessage) -> AbsMemoryMessage: raise NotImplementedError

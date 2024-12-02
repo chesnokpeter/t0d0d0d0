@@ -6,7 +6,7 @@ from ..domain.models import BaseModel
 
 
 @dataclass(eq=False, slots=True)
-class Return:
+class ServiceReturn:
     message: str
     desc: str
     data: list[dict[str, Any]]
@@ -15,7 +15,7 @@ class Return:
 
     @staticmethod
     def OkAnswer(message: str, desc: str, data: list[dict[str, Any]], encrypted: list[str]|None = None):
-        return Return(
+        return ServiceReturn(
             type='success',
             message=message,
             desc=desc,
@@ -51,11 +51,11 @@ class Return:
             return ret
         
         data = [i.dict() for i in process_data(data)]
-        return Return.OkAnswer(message=message, desc=desc, data=data, encrypted=encrypted)
+        return ServiceReturn.OkAnswer(message=message, desc=desc, data=data, encrypted=encrypted)
 
     @staticmethod
     def ErrAnswer(message: str, desc: str):
-        return Return(
+        return ServiceReturn(
             type='error',
             message=message,
             desc=desc,

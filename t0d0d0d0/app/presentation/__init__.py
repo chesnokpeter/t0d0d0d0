@@ -1,1 +1,1 @@
-from .returns import Return
+from .returns import ServiceReturn
