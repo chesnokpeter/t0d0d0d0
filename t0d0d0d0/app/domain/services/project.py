@@ -19,16 +19,14 @@ class ProjectService:
 
         name = self.encryption_repo.rsa_encrypt(data.name, self.encryption_repo.rsa_public_deserial(u.public_key))
         p = AddProject(name, user_id)
-        p = await self.project_repo.add(p)
-        return p
+        return await self.project_repo.add(p)
 
     async def get_all(self, user_id: int) -> list[ProjectModel] | None:
         u = await self.user_repo.get(id=user_id)
         if not u:
             raise NotFoundError('user not found')
 
-        p = await self.project_repo.get_all(user_id=user_id)
-        return p
+        return await self.project_repo.get_all(user_id=user_id)
     
     async def edit(self, user_id: int, project_id: int, **data) -> ProjectModel:
         u = await self.user_repo.get(user_id)
@@ -41,8 +39,7 @@ class ProjectService:
         if data.get('name'):
             data['name'] = self.encryption_repo.rsa_encrypt(data['name'], self.encryption_repo.rsa_public_deserial(u.public_key))
         p = AddProject(**data, user_id=user_id)
-        p = await self.project_repo.update(project_id, p)
-        return p 
+        return await self.project_repo.update(project_id, p)
     
     async def delete(self, user_id: int, project_id: int) -> None:
         u = await self.user_repo.get(user_id)
