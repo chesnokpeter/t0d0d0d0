@@ -18,4 +18,5 @@ class AbsUserRepo(BaseRepo, ABC):
     @abstractmethod
     async def update(self, key: Any, data: AddUser) -> UserModel: raise NotImplementedError
 
-
+    @abstractmethod
+    async def delete(self, key: Any) -> None: raise NotImplementedError

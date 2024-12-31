@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 from .base import BaseRepo
 from ..entities import AddTask
-from ..models import TaskModel
+from ..models import TaskModel, TaskModelWithProjName
 
 class AbsTaskRepo(BaseRepo, ABC):
 
@@ -18,4 +18,9 @@ class AbsTaskRepo(BaseRepo, ABC):
     @abstractmethod
     async def update(self, key: Any, data: AddTask) -> TaskModel: raise NotImplementedError
 
+    @abstractmethod
+    async def delete(self, key: Any) -> None: raise NotImplementedError
+
+    @abstractmethod
+    async def get_all_with_proj_name(self, **data) -> list[TaskModelWithProjName] | None: raise NotImplementedError
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import date as datetype, time as timetype, datetime
 
-from ..shared.enum import TaskStatus
+from ..shared import TaskStatus
 
 
 @dataclass(eq=False, slots=True)

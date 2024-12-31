@@ -18,4 +18,6 @@ class AbsProjectRepo(BaseRepo, ABC):
     @abstractmethod
     async def update(self, key: Any, data: AddProject) -> ProjectModel: raise NotImplementedError
 
+    @abstractmethod
+    async def delete(self, key: Any) -> None: raise NotImplementedError
 
