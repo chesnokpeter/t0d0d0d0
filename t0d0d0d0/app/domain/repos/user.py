@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Any
 from .base import BaseRepo
 from ..entities import AddUser
 from ..models import UserModel
 
-class AbsUserRepo(BaseRepo, ABC):
+class AbsUserRepo(BaseRepo):
 
     @abstractmethod
     async def add(self, data: AddUser) -> UserModel: raise NotImplementedError
@@ -20,3 +20,4 @@ class AbsUserRepo(BaseRepo, ABC):
 
     @abstractmethod
     async def delete(self, key: Any) -> None: raise NotImplementedError
+

@@ -9,7 +9,7 @@ class Use:
     use_case: BaseUseCase
     uow: AbsUnitOfWork
 
-    async def __call__(self, *args, **kwds, ) -> ServiceReturn:
+    async def __call__(self, *args, **kwds) -> ServiceReturn:
         async with self.uow as uow:
             uc = await self.use_case.execute(*args, **kwds)
 
