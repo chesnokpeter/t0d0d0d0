@@ -2,9 +2,9 @@ from abc import ABC
 
 from typing import TypeVar, Generic
 
-T = TypeVar('T')
+TSESION = TypeVar('T')
 
 
-class BaseRepo(ABC, Generic[T]):
-    def __init__(self, session: T):
+class BaseRepo(ABC, Generic[TSESION]):
+    def __init__(self, session: TSESION):
         self.session = session

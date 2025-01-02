@@ -1,10 +1,10 @@
 from abc import abstractmethod
 from typing import Any
-from .base import BaseRepo
+from .base import BaseRepo, TSESION
 from ..entities import AddProject
 from ..models import ProjectModel
 
-class AbsProjectRepo(BaseRepo):
+class AbsProjectRepo(BaseRepo[TSESION]):
 
     @abstractmethod
     async def add(self, data: AddProject) -> ProjectModel: raise NotImplementedError

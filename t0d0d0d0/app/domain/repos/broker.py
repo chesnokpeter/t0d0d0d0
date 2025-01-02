@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from ..interfaces import AbsBrokerMessage
 
-from .base import BaseRepo
+from .base import BaseRepo, TSESION
 
-class AbsBrokerRepo(BaseRepo, ABC):
+class AbsBrokerRepo(BaseRepo[TSESION]):
 
     @abstractmethod
     async def send(self, data: AbsBrokerMessage) -> None: raise NotImplementedError

@@ -29,3 +29,5 @@ class RedisDefaultRepo(Generic[T], MemoryAbsRepo[RedisProtocol]):
 
     async def delete(self, key: str) -> None:
         await self.session.delete(keys=[key])  # type: ignore
+
+
