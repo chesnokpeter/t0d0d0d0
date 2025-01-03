@@ -7,7 +7,7 @@ from ..entities import AddTask, AuthnotifyBroker
 from ..schemas import NewTaskSch
 from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo, AbsMemoryRepo
 
-from ..shared import dtcls_slots2dict
+from ...shared import dtcls_slots2dict
 
 @dataclass(eq=False, slots=True)
 class TaskService:

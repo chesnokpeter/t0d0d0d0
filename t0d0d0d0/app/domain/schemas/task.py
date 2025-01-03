@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import date as datetype
 from datetime import time as timetype
 
-from ..shared import TaskStatus
+from ...shared import TaskStatus
 
 @dataclass(eq=False, slots=True)
 class NewTaskSch:

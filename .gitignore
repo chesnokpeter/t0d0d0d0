@@ -1,6 +1,7 @@
 .bash
 __pycache__
 venv
+.venv
 scripts/migrations/versions/*
 !scripts/migrations/versions/.gitkeep
 .mypy_cache
@@ -12,3 +13,4 @@ scripts/secrets.bash
 test.py
 
 t0d0d0d0/sheduler/sheduler
+t0d0d0d0/ditest.py
