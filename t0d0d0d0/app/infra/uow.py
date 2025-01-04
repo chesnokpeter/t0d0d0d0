@@ -1,31 +1,53 @@
+from dataclasses import dataclass, field
+from typing import Type, TypeVar, Generic
+from asyncio import gather
+
+from ..application.uses_cases import BaseUseCase
+from .adapters import AbsConnector, AbsACIDConnector
 
 
+T = TypeVar('T', bound=BaseUseCase)
+
+class UnitOfWork(Generic[T]):
+    def __init__(self, adapters: list[AbsConnector], use_case: Type[T]):
+        self.adapters = adapters
+        self.use_case = use_case
+        self.depends_on = {i.depends_on for i in use_case.repo_used}
+
+    async def __aenter__(self) -> 'UnitOfWork':
+        for i in self.adapters:
+            if i.__class__.__name__ in self.depends_on:
+                await i.connect()
+            else: 
+                continue
+
+            for j in self.use_case.repo_used:
+                if i.__class__.__name__ == j.depends_on:
+                    j.connect(i.session)
+
+        return self
+
+    async def __aexit__(self, *args):
+        await gather(*(c.close() for c in self.adapters))
+
+    async def commit(self):
+        await gather(*(c.commit() for c in self.adapters if isinstance(c, AbsACIDConnector)))
+
+    async def rollback(self):
+        await gather(*(c.rollback() for c in self.adapters if isinstance(c, AbsACIDConnector)))
 
 
-# class UnitOfWork():
-#     def __init__(self, repos: list[AbsRepo], connectors: list[AbsConnector]):
-#         self.connectors = connectors
-#         self.repo_names = [repo.reponame for repo in repos]
-#         [setattr(self, repo.reponame, repo) for repo in repos]
-#         for r in repos:
-#             if r.require_connector not in {c.connector_name for c in connectors}:
-#                 raise NoConnectorForRepo(f'No Connector For Repo "{r.reponame}"')
+@dataclass(eq=False, slots=True)
+class SetupUOW:
+    adapters: list[AbsConnector]
 
-#     async def __aenter__(self):
-#         for c in self.connectors:
-#             await c.connect()
-#             for repo_name in self.repo_names:
-#                 repo: AbsRepo = getattr(self, repo_name)
-#                 if repo.require_connector == c.connector_name:
-#                     repo(c.session)
+    def uow(self, use_case: Type[T]) -> UnitOfWork[T]:
+        return UnitOfWork(self.adapters, use_case)
+    
 
-#         return self
 
-#     async def __aexit__(self, *args):
-#         await gather(*(c.close() for c in self.connectors))
+from ..application.uses_cases.user import SignUpUseCase
 
-#     async def commit(self):
-#         await gather(*(c.commit() for c in self.connectors))
-
-#     async def rollback(self):
-#         await gather(*(c.rollback() for c in self.connectors))
+uow = SetupUOW().uow(SignUpUseCase)
+with uow:
+    uow.use_case.execute()

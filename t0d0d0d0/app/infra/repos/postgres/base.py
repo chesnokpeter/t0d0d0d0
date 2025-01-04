@@ -22,6 +22,7 @@ T = TypeVar('T', bound=BaseModel)
 
 
 class PostgresDefaultRepo(BaseRepo[Session], Generic[T]):
+    depends_on = 'PostgresConnector'
     table: Type[AbsPostgresTable]
 
     async def add(self, data: AbsAddEntity) -> T:

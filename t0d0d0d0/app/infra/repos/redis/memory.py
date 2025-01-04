@@ -7,6 +7,8 @@ from asyncio_redis import RedisProtocol
 
 
 class MemoryRepoRedis(AbsMemoryRepo[RedisProtocol]):
+    depends_on = 'RedisConnector'
+
     async def get(self, key: str, ref: Type[T]) -> T | None:
         data = await self.session.get(key)  # type: ignore
         if not data:

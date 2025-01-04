@@ -5,6 +5,8 @@ from typing import Callable, Any, TypeAlias, TypeVar, Awaitable
 from ...presentation import ServiceReturn
 from ...domain.services import ConflictError, NotFoundError, IncorrectError, PermissionError
 
+from ...domain.repos import BaseRepo
+
 T = TypeVar('T')
 
 
@@ -16,6 +18,9 @@ class UseCaseErrRet(Exception):
 
 @dataclass(eq=False, slots=True)
 class BaseUseCase(ABC):
+    service: Any
+    repo_used: list[BaseRepo]
+
     async def __call__(self, *args, **kwds) -> ServiceReturn:
         return await self.execute(*args, **kwds)
 

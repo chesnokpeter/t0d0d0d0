@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from datetime import date, datetime
 
 from .exceptions import NotFoundError, ConflictError
-from ..interfaces import AbsBrokerMessage
 from ..models import UserModel
 from ..entities import AddUser, AddProject, AddTask, AuthcodeMemory, AuthnotifyBroker
 from ..schemas import SignUpSch
