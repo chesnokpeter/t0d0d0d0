@@ -16,7 +16,7 @@ from ..app.infra.adapters.postgres import PostgresConnector, get_async_conn_post
 from ..app.infra.adapters.rabbit import RabbitConnector, get_async_conn_rabbit
 from ..app.infra.adapters.redis import RedisConnector, get_async_conn_redis
 
-from ..app.application.uses_cases import __all__use_cases__, TestUserUseCase
+from ..app.application.uses_cases import __all__use_cases__, RepoRealizations
 
 from ..app.infra.uow import SetupUOW
 from ..app.infra.adapters import AbsConnector
@@ -28,7 +28,6 @@ T = TypeVar('T', bound=BaseRepo)
 __abs_repos__ = [AbsBrokerRepo, AbsEncryptionRepo, AbsMemoryRepo, AbsProjectRepo, AbsTaskRepo, AbsUserRepo]
 
 __repos__ = [BrokerRepoRabbit, EncryptionRepoHazmat, MemoryRepoRedis, ProjectRepoPostgresql, TaskRepoPostgresql, UserRepoPostgresql]
-
 
 class IoC(Provider):
     scope = Scope.REQUEST
@@ -52,18 +51,17 @@ class IoC(Provider):
     @provide()
     def list_connectors(self, pc: PostgresConnector, rbc: RabbitConnector, rdc: RedisConnector) -> list[AbsConnector]:
         return [pc, rbc, rdc]
-
-    # @provide()
-    # def test_uc(self, service: UserService, repo: AbsUserRepo) -> TestUserUseCase:
-    #     return TestUserUseCase(service=service, repo_used=[repo])
-
+    
     @provide()
-    def list_repos(self, broker: AbsBrokerRepo, encry: AbsEncryptionRepo, memory: AbsMemoryRepo, proj: AbsProjectRepo, task: AbsTaskRepo, user: AbsUserRepo) -> list[T, ...]:
-        
-
-
-        ...
-
+    def repo_realizations(self, broker: AbsBrokerRepo, encryption: AbsEncryptionRepo, memory: AbsMemoryRepo, project: AbsProjectRepo, task: AbsTaskRepo, user: AbsUserRepo) -> RepoRealizations:
+        return {
+            AbsUserRepo: user,
+            AbsProjectRepo: project,
+            AbsTaskRepo: task,
+            AbsEncryptionRepo: encryption,
+            AbsBrokerRepo: broker,
+            AbsMemoryRepo: memory
+        }
 
 ioc = IoC()
 
@@ -72,7 +70,6 @@ ioc = IoC()
 [ioc.provide(i) for i in [UserService, ProjectService, TaskService]]
 
 [ioc.provide(i) for i in __all__use_cases__]
-
 
 
 

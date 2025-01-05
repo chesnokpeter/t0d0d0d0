@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from ...domain.services import UserService
 from ...domain.schemas import SignUpSch
 from .base import BaseUseCase
@@ -31,7 +31,7 @@ class SignInUseCase(BaseUserUseCase):
 
 @dataclass(eq=False)
 class TestUserUseCase(BaseUserUseCase):
-    repo_used: list[AbsUserRepo]
+    repo_used: list[AbsUserRepo] = field(default_factory=lambda: [AbsUserRepo], init=False)
 
     async def execute(self, user_id: int) -> ServiceReturn:
         res = await self.call_with_service_excepts(lambda: self.service.test(user_id))

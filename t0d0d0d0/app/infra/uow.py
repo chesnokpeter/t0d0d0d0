@@ -12,7 +12,7 @@ class UnitOfWork(Generic[T]):
     def __init__(self, adapters: list[AbsConnector], use_case: Type[T]):
         self.adapters = adapters
         self.use_case = use_case
-        self.depends_on = {i.depends_on for i in use_case.repo_used}
+        self.depends_on = {use_case.repo_realizations[i].depends_on for i in use_case.repo_used}
 
     async def __aenter__(self) -> 'UnitOfWork[T]':
         for i in self.adapters:
@@ -22,8 +22,8 @@ class UnitOfWork(Generic[T]):
                 continue
 
             for j in self.use_case.repo_used:
-                if i.__class__.__name__ == j.depends_on:
-                    j.connect(i.session)
+                if i.__class__.__name__ == self.use_case.repo_realizations[j].depends_on:
+                    self.use_case.repo_realizations[j].connect(i.session)
 
         return self
 

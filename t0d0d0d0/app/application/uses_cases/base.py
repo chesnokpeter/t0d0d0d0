@@ -1,9 +1,11 @@
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
-from typing import Callable, Any, TypeAlias, TypeVar, Awaitable
+from typing import Callable, Any, TypeVar, Awaitable
 
 from ...presentation import ServiceReturn
 from ...domain.services import ConflictError, NotFoundError, IncorrectError, PermissionError
+
+from ...domain.repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo, AbsMemoryRepo
 
 from ...domain.repos import BaseRepo
 
@@ -15,11 +17,22 @@ class UseCaseErrRet(Exception):
         super().__init__(*args)
         self.ret = ret
 
+class RepoRealizations:...
 
 @dataclass(eq=False)
 class BaseUseCase(ABC):
-    service: Any = field(kw_only=True, init=False)
-    repo_used: list[BaseRepo] = field(kw_only=True, init=False)
+    user_repo: AbsUserRepo
+    project_repo: AbsProjectRepo
+    task_repo: AbsTaskRepo
+    encryption_repo: AbsEncryptionRepo
+    broker_repo: AbsBrokerRepo
+    memory_repo: AbsMemoryRepo
+
+    repo_realizations: RepoRealizations
+
+    service: Any = field(init=False)
+
+    repo_used: list[BaseRepo] = field(init=False)
 
     async def __call__(self, *args, **kwds) -> ServiceReturn:
         return await self.execute(*args, **kwds)
