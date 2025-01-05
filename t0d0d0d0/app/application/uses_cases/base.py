@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from typing import Callable, Any, TypeAlias, TypeVar, Awaitable
 
@@ -16,10 +16,10 @@ class UseCaseErrRet(Exception):
         self.ret = ret
 
 
-@dataclass(eq=False, slots=True)
+@dataclass(eq=False)
 class BaseUseCase(ABC):
-    service: Any
-    repo_used: list[BaseRepo]
+    service: Any = field(kw_only=True, init=False)
+    repo_used: list[BaseRepo] = field(kw_only=True, init=False)
 
     async def __call__(self, *args, **kwds) -> ServiceReturn:
         return await self.execute(*args, **kwds)

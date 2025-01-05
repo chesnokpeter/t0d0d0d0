@@ -1,10 +1,10 @@
 from abc import abstractmethod
 from typing import Any
-from .base import BaseRepo, TSESION
+from .base import BaseRepo, sT
 from ..entities import AddTask
 from ..models import TaskModel, TaskModelWithProjName
 
-class AbsTaskRepo(BaseRepo[TSESION]):
+class AbsTaskRepo(BaseRepo[sT]):
 
     @abstractmethod
     async def add(self, data: AddTask) -> TaskModel: raise NotImplementedError

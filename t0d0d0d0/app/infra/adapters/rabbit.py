@@ -15,7 +15,8 @@ class RabbitConnector(AbsConnector[Callable[[], Callable[[], RabbitBroker]]]):
         self._session: RabbitBroker = await self.maker()
 
     async def close(self):
-        self._session.close()
+        if self._session:
+            self._session.close()
 
     @property
     def session(self):

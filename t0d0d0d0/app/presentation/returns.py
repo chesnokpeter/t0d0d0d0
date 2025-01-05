@@ -28,30 +28,32 @@ class ServiceReturn:
         if not isinstance(data, list):
             data = [data]
 
-        def by_encode(val: bytes) -> str:
-            return base64.b64encode(val).decode('utf-8')
+        print(data)
 
-        def process_value(val):
-            if isinstance(val, bytes):
-                return by_encode(val)
-            elif isinstance(val, list):
-                return [process_value(item) for item in val]
-            elif isinstance(val, dict):
-                return {k: process_value(v) for k, v in val.items()}
-            else:
-                return val
+        # def by_encode(val: bytes) -> str:
+        #     return base64.b64encode(val).decode('utf-8')
 
-        def process_data(data):
-            ret = []
-            for o in data:
-                item = {}
-                for name, val in o:
-                    item[name] = process_value(val)
-                ret.append(item)
-            return ret
+        # def process_value(val):
+        #     if isinstance(val, bytes):
+        #         return by_encode(val)
+        #     elif isinstance(val, list):
+        #         return [process_value(item) for item in val]
+        #     elif isinstance(val, dict):
+        #         return {k: process_value(v) for k, v in val.items()}
+        #     else:
+        #         return val
+
+        # def process_data(data):
+        #     ret = []
+        #     for o in data:
+        #         item = {}
+        #         for name, val in o:
+        #             item[name] = process_value(val)
+        #         ret.append(item)
+        #     return ret
         
-        data = [i.dict() for i in process_data(data)]
-        return ServiceReturn.OkAnswer(message=message, desc=desc, data=data, encrypted=encrypted)
+        # data = [i.dict() for i in process_data(data)]
+        return ServiceReturn.OkAnswer(message=message, desc=desc, data=[{"test":"123"}], encrypted=encrypted)
 
     @staticmethod
     def ErrAnswer(message: str, desc: str):

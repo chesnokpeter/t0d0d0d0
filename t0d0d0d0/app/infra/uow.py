@@ -14,7 +14,7 @@ class UnitOfWork(Generic[T]):
         self.use_case = use_case
         self.depends_on = {i.depends_on for i in use_case.repo_used}
 
-    async def __aenter__(self) -> 'UnitOfWork':
+    async def __aenter__(self) -> 'UnitOfWork[T]':
         for i in self.adapters:
             if i.__class__.__name__ in self.depends_on:
                 await i.connect()
@@ -46,8 +46,3 @@ class SetupUOW:
     
 
 
-from ..application.uses_cases.user import SignUpUseCase
-
-uow = SetupUOW().uow(SignUpUseCase)
-with uow:
-    uow.use_case.execute()

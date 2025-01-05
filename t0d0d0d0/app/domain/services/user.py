@@ -84,3 +84,7 @@ class UserService:
         private_key = self.encryption_repo.aes_decrypt(user.aes_private_key, self.encryption_repo.convert_tgid_to_aes_key(login.tgid))
         await self.memory_repo.delete(authcode)
         return user, private_key, user.id
+    
+    async def test(self, user_id: int) -> UserModel | None:
+        u = await self.user_repo.get(user_id)
+        return u

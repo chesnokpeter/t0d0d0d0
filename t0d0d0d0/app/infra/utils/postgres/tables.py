@@ -22,7 +22,6 @@ from ....domain.models import ProjectModel, TaskModel, UserModel
 
 from .base import AbsPostgresTable
 
-
 class Base(DeclarativeBase):
     def __repr__(self):
         mapper = inspect(self).mapper
@@ -31,9 +30,9 @@ class Base(DeclarativeBase):
             ent.append('{0}={1}'.format(col.key, getattr(self, col.key)))
         return '<{0}('.format(self.__class__.__name__) + ', '.join(ent) + ')>'
 
-class PostgresTable(Base, AbsPostgresTable):...
+# class PostgresTable(Base, AbsPostgresTable):...
 
-class USER(metaclas=PostgresTable):
+class USER(Base):
     __tablename__ = 'user'
     id: Mapped[int] = mapped_column(
         Integer(),
@@ -71,11 +70,12 @@ class USER(metaclas=PostgresTable):
             tgusername=self.tgusername,
             name=self.name,
             aes_private_key=self.aes_private_key,
-            public_key=self.public_key
+            public_key=self.public_key,
+            notify_id=self.notify_id
         )
 
 
-class TASK(metaclas=PostgresTable):
+class TASK(Base):
     __tablename__ = 'task'
     id: Mapped[int] = mapped_column(
         Integer(),
@@ -113,7 +113,7 @@ class TASK(metaclas=PostgresTable):
         )
 
 
-class PROJECT(metaclas=PostgresTable):
+class PROJECT(Base):
     __tablename__ = 'project'
     id: Mapped[int] = mapped_column(
         Integer(),

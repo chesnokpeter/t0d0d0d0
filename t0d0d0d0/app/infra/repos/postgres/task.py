@@ -9,3 +9,5 @@ class TaskRepoPostgresql(PostgresDefaultRepo[TaskModel], AbsTaskRepo):
     #! get_all_with_proj_name implement!!
 
 
+    async def get_all_with_proj_name(self, **data): raise NotImplementedError
+

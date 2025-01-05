@@ -13,7 +13,8 @@ class RedisConnector(AbsConnector[Callable[[], Callable[[], RedisProtocol]]]):
         self._session: RedisProtocol = await self.maker()
 
     async def close(self):
-        self._session.close()
+        if self._session:
+            self._session.close()
 
     @property
     def session(self):
