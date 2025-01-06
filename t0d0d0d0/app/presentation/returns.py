@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Generic, Literal, TypeVar
+from typing import Literal, Type
 
 from ..domain.models import BaseModel
 

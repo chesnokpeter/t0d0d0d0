@@ -45,7 +45,7 @@ class IoC(Provider):
     @provide()
     def list_connectors(self, pgc: PostgresConnector, rbc: RabbitConnector, rdc: RedisConnector) -> list[AbsConnector]:
         return [pgc, rbc, rdc]
-    
+
     @provide()
     def repo_realizations(self, broker: AbsBrokerRepo, encryption: AbsEncryptionRepo, memory: AbsMemoryRepo, project: AbsProjectRepo, task: AbsTaskRepo, user: AbsUserRepo) -> RepoRealizations:
         return {
