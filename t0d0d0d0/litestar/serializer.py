@@ -1,12 +1,16 @@
 import base64, json
 
+from dataclasses import dataclass
+
 from litestar import Response
 
 from ..app.presentation import ServiceReturn
 
 from ..app.shared import dtcls_slots2dict
 
+@dataclass(eq=False, slots=True)
 class RestServiceReturn(ServiceReturn):
+
     @property
     def response(self) -> Response:
         def by_encode(val: bytes):

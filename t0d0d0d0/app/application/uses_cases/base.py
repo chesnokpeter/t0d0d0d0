@@ -9,6 +9,7 @@ from ...domain.repos import BaseRepo
 
 T = TypeVar('T')
 
+
 class RepoRealizations:...
 
 class UseCaseErrRet(Exception):
