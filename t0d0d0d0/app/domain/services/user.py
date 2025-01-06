@@ -8,7 +8,7 @@ from ..entities import AddUser, AddProject, AddTask, AuthcodeMemory, AuthnotifyB
 from ..schemas import SignUpSch
 from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo, AbsMemoryRepo
 
-@dataclass(eq=False, slots=True)
+@dataclass(eq=False)
 class UserService:
     user_repo: AbsUserRepo
     project_repo: AbsProjectRepo

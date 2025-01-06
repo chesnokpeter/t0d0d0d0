@@ -6,7 +6,7 @@ from ..entities import AddProject
 from ..schemas import NewProjectSch
 from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo
 
-@dataclass(eq=False, slots=True)
+@dataclass(eq=False)
 class ProjectService:
     user_repo: AbsUserRepo
     project_repo: AbsProjectRepo

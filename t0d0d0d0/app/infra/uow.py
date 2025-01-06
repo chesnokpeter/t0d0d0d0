@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Type, TypeVar, Generic
+from typing import TypeVar, Generic
 from asyncio import gather
 
 from ..application.uses_cases import BaseUseCase
@@ -44,6 +44,6 @@ class SetupUOW:
 
     def uow(self, use_case: T) -> UnitOfWork[T]:
         return UnitOfWork[T](self.adapters, use_case)
-    
+
 
 

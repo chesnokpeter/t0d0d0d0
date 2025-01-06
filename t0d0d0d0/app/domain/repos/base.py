@@ -1,8 +1,6 @@
 from abc import ABC
 from typing import TypeVar, Generic
 
-from ...shared import RepoDependsOnRegister
-
 sT = TypeVar('T')
 
 class NonSession:...

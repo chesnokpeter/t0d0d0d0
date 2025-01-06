@@ -36,5 +36,5 @@ class TestUserUseCase(BaseUserUseCase):
     async def execute(self, user_id: int) -> ServiceReturn:
         res = await self.call_with_service_excepts(lambda: self.service.test(user_id))
 
-        return ServiceReturn.OkAnswerModel('tet', 'test successfully done', data=res)
+        return self.sret.ret('test', 'test successfully done', data=[res])
 

@@ -1,6 +1,3 @@
-import logging, dishka
-
-import dishka.plotter
 from litestar import Litestar, post
 from msgspec import Struct
 
@@ -24,7 +21,7 @@ class SignUpSch(Struct):
 async def general(user_id: int, s: FromDishka[SetupUOW], uc: FromDishka[TestUserUseCase]) -> str:
     async with s.uow(uc) as uow:
         r = await uow.uc.execute(user_id)
-    return str(r)
+    return r.response
 
 
 
