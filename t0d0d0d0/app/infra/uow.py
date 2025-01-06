@@ -9,9 +9,10 @@ from .adapters import AbsConnector, AbsACIDConnector
 T = TypeVar('T', bound=BaseUseCase)
 
 class UnitOfWork(Generic[T]):
-    def __init__(self, adapters: list[AbsConnector], use_case: Type[T]):
+    uc: T
+    def __init__(self, adapters: list[AbsConnector], use_case: T):
         self.adapters = adapters
-        self.use_case = use_case
+        self.uc = use_case
         self.depends_on = {use_case.repo_realizations[i].depends_on for i in use_case.repo_used}
 
     async def __aenter__(self) -> 'UnitOfWork[T]':
@@ -21,9 +22,9 @@ class UnitOfWork(Generic[T]):
             else: 
                 continue
 
-            for j in self.use_case.repo_used:
-                if i.__class__.__name__ == self.use_case.repo_realizations[j].depends_on:
-                    self.use_case.repo_realizations[j].connect(i.session)
+            for j in self.uc.repo_used:
+                if i.__class__.__name__ == self.uc.repo_realizations[j].depends_on:
+                    self.uc.repo_realizations[j].connect(i.session)
 
         return self
 
@@ -41,8 +42,8 @@ class UnitOfWork(Generic[T]):
 class SetupUOW:
     adapters: list[AbsConnector]
 
-    def uow(self, use_case: Type[T]) -> UnitOfWork[T]:
-        return UnitOfWork(self.adapters, use_case)
+    def uow(self, use_case: T) -> UnitOfWork[T]:
+        return UnitOfWork[T](self.adapters, use_case)
     
 
 

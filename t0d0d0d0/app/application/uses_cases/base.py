@@ -21,13 +21,6 @@ class RepoRealizations:...
 
 @dataclass(eq=False)
 class BaseUseCase(ABC):
-    user_repo: AbsUserRepo
-    project_repo: AbsProjectRepo
-    task_repo: AbsTaskRepo
-    encryption_repo: AbsEncryptionRepo
-    broker_repo: AbsBrokerRepo
-    memory_repo: AbsMemoryRepo
-
     repo_realizations: RepoRealizations
 
     service: Any = field(init=False)
@@ -44,7 +37,7 @@ class BaseUseCase(ABC):
         try:
             r = await call()
         except (NotFoundError, ConflictError, IncorrectError, PermissionError) as service_error:
-            raise UseCaseErrRet(ServiceReturn.ErrAnswer(service_error.type, service_error.message))
+            raise UseCaseErrRet(ServiceReturn(service_error.type, service_error.message))
         except Exception as e:
             raise e
         return r
