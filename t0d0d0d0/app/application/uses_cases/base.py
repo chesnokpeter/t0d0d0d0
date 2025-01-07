@@ -10,7 +10,7 @@ from ...domain.repos import BaseRepo
 T = TypeVar('T')
 
 
-class RepoRealizations:...
+class RepoRealizations(ABC):...
 
 class UseCaseErrRet(Exception):
     def __init__(self, ret: ServiceReturn, *args):

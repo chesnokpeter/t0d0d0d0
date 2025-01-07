@@ -18,7 +18,7 @@ class UserService:
     memory_repo: AbsMemoryRepo
 
     async def signup(self, data: SignUpSch) -> tuple[UserModel, bytes, int]: 
-        reg = await self.memory_repo.get(data.authcode, AuthcodeMemory)
+        reg = await self.memory_repo.get(key=data.authcode, ref=AuthcodeMemory)
         if not reg:
             raise NotFoundError('authcode not found')
 

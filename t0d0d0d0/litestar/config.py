@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 
 postgres_url = os.environ.get('POSTGRES_URL')

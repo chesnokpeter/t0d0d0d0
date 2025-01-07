@@ -1,14 +1,14 @@
 from typing import TypeVar
 from dishka import Provider, Scope, provide
 
-from ..app.domain import AbsBrokerRepo, AbsEncryptionRepo, AbsMemoryRepo, AbsProjectRepo, AbsTaskRepo, AbsUserRepo, NonSession, BaseRepo
+from ..app.domain import AbsEncryptionRepo, BaseRepo, NonSession, AbsBrokerRepo, AbsEncryptionRepo, AbsMemoryRepo, AbsProjectRepo, AbsTaskRepo, AbsUserRepo, __all_abs_repos__
 from ..app.domain import UserService, ProjectService, TaskService
 
-from ..app.application.uses_cases import __all__use_cases__, RepoRealizations
+from ..app.application.uses_cases import RepoRealizations, __all__use_cases__
 
 from ..app.presentation import ServiceReturn, SReturnBuilder
 
-from ..app.infra import UserRepoPostgresql, ProjectRepoPostgresql, TaskRepoPostgresql, BrokerRepoRabbit, MemoryRepoRedis, EncryptionRepoHazmat
+from ..app.infra import EncryptionRepoHazmat, __all_realizations_repos__
 from ..app.infra.adapters.postgres import PostgresConnector, get_async_conn_postgres
 from ..app.infra.adapters.rabbit import RabbitConnector, get_async_conn_rabbit
 from ..app.infra.adapters.redis import RedisConnector, get_async_conn_redis
@@ -19,9 +19,6 @@ from .serializer import RestServiceReturn
 
 T = TypeVar('T', bound=BaseRepo)
 
-__abs_repos__ = [AbsBrokerRepo, AbsEncryptionRepo, AbsMemoryRepo, AbsProjectRepo, AbsTaskRepo, AbsUserRepo]
-
-__repos__ = [BrokerRepoRabbit, EncryptionRepoHazmat, MemoryRepoRedis, ProjectRepoPostgresql, TaskRepoPostgresql, UserRepoPostgresql]
 
 class IoC(Provider):
     scope = Scope.REQUEST
@@ -59,7 +56,9 @@ class IoC(Provider):
 
 ioc = IoC()
 
-[ioc.provide(source=__repos__[k], provides=v) for k, v in enumerate(__abs_repos__)]
+[ioc.provide(__all_realizations_repos__[k], provides=v) for k, v in enumerate(__all_abs_repos__)]
+
+ioc.provide(EncryptionRepoHazmat, provides=AbsEncryptionRepo, scope=Scope.APP)
 
 [ioc.provide(i) for i in [UserService, ProjectService, TaskService]]
 
