@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
-from typing import Callable, Any, TypeVar, Awaitable
+from typing import Callable, Any, TypeVar, Awaitable, NewType
 
 from ...presentation import ServiceReturn, SReturnBuilder
 from ...domain.services import ConflictError, NotFoundError, IncorrectError, PermissionError
@@ -9,8 +9,7 @@ from ...domain.repos import BaseRepo
 
 T = TypeVar('T')
 
-
-class RepoRealizations(ABC):...
+RepoRealizations = NewType('RepoRealizations', dict[str, BaseRepo])
 
 class UseCaseErrRet(Exception):
     def __init__(self, ret: ServiceReturn, *args):

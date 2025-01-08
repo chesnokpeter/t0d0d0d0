@@ -5,7 +5,7 @@ from .base import BaseUseCase
 
 from ...presentation import ServiceReturn
 
-from ...domain.repos import AbsUserRepo, AbsMemoryRepo, AbsBrokerRepo, AbsEncryptionRepo, BaseRepo
+from ...domain.repos import AbsUserRepo, AbsMemoryRepo, AbsBrokerRepo, AbsEncryptionRepo, BaseRepo, AbsProjectRepo, AbsTaskRepo
 
 @dataclass(eq=False)
 class BaseUserUseCase(BaseUseCase):
@@ -15,12 +15,12 @@ class BaseUserUseCase(BaseUseCase):
 
 @dataclass(eq=False)
 class SignUpUseCase(BaseUserUseCase):
-    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo, AbsMemoryRepo, AbsBrokerRepo, AbsEncryptionRepo], init=False)
+    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo, AbsMemoryRepo, AbsBrokerRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo], init=False)
 
     async def execute(self, data: SignUpSch) -> tuple[ServiceReturn, int | None]:
         res, private_key_pem, id = await self.call_with_service_excepts(lambda: self.service.signup(data))
 
-        return ServiceReturn.OkAnswer('sign up', 'successfully created user', [{"private_key":private_key_pem}]), id
+        return self.sret.ret('sign up', 'successfully created user', [{"private_key":private_key_pem}]), id
 
 
 
@@ -31,7 +31,7 @@ class SignInUseCase(BaseUserUseCase):
     async def execute(self, authcode: str) -> tuple[ServiceReturn, int | None]:
         res, private_key_pem, id = await self.call_with_service_excepts(lambda: self.service.login(authcode))
 
-        return ServiceReturn.OkAnswer('sign in', 'successfully login user', [{"private_key":private_key_pem}]), id
+        return self.sret.ret('sign in', 'successfully login user', [{"private_key":private_key_pem}]), id
 
 @dataclass(eq=False)
 class TestUserUseCase(BaseUserUseCase):

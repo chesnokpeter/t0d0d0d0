@@ -23,7 +23,7 @@ T = TypeVar('T', bound=BaseRepo)
 class IoC(Provider):
     scope = Scope.REQUEST
 
-    @provide()
+    @provide(scope=Scope.APP)
     def non_s(self) -> NonSession:
         return NonSession()
 
