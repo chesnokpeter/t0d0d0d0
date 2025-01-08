@@ -9,7 +9,7 @@ from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo,
 
 from ...shared import dtcls_slots2dict
 
-@dataclass(eq=False)
+@dataclass(eq=False, slots=True)
 class TaskService:
     user_repo: AbsUserRepo
     project_repo: AbsProjectRepo

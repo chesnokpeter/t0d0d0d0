@@ -9,6 +9,7 @@ from ...domain.repos import BaseRepo
 
 T = TypeVar('T')
 
+
 RepoRealizations = NewType('RepoRealizations', dict[str, BaseRepo])
 
 class UseCaseErrRet(Exception):
