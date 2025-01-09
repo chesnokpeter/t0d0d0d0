@@ -2,12 +2,14 @@ from dishka.integrations.litestar import inject, FromDishka
 
 from typing import Annotated, TypeVar, TypeAlias
 
-from litestar import Router, Response
+from litestar import Router, Response, Request
 from litestar.handlers.base import BaseRouteHandler
 from litestar.routes.base import BaseRoute
 from litestar.routes.http import HTTPRoute
 
 from .ioc import RestServiceReturn, SetupUOW
+from .jwt.secure import Litestar_jwt_secure
+from .config import secret_key
 
 def _process_route_recursively(route: list[BaseRoute]):
     if isinstance(route, HTTPRoute):
@@ -34,3 +36,9 @@ T = TypeVar('T')
 UseCase: TypeAlias = Annotated[FromDishka[T], T]
 
 SUOW: TypeAlias = Annotated[FromDishka[SetupUOW], SetupUOW]
+
+accessjwt = Litestar_jwt_secure(secret=secret_key, expire_sec=900)
+refreshjwt = Litestar_jwt_secure(secret=secret_key, expire_sec=604800)
+
+async def secure(request: Request):...
+
