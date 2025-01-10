@@ -8,6 +8,8 @@ from ..entities import AddUser, AddProject, AddTask, AuthcodeMemory, AuthnotifyB
 from ..schemas import SignUpSch
 from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo, AbsMemoryRepo
 
+from .utils import genAuthCode
+
 @dataclass(eq=False, slots=True)
 class UserService:
     user_repo: AbsUserRepo
@@ -18,7 +20,7 @@ class UserService:
     memory_repo: AbsMemoryRepo
 
     async def signup(self, data: SignUpSch) -> tuple[UserModel, bytes, int]: 
-        reg = await self.memory_repo.get(key=data.authcode, ref=AuthcodeMemory)
+        reg: AuthcodeMemory = await self.memory_repo.get(key=data.authcode, ref=AuthcodeMemory)
         if not reg:
             raise NotFoundError('authcode not found')
 
@@ -71,7 +73,7 @@ class UserService:
 
 
     async def login(self, authcode: str) -> tuple[UserModel, bytes, int]: 
-        login = await self.memory_repo.get(authcode, AuthcodeMemory)
+        login: AuthcodeMemory = await self.memory_repo.get(authcode, AuthcodeMemory)
         if not login:
             raise NotFoundError('authcode not found')
 
@@ -84,33 +86,41 @@ class UserService:
         private_key = self.encryption_repo.aes_decrypt(user.aes_private_key, self.encryption_repo.convert_tgid_to_aes_key(login.tgid))
         await self.memory_repo.delete(authcode)
         return user, private_key, user.id
-    
-    async def test(self, user_id: int) -> UserModel | None:
-        u = await self.user_repo.get(user_id)
-        return u
-    
+
+    # async def test(self, user_id: int) -> UserModel | None:
+    #     u = await self.user_repo.get(user_id)
+    #     return u
 
 
-    async def newAuthcode(self, tgid: int, tgusername: str) -> int:
+    async def prereg(self, tgid: int, tgusername: str) -> int:
         async def checkCode(code: str) -> str:
-            check = await self.uow.authcode.get(code)
+            check: AuthcodeMemory = await self.memory_repo.get(code, AuthcodeMemory)
             if check:
                 return await checkCode(genAuthCode())
             return code
+        
+        exist = await self.user_repo.get_all(tgid=tgid)
+        if exist:
+            raise ConflictError('user already exist')
+        exist = await self.user_repo.get_all(tgusername=tgusername)
+        if exist:
+            raise ConflictError('user already exist')
 
         code = await checkCode(genAuthCode())
-        await self.uow.authcode.add(code, AuthcodeModel(tgid=tgid, tgusername=tgusername))
+        await self.memory_repo.add(code, AuthcodeMemory(tgid=tgid, tgusername=tgusername))
         return code
 
-    async def getOne(self, id: int) -> UserModel:
-        u = await self.uow.user.get_one(id=id)
-        if not u:
-            raise UserException('user not found')
-        return u.model()
 
 
-    async def getfromTG(self, tgid: int) -> UserModel:
-        u = await self.uow.user.get_one(tgid=tgid)
+    async def get_by_id(self, id: int) -> UserModel:
+        u = await self.user_repo.get(id)
         if not u:
-            raise UserException('user not found')
-        return u.model()
+            raise NotFoundError('user not found')
+        return u
+
+
+    async def get_by_tgid(self, tgid: int) -> UserModel:
+        u = await self.user_repo.get_all(tgid=tgid)
+        if not u:
+            raise NotFoundError('user not found')
+        return u[0]

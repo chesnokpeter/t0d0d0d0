@@ -42,3 +42,14 @@ class TestUserUseCase(BaseUserUseCase):
 
         return self.sret.ret('test', 'test successfully done', data=[res])
 
+
+
+@dataclass(eq=False)
+class PreregUseCase(BaseUserUseCase):
+    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo, AbsMemoryRepo], init=False)
+
+    async def execute(self, authcode: str) -> tuple[ServiceReturn, int | None]:
+        res = await self.call_with_service_excepts(lambda: self.service.prereg(authcode))
+
+        return self.sret.ret('sign in', 'successfully login user', [{"private_key":private_key_pem}]), id
+
