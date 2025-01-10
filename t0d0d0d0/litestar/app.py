@@ -1,5 +1,5 @@
-from litestar import Litestar, post, Request
-
+from litestar import Litestar, post
+from litestar.di import Provide
 
 from dishka.integrations.litestar import setup_dishka, LitestarProvider
 from dishka import make_async_container
@@ -7,15 +7,12 @@ from dishka import make_async_container
 from ..app.application.uses_cases import TestUserUseCase
 from .ioc import ioc
 
-from .shortcuts import DishkaRouter, after_request, UseCase, SUOW
+from .shortcuts import DishkaRouter, after_request, UseCase, SUOW, jwt_secure
 
 from typing import Any
-from litestar.di import Provide
-async def di(request: Request):
-    print(request)
 
 
-@post('/', dependencies={'di': Provide(di)})
+@post('/', dependencies={'di': Provide(jwt_secure)})
 async def generall(user_id: int, s: SUOW, uc: UseCase[TestUserUseCase], di: Any) -> str:
     async with s.uow(uc) as uow:
         r = await uow.uc.execute(user_id)

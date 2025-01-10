@@ -88,3 +88,29 @@ class UserService:
     async def test(self, user_id: int) -> UserModel | None:
         u = await self.user_repo.get(user_id)
         return u
+    
+
+
+    async def newAuthcode(self, tgid: int, tgusername: str) -> int:
+        async def checkCode(code: str) -> str:
+            check = await self.uow.authcode.get(code)
+            if check:
+                return await checkCode(genAuthCode())
+            return code
+
+        code = await checkCode(genAuthCode())
+        await self.uow.authcode.add(code, AuthcodeModel(tgid=tgid, tgusername=tgusername))
+        return code
+
+    async def getOne(self, id: int) -> UserModel:
+        u = await self.uow.user.get_one(id=id)
+        if not u:
+            raise UserException('user not found')
+        return u.model()
+
+
+    async def getfromTG(self, tgid: int) -> UserModel:
+        u = await self.uow.user.get_one(tgid=tgid)
+        if not u:
+            raise UserException('user not found')
+        return u.model()
