@@ -11,6 +11,8 @@ from ...domain.repos import AbsUserRepo, AbsMemoryRepo, AbsBrokerRepo, AbsEncryp
 class BaseUserUseCase(BaseUseCase):
     service: UserService
 
+    async def execute(self, *args, **kwds):...
+
 
 
 @dataclass(eq=False)
@@ -48,8 +50,8 @@ class TestUserUseCase(BaseUserUseCase):
 class PreregUseCase(BaseUserUseCase):
     repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo, AbsMemoryRepo], init=False)
 
-    async def execute(self, authcode: str) -> tuple[ServiceReturn, int | None]:
+    async def execute(self, authcode: str) -> tuple[ServiceReturn, str]:
         res = await self.call_with_service_excepts(lambda: self.service.prereg(authcode))
 
-        return self.sret.ret('sign in', 'successfully login user', [{"private_key":private_key_pem}]), id
+        return self.sret.ret('prereg', 'successfully prereg user', [{"authcode":res}]), res
 

@@ -1,19 +1,21 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TypeVar, Generic
+from typing_extensions import Unpack
 from asyncio import gather
 
 from ..application.uses_cases import BaseUseCase
 from .adapters import AbsConnector, AbsACIDConnector
-
+from ..domain.repos.base import BaseRepo
 
 T = TypeVar('T', bound=BaseUseCase)
 
 class UnitOfWork(Generic[T]):
     uc: T
-    def __init__(self, adapters: list[AbsConnector], use_case: T):
+    def __init__(self, adapters: list[AbsConnector], use_case: T, repos: list[BaseRepo]=None):
         self.adapters = adapters
         self.uc = use_case
-        self.depends_on = {use_case.repo_realizations[i].depends_on for i in use_case.repo_used}
+        self.depends_on = {use_case.repo_realizations[i].depends_on for i in use_case.repo_used} if not repos else {i.depends_on for i in repos}
+        self.repos = repos if repos else None
 
     async def __aenter__(self) -> 'UnitOfWork[T]':
         for i in self.adapters:
@@ -22,9 +24,14 @@ class UnitOfWork(Generic[T]):
             else: 
                 continue
 
-            for j in self.uc.repo_used:
-                if i.__class__.__name__ == self.uc.repo_realizations[j].depends_on:
-                    self.uc.repo_realizations[j].connect(i.session)
+            if self.repos:
+                for j in self.repos:
+                    if i.__class__.__name__ == j.depends_on:
+                        j.connect(i.session)
+            else:
+                for j in self.uc.repo_used:
+                    if i.__class__.__name__ == self.uc.repo_realizations[j].depends_on:
+                        self.uc.repo_realizations[j].connect(i.session)
 
         return self
 
@@ -44,6 +51,9 @@ class SetupUOW:
 
     def uow(self, use_case: T) -> UnitOfWork[T]:
         return UnitOfWork[T](self.adapters, use_case)
+    
+    def uow_repos(self, use_case: T, *repos: Unpack[BaseRepo]) -> UnitOfWork[T]:
+        return UnitOfWork[T](self.adapters, use_case, repos)
 
 
 

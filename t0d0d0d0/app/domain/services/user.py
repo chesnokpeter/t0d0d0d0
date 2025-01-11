@@ -92,7 +92,7 @@ class UserService:
     #     return u
 
 
-    async def prereg(self, tgid: int, tgusername: str) -> int:
+    async def prereg(self, tgid: int, tgusername: str) -> str:
         async def checkCode(code: str) -> str:
             check: AuthcodeMemory = await self.memory_repo.get(code, AuthcodeMemory)
             if check:
@@ -124,3 +124,7 @@ class UserService:
         if not u:
             raise NotFoundError('user not found')
         return u[0]
+    
+    async def get_by_tgid_not_excep(self, tgid: int) -> UserModel | None:
+        u = await self.user_repo.get_all(tgid=tgid)
+        return u[0] if u else None
