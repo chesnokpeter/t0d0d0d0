@@ -14,7 +14,7 @@ class Litestar_jwt_secure:
     def encode(self, id: int) -> str:
         expire = datetime.now() + timedelta(seconds=self.expire_sec)
         payload = {
-            "id": str(id),
+            "id": id,
             'extras': self.extra,
             'exp': expire
         }
