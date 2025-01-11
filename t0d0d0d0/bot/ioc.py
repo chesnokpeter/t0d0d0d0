@@ -14,8 +14,6 @@ from ..app.infra.adapters.redis import RedisConnector, get_async_conn_redis
 from ..app.infra import SetupUOW, AbsConnector
 
 from .config import postgres_url, rabbit_url, redis_host, redis_port
-from .serializer import RestServiceReturn
-
 
 
 class IoC(Provider):
@@ -62,7 +60,7 @@ ioc.provide(EncryptionRepoHazmat, provides=AbsEncryptionRepo, scope=Scope.APP)
 
 [ioc.provide(i) for i in __all__use_cases__]
 
-ioc.provide(lambda: RestServiceReturn, provides=ServiceReturn, scope=Scope.APP)
+ioc.provide(lambda: ServiceReturn, provides=ServiceReturn, scope=Scope.APP)
 
 ioc.provide(SReturnBuilder, scope=Scope.APP)
 
