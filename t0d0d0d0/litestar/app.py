@@ -12,8 +12,8 @@ from .shortcuts import DishkaRouter, after_request, UseCase, SUOW, jwt_secure
 from typing import Any
 
 
-@post('/', dependencies={'di': Provide(jwt_secure)})
-async def generall(user_id: int, s: SUOW, uc: UseCase[TestUserUseCase], di: Any) -> str:
+@post('/')
+async def generall(s: SUOW, uc: UseCase[TestUserUseCase]) -> str:
     async with s.uow(uc) as uow:
         r = await uow.uc.execute(user_id)
     return r
@@ -21,7 +21,7 @@ async def generall(user_id: int, s: SUOW, uc: UseCase[TestUserUseCase], di: Any)
 
 
 
-r = DishkaRouter('', route_handlers=[generall])
+r = DishkaRouter('', route_handlers=[generall], dependencies={'di': Provide(jwt_secure)})
 
 
 

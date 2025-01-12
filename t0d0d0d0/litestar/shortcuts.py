@@ -9,7 +9,10 @@ from litestar.routes.http import HTTPRoute
 
 from .ioc import RestServiceReturn, SetupUOW
 
-from .jwt.middleware import jwt_secure, accessjwt, refreshjwt
+from .jwt.middleware import jwt_secure, accessSecure, refreshSecure, Litestar_jwt_secure
+
+accST: TypeAlias = Litestar_jwt_secure
+rshST: TypeAlias = Litestar_jwt_secure
 
 def _process_route_recursively(route: list[BaseRoute]):
     if isinstance(route, HTTPRoute):
