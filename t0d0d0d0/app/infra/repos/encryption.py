@@ -10,6 +10,8 @@ from ...domain.repos import AbsEncryptionRepo
 from ...domain.repos.base import NonSession
 
 class EncryptionRepoHazmat(AbsEncryptionRepo[NonSession]):
+    depends_on = None
+
     def __init__(self, session: NonSession):...
 
 

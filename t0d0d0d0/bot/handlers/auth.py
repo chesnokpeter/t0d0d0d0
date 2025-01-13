@@ -11,20 +11,21 @@ from aiogram.types import (
 )
 from aiogram.utils.deep_linking import decode_payload
 
-from dishka.integrations.aiogram import FromDishka
+from dishka.integrations.aiogram import FromDishka, inject
 
 from ..shortcuts import SUOW, UseCase
 from ...app.application.uses_cases.user import BaseUserUseCase
-from ...app.domain.repos import AbsUserRepo
+from ...app.domain.repos import AbsUserRepo, AbsEncryptionRepo, AbsMemoryRepo
 
 router = Router()
 
 
 @router.message(CommandStart())
-async def command_start_handler(message: Message, state: FSMContext, s: SUOW, uc: UseCase[BaseUserUseCase], repo: FromDishka[AbsUserRepo]) -> None:
+@inject
+async def command_start_handler(message: Message, state: FSMContext, s: SUOW, uc: UseCase[BaseUserUseCase], repo1: FromDishka[AbsUserRepo], repo2: FromDishka[AbsEncryptionRepo], repo3: FromDishka[AbsMemoryRepo]) -> None:
     await state.clear()
 
-    async with s.uow_repos(uc, repo) as uow:
+    async with s.uow_repos(uc, repo1, repo2, repo3) as uow:
         code = await uow.uc.service.prereg(message.chat.id, message.chat.username)
 
     await message.answer(

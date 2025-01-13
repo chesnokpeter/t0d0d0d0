@@ -14,7 +14,7 @@ class UnitOfWork(Generic[T]):
     def __init__(self, adapters: list[AbsConnector], use_case: T, repos: list[BaseRepo]=None):
         self.adapters = adapters
         self.uc = use_case
-        self.depends_on = {use_case.repo_realizations[i].depends_on for i in use_case.repo_used} if not repos else {i.depends_on for i in repos}
+        self.depends_on = {use_case.repo_realizations[i].depends_on for i in use_case.repo_used} if not repos else {i.depends_on for i in repos if i.depends_on}
         self.repos = repos if repos else None
 
     async def __aenter__(self) -> 'UnitOfWork[T]':

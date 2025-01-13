@@ -4,6 +4,7 @@ from ..app.domain import AbsEncryptionRepo, BaseRepo, NonSession, AbsBrokerRepo,
 from ..app.domain import UserService, ProjectService, TaskService
 
 from ..app.application.uses_cases import RepoRealizations, __all__use_cases__
+from ..app.application.uses_cases.user import BaseUserUseCase
 
 from ..app.presentation import ServiceReturn, SReturnBuilder
 
@@ -61,6 +62,8 @@ ioc.provide(EncryptionRepoHazmat, provides=AbsEncryptionRepo, scope=Scope.APP)
 [ioc.provide(i) for i in __all__use_cases__]
 
 ioc.provide(lambda: ServiceReturn, provides=ServiceReturn, scope=Scope.APP)
+
+ioc.provide(BaseUserUseCase)
 
 ioc.provide(SReturnBuilder, scope=Scope.APP)
 

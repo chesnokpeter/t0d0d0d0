@@ -99,12 +99,12 @@ class UserService:
                 return await checkCode(genAuthCode())
             return code
         
-        exist = await self.user_repo.get_all(tgid=tgid)
-        if exist:
-            raise ConflictError('user already exist')
-        exist = await self.user_repo.get_all(tgusername=tgusername)
-        if exist:
-            raise ConflictError('user already exist')
+        # exist = await self.user_repo.get_all(tgid=self.encryption_repo.hashed(str(tgid)))
+        # if exist:
+        #     raise ConflictError('user already exist')
+        # exist = await self.user_repo.get_all(tgusername=self.encryption_repo.hashed(tgusername))
+        # if exist:
+        #     raise ConflictError('user already exist')
 
         code = await checkCode(genAuthCode())
         await self.memory_repo.add(code, AuthcodeMemory(tgid=tgid, tgusername=tgusername))
