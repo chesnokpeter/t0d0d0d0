@@ -10,6 +10,7 @@ from ..app.shared import dtcls_slots2dict
 
 @dataclass(eq=False, slots=True)
 class RestServiceReturn(ServiceReturn):
+    cookie: dict[str, str] = None
 
     @property
     def response(self) -> Response:
@@ -42,6 +43,14 @@ class RestServiceReturn(ServiceReturn):
                 'message': self.message,
                 'desc': self.desc,
                 'data': data,
-                'encrypted' : self.encrypted
-            }), status_code=200
+                'encrypted' : self.encrypted,
+            }), 
+            status_code=200, 
+            cookies=self.cookie if self.cookie else None
         )
+
+    def add_cookie(self, **data):
+        for k, v in data.items():
+            self.cookie[k] = v
+        
+        

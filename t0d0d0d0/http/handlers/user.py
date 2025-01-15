@@ -1,23 +1,44 @@
 from litestar import post
 from litestar.di import Provide
 
-from ...app.application import SignUpUseCase
-from ..shortcuts import DishkaRouter, SUOW, UseCase, accessSecure, accST
+from ...app.application import SignUpUseCase, SignInUseCase
+from ..shortcuts import DishkaRouter, SUOW, UseCase, accessSecure, accST, refreshSecure, rshST
 
 from ..schemas import SignUpSch
 
 
 @post('/signup')
-async def signup_user(data: SignUpSch, s: SUOW, uc: UseCase[SignUpUseCase], accessSecure: accST):
+async def signup_user(data: SignUpSch, s: SUOW, uc: UseCase[SignUpUseCase], accessSecure: accST, refreshSecure: rshST) -> str:
     async with s.uow(uc) as uow:
         r, id = await uow.uc.execute(data)
         await uow.commit()
     token = accessSecure.encode(id)
+    rtoken = refreshSecure.encode(id)
+    r.add_cookie(access_token=token)
+    r.add_cookie(refresh_token=rtoken)
+    return r
+
+
+@post('/login')
+async def login_user(authcode: str, s: SUOW, uc: UseCase[SignInUseCase], accessSecure: accST, refreshSecure: rshST) -> str:
+    async with s.uow(uc) as uow:
+        r, id = await uow.uc.execute(authcode)
+        await uow.commit()
+    token = accessSecure.encode(id)
+    rtoken = refreshSecure.encode(id)
+    r.add_cookie(access_token=token)
+    r.add_cookie(refresh_token=rtoken)
+    return r
+
 
 
 router = DishkaRouter('/user', route_handlers=[
     signup_user,
-], dependencies={'accessSecure': Provide(lambda: accessSecure, use_cache=True)})
+    login_user
+], dependencies={
+    'accessSecure': Provide(lambda: accessSecure, use_cache=True),
+    'refreshSecure': Provide(lambda: refreshSecure, use_cache=True)
+})
 
 
 

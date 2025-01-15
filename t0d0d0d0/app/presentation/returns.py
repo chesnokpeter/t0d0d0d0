@@ -8,7 +8,7 @@ from ..domain.models import BaseModel
 class ServiceReturn:
     message: str
     desc: str
-    data: list[BaseModel]
+    data: list[BaseModel] | None = None
     type: Literal['success', 'error'] = 'success'
     encrypted: list[str] | None = None
 

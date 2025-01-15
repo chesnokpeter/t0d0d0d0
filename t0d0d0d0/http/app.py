@@ -11,17 +11,18 @@ from .shortcuts import DishkaRouter, after_request, UseCase, SUOW, jwt_secure
 
 from typing import Any
 
+from .handlers.user import router as user
 
-@post('/')
-async def generall(s: SUOW, uc: UseCase[TestUserUseCase]) -> str:
-    async with s.uow(uc) as uow:
-        r = await uow.uc.execute(user_id)
-    return r
+# @post('/')
+# async def generall(s: SUOW, uc: UseCase[TestUserUseCase]) -> str:
+#     async with s.uow(uc) as uow:
+#         r = await uow.uc.execute(user_id)
+#     return r
 
 
 
 
-r = DishkaRouter('', route_handlers=[generall], dependencies={'di': Provide(jwt_secure)})
+r = DishkaRouter('', route_handlers=[user], dependencies={'di': Provide(jwt_secure)})
 
 
 

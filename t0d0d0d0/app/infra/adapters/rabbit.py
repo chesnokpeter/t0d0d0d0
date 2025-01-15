@@ -12,11 +12,11 @@ def get_async_conn_rabbit(rabbit_url: str) -> Callable[[], RabbitBroker]:
 
 class RabbitConnector(AbsConnector[Callable[[], Callable[[], RabbitBroker]]]):
     async def connect(self):
-        self._session: RabbitBroker = await self.maker()
+        self._session: RabbitBroker = self.maker()
 
     async def close(self):
         if self._session:
-            self._session.close()
+            await self._session.close()
 
     @property
     def session(self):
