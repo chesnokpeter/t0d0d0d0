@@ -13,6 +13,7 @@ def get_async_conn_rabbit(rabbit_url: str) -> Callable[[], RabbitBroker]:
 class RabbitConnector(AbsConnector[Callable[[], Callable[[], RabbitBroker]]]):
     async def connect(self):
         self._session: RabbitBroker = self.maker()
+        await self._session.connect()
 
     async def close(self):
         if self._session:

@@ -1,33 +1,31 @@
-from litestar import Litestar, post
+from litestar import Litestar
 from litestar.di import Provide
 
 from dishka.integrations.litestar import setup_dishka, LitestarProvider
 from dishka import make_async_container
 
-from ..app.application.uses_cases import TestUserUseCase
+from ..app.application.uses_cases.base import UseCaseErrRet
+
 from .ioc import ioc
-
-from .shortcuts import DishkaRouter, after_request, UseCase, SUOW, jwt_secure
-
-from typing import Any
+from .shortcuts import after_request, jwt_secure
 
 from .handlers.user import router as user
 
-# @post('/')
-# async def generall(s: SUOW, uc: UseCase[TestUserUseCase]) -> str:
-#     async with s.uow(uc) as uow:
-#         r = await uow.uc.execute(user_id)
-#     return r
-
-
-
-
-r = DishkaRouter('', route_handlers=[user], dependencies={'di': Provide(jwt_secure)})
+def use_case_err(request, exception: UseCaseErrRet):
+    return exception.ret.response
 
 
 
 def create_app() -> Litestar:
-    app = Litestar(route_handlers=[r], debug=True, after_request=after_request)
+    app = Litestar(
+        route_handlers=[
+            user
+        ], 
+        debug=True, 
+        after_request=after_request, 
+        dependencies={'di': Provide(jwt_secure, use_cache=True)},
+        exception_handlers={UseCaseErrRet:use_case_err}
+    )
     container = make_async_container(ioc, LitestarProvider())
     setup_dishka(container, app)
     return app

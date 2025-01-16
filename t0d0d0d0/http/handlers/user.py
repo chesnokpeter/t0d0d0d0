@@ -14,8 +14,7 @@ async def signup_user(data: SignUpSch, s: SUOW, uc: UseCase[SignUpUseCase], acce
         await uow.commit()
     token = accessSecure.encode(id)
     rtoken = refreshSecure.encode(id)
-    r.add_cookie(access_token=token)
-    r.add_cookie(refresh_token=rtoken)
+    r.add_cookie(access_token=token, refresh_token=rtoken)
     return r
 
 
@@ -26,8 +25,7 @@ async def login_user(authcode: str, s: SUOW, uc: UseCase[SignInUseCase], accessS
         await uow.commit()
     token = accessSecure.encode(id)
     rtoken = refreshSecure.encode(id)
-    r.add_cookie(access_token=token)
-    r.add_cookie(refresh_token=rtoken)
+    r.add_cookie(access_token=token, refresh_token=rtoken)
     return r
 
 

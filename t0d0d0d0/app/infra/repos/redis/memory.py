@@ -20,7 +20,7 @@ class MemoryRepoRedis(AbsMemoryRepo[RedisProtocol]):
         return ref(**data)
 
     async def add(self, key: str, data: AbsMemoryMessage) -> None:
-        await self.session.set(key, json.dumps(data.model_dump()))  # type: ignore
+        await self.session.set(key, json.dumps({**data.model_dump(), 'memory_model_name' : data.memory_model_name}))  # type: ignore
 
     async def delete(self, key: str) -> None:
         await self.session.delete(keys=[key])  # type: ignore
