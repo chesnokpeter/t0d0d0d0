@@ -16,7 +16,7 @@ from ..app.infra import SetupUOW, AbsConnector
 from .config import postgres_url, rabbit_url, redis_host, redis_port
 from .serializer import RestServiceReturn
 
-
+from .jwt.middleware import jwt_secure
 
 class IoC(Provider):
     scope = Scope.REQUEST
