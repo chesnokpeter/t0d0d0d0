@@ -87,9 +87,9 @@ class UserService:
         await self.memory_repo.delete(authcode)
         return user, private_key, user.id
 
-    # async def test(self, user_id: int) -> UserModel | None:
-    #     u = await self.user_repo.get(user_id)
-    #     return u
+    async def test(self, user_id: int) -> UserModel | None:
+        u = await self.user_repo.get(user_id)
+        return u
 
 
     async def prereg(self, tgid: int, tgusername: str) -> str:

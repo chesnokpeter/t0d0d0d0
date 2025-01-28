@@ -7,6 +7,8 @@ from ...presentation import ServiceReturn
 
 from ...domain.repos import AbsUserRepo, AbsMemoryRepo, AbsBrokerRepo, AbsEncryptionRepo, BaseRepo, AbsProjectRepo, AbsTaskRepo
 
+from ...domain.models import UserModel
+
 @dataclass(eq=False)
 class BaseUserUseCase(BaseUseCase):
     service: UserService
@@ -52,6 +54,17 @@ class PreregUseCase(BaseUserUseCase):
 
     async def execute(self, authcode: str) -> tuple[ServiceReturn, str]:
         res = await self.call_with_service_excepts(lambda: self.service.prereg(authcode))
+
+        return self.sret.ret('prereg', 'successfully prereg user', [{"authcode":res}]), res
+
+
+
+@dataclass(eq=False)
+class GetByIdUseCase(BaseUserUseCase):
+    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo], init=False)
+
+    async def execute(self, id: int) -> tuple[ServiceReturn, UserModel]:
+        res = await self.call_with_service_excepts(lambda: self.service.get_by_id(id))
 
         return self.sret.ret('prereg', 'successfully prereg user', [{"authcode":res}]), res
 

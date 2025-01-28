@@ -23,7 +23,7 @@ def create_app() -> Litestar:
         ], 
         debug=True, 
         after_request=after_request, 
-        dependencies={'di': Provide(jwt_secure, use_cache=True)},
+        dependencies={'di': Provide(jwt_secure)},
         exception_handlers={UseCaseErrRet:use_case_err}
     )
     container = make_async_container(ioc, LitestarProvider())

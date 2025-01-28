@@ -1,7 +1,7 @@
 from litestar import post
 from litestar.di import Provide
 
-from ...app.application import SignUpUseCase, SignInUseCase
+from ...app.application import SignUpUseCase, SignInUseCase, GetByIdUseCase
 from ..shortcuts import DishkaRouter, SUOW, UseCase, accessSecure, accST, refreshSecure, rshST
 
 from ..schemas import SignUpSch
@@ -27,6 +27,27 @@ async def login_user(authcode: str, s: SUOW, uc: UseCase[SignInUseCase], accessS
     rtoken = refreshSecure.encode(id)
     r.add_cookie(access_token=token, refresh_token=rtoken)
     return r
+
+
+@get('/me')
+async def me_user(uc: UseCase[GetByIdUseCase], s: SUOW):
+    
+    user = await UserService(uow).getOne(id=int(credentials['id']))
+    response = Answer.OkAnswerModel('user', 'user', data=user)
+    return response.response
+
+
+@post('/refresh')
+async def refresh_token(uow=Depends(uowdep(user)), credentials=Security(refreshSecure)):
+    user = await UserService(uow).getOne(id=credentials['id'])
+    response = Answer.OkAnswer(
+        'access token has been updated',
+        'access token has been updated',
+        data=[{}],
+    )
+    access_token = access.create_access_token(subject={'id': credentials['id']})
+    access.set_access_cookie(response.response, access_token)
+    return response.response
 
 
 

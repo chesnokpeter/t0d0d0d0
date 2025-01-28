@@ -1,6 +1,6 @@
 # from .exceptions import exceptions
 from .base import BaseUseCase, UseCaseErrRet, RepoRealizations
-from .user import SignInUseCase, SignUpUseCase, TestUserUseCase
+from .user import SignInUseCase, SignUpUseCase, TestUserUseCase, GetByIdUseCase
 from .project import DeleteProjectUseCase, AllProjectsUseCase, EditProjectUseCase, NewProjUseCase
 from .task import DeleteTaskUseCase, AllTaskUseCase, EditTaskUseCase, NewTaskUseCase, TaskByIdUseCase, AllInboxUseCase
 
