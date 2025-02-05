@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from .exceptions import ExpiredJWTError, InvalidJWTError, JWTError
 
-class Litestar_jwt_secure:
+class Litestar_faccess_secure:
     __slots__ = ('secret', 'expire_sec', 'extra')
 
     def __init__(self, secret: str, expire_sec: int, **extra):

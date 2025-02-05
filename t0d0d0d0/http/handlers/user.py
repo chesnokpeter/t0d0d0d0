@@ -1,14 +1,13 @@
-from litestar import post
-from litestar.di import Provide
+from litestar import post, get
 
 from ...app.application import SignUpUseCase, SignInUseCase, GetByIdUseCase
-from ..shortcuts import DishkaRouter, SUOW, UseCase, accessSecure, accST, refreshSecure, rshST
+from ..shortcuts import DishkaRouter, SUOW, UseCase, accST, rshST, FACCESS, RET
 
 from ..schemas import SignUpSch
 
 
 @post('/signup')
-async def signup_user(data: SignUpSch, s: SUOW, uc: UseCase[SignUpUseCase], accessSecure: accST, refreshSecure: rshST) -> str:
+async def signup_user(data: SignUpSch, s: SUOW, uc: UseCase[SignUpUseCase], accessSecure: accST, refreshSecure: rshST) -> RET:
     async with s.uow(uc) as uow:
         r, id = await uow.uc.execute(data)
         await uow.commit()
@@ -19,7 +18,7 @@ async def signup_user(data: SignUpSch, s: SUOW, uc: UseCase[SignUpUseCase], acce
 
 
 @post('/login')
-async def login_user(authcode: str, s: SUOW, uc: UseCase[SignInUseCase], accessSecure: accST, refreshSecure: rshST) -> str:
+async def login_user(authcode: str, s: SUOW, uc: UseCase[SignInUseCase], accessSecure: accST, refreshSecure: rshST) -> RET:
     async with s.uow(uc) as uow:
         r, id = await uow.uc.execute(authcode)
         await uow.commit()
@@ -30,34 +29,31 @@ async def login_user(authcode: str, s: SUOW, uc: UseCase[SignInUseCase], accessS
 
 
 @get('/me')
-async def me_user(uc: UseCase[GetByIdUseCase], s: SUOW):
-    
-    user = await UserService(uow).getOne(id=int(credentials['id']))
-    response = Answer.OkAnswerModel('user', 'user', data=user)
-    return response.response
+async def me_user(uc: UseCase[GetByIdUseCase], s: SUOW, faccess: FACCESS) -> RET:
+    async with s.uow(uc) as uow:
+        r, model = await uow.uc.execute(faccess)
+    return r
 
 
-@post('/refresh')
-async def refresh_token(uow=Depends(uowdep(user)), credentials=Security(refreshSecure)):
-    user = await UserService(uow).getOne(id=credentials['id'])
-    response = Answer.OkAnswer(
-        'access token has been updated',
-        'access token has been updated',
-        data=[{}],
-    )
-    access_token = access.create_access_token(subject={'id': credentials['id']})
-    access.set_access_cookie(response.response, access_token)
-    return response.response
+# @post('/refresh')
+# async def refresh_token(uow=Depends(uowdep(user)), credentials=Security(refreshSecure)):
+#     user = await UserService(uow).getOne(id=credentials['id'])
+#     response = Answer.OkAnswer(
+#         'access token has been updated',
+#         'access token has been updated',
+#         data=[{}],
+#     )
+#     access_token = access.create_access_token(subject={'id': credentials['id']})
+#     access.set_access_cookie(response.response, access_token)
+#     return response.response
 
 
 
 router = DishkaRouter('/user', route_handlers=[
     signup_user,
-    login_user
-], dependencies={
-    'accessSecure': Provide(lambda: accessSecure, use_cache=True),
-    'refreshSecure': Provide(lambda: refreshSecure, use_cache=True)
-})
+    login_user,
+    me_user
+])
 
 
 

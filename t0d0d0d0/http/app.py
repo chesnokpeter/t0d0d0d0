@@ -7,7 +7,7 @@ from dishka import make_async_container
 from ..app.application.uses_cases.base import UseCaseErrRet
 
 from .ioc import ioc
-from .shortcuts import after_request, jwt_secure
+from .shortcuts import after_request, faccess_secure
 
 from .handlers.user import router as user
 
@@ -23,7 +23,6 @@ def create_app() -> Litestar:
         ], 
         debug=True, 
         after_request=after_request, 
-        dependencies={'di': Provide(jwt_secure)},
         exception_handlers={UseCaseErrRet:use_case_err}
     )
     container = make_async_container(ioc, LitestarProvider())

@@ -16,7 +16,7 @@ from ..app.infra import SetupUOW, AbsConnector
 from .config import postgres_url, rabbit_url, redis_host, redis_port
 from .serializer import RestServiceReturn
 
-from .jwt.middleware import jwt_secure
+from .jwt.middleware import faccess_secure, accST, rshST, accessSecure, refreshSecure
 
 class IoC(Provider):
     scope = Scope.REQUEST
@@ -62,8 +62,15 @@ ioc.provide(EncryptionRepoHazmat, provides=AbsEncryptionRepo, scope=Scope.APP)
 
 [ioc.provide(i) for i in __all__use_cases__]
 
+ioc.provide(lambda: accessSecure, provides=accST)
+
+ioc.provide(lambda: refreshSecure, provides=rshST)
+
+ioc.provide(faccess_secure, provides=faccess_secure)
+
 ioc.provide(lambda: RestServiceReturn, provides=ServiceReturn, scope=Scope.APP)
 
 ioc.provide(SReturnBuilder, scope=Scope.APP)
 
 ioc.provide(SetupUOW)
+
