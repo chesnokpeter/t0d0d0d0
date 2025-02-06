@@ -23,3 +23,12 @@ async def faccess_secure(request: Request, accessSecure: accST) -> int:
     if not token.get('extras'):
         raise InvalidJWTError()
     return token['id']
+
+
+async def frefresh_secure(request: Request, accessSecure: accST) -> int:
+    if not request.cookies.get('refresh_token'):
+        raise NotFoundJWTError()
+    token = accessSecure.decode(request.cookies.get('refresh_token'))
+    if not token.get('extras'):
+        raise InvalidJWTError()
+    return token['id']
