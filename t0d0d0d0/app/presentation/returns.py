@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Literal, Type
+from typing import Literal, TypeAlias, TypeVar, Generic
 
 from ..domain.models import BaseModel
 
@@ -25,4 +25,8 @@ class SReturnBuilder:
             type=type,
             encrypted=encrypted,
         )
+    
 
+T = TypeVar('T')
+
+ServiceRetModel: TypeAlias = tuple[ServiceReturn, T]

@@ -3,7 +3,7 @@ from litestar import post, get
 from ...app.application import NewProjUseCase
 from ..shortcuts import DishkaRouter, SUOW, UseCase, accST, rshST, FACCESS, RET, FREFRESH
 
-from ..schemas import SignUpSch
+from ..schemas import NewProjectSch
 
 
 @post('/new')
@@ -15,6 +15,14 @@ async def new_project(
     s = await ProjectService(uow).new(user_id=int(credentials['id']), data=data)
     r = Answer.OkAnswerModel('project', 'project', data=s, encrypted=['name'])
     return r.response
+
+
+@get('/new')
+async def new_project(data: NewProjectSch, uc: UseCase[NewProjUseCase], s: SUOW, id: FACCESS) -> RET:
+    async with s.uow(uc) as uow:
+        r, model = await uow.uc.execute(id)
+    return r
+
 
 
 @get('/get')
