@@ -1,63 +1,48 @@
-from litestar import post, get
+from litestar import post, get, patch
 
-from ...app.application import NewProjUseCase
-from ..shortcuts import DishkaRouter, SUOW, UseCase, accST, rshST, FACCESS, RET, FREFRESH
+from ...app.application import NewProjUseCase, AllProjectsUseCase, EditProjectUseCase, DeleteProjectUseCase
+from ..shortcuts import DishkaRouter, SUOW, UseCase, FACCESS, RET
 
-from ..schemas import NewProjectSch
+from ..schemas import NewProjectSch, EditProjectSch, DeleteProjectSch
+
 
 
 @post('/new')
-async def new_project(
-    data: NewProjectSch,
-    uow = Depends(uowdep(user, project)),
-    credentials = Security(accessSecure),
-):
-    s = await ProjectService(uow).new(user_id=int(credentials['id']), data=data)
-    r = Answer.OkAnswerModel('project', 'project', data=s, encrypted=['name'])
-    return r.response
-
-
-@get('/new')
 async def new_project(data: NewProjectSch, uc: UseCase[NewProjUseCase], s: SUOW, id: FACCESS) -> RET:
+    async with s.uow(uc) as uow:
+        r, model = await uow.uc.execute(id, data)
+    return r
+
+
+@get('/get')
+async def get_user_projects(uc: UseCase[AllProjectsUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id)
     return r
 
 
 
-@get('/get')
-async def get_user_projects(uow=Depends(uowdep(user, project)), credentials=Security(accessSecure)):
-    s = await ProjectService(uow).getAll(user_id=int(credentials['id']))
-    r = Answer.OkAnswerModel('project', 'project', data=s, encrypted=['name'])
-    return r.response
-
-
 @patch('/edit/name')
-async def edit_project(
-    id: int = Body(embed=True),
-    name: str = Body(embed=True),
-    uow=Depends(uowdep(user, project)),
-    credentials=Security(accessSecure),
-):
-    await ProjectService(uow).edit(user_id=int(credentials['id']), project_id=id, name=name)
-    r = Answer.OkAnswer('project', 'project', data=[{}])
-    return r.response
+async def edit_project(data: EditProjectSch, uc: UseCase[EditProjectUseCase], s: SUOW, id: FACCESS) -> RET:
+    async with s.uow(uc) as uow:
+        r, model = await uow.uc.execute(id, data.id, name=data.name)
+    return r
 
 
-@delete('/delete')
-async def delete_project(
-    id: int = Body(embed=True),
-    uow=Depends(uowdep(user, project)),
-    credentials=Security(accessSecure),
-):
-    await ProjectService(uow).delete(user_id=int(credentials['id']), project_id=id)
-    r = Answer.OkAnswer('project', 'project', data=[{}])
-    return r.response
+
+@patch('/delete')
+async def delete_project(data: DeleteProjectSch, uc: UseCase[DeleteProjectUseCase], s: SUOW, id: FACCESS) -> RET:
+    async with s.uow(uc) as uow:
+        r, model = await uow.uc.execute(id, data.id)
+    return r
+
 
 
 
 router = DishkaRouter('/project', route_handlers=[
-
-
+    new_project,
+    get_user_projects,
+    edit_project,
+    delete_project
 ])
 

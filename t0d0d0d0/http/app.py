@@ -10,6 +10,7 @@ from .ioc import ioc
 from .shortcuts import after_request, faccess_secure
 
 from .handlers.user import router as user
+from .handlers.project import router as project
 
 def use_case_err(request, exception: UseCaseErrRet):
     return exception.ret.response
@@ -19,7 +20,8 @@ def use_case_err(request, exception: UseCaseErrRet):
 def create_app() -> Litestar:
     app = Litestar(
         route_handlers=[
-            user
+            user,
+            project
         ], 
         debug=True, 
         after_request=after_request, 

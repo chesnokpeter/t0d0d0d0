@@ -1,2 +1,2 @@
 from .user import SignUpSch
-from .project import NewProjectSch
+from .project import NewProjectSch, EditProjectSch, DeleteProjectSch
