@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from datetime import datetime
+
 from .exceptions import NotFoundError, ConflictError
 from ..interfaces import AbsBrokerMessage
 from ..models import TaskModel, TaskModelWithProjName
@@ -116,3 +118,10 @@ class TaskService:
         await self.task_repo.delete(id)
 
 
+
+    async def get_by_date(self, user_id: int, date: datetime) -> list[TaskModelWithProjName] | None:
+        u = await self.user_repo.get(user_id)
+        if not u:
+            raise NotFoundError('user not found')
+
+        return await self.task_repo.get_all_with_proj_name(user_id=user_id, date=date)

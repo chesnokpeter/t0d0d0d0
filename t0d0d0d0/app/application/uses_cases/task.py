@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 from ...domain.services import TaskService
 from ...domain.schemas import NewTaskSch
 from ...domain import TaskModel, TaskModelWithProjName
@@ -74,4 +75,12 @@ class TaskByIdUseCase(BaseTaskUseCase):
     async def execute(self, user_id: int, task_id: int) -> ServiceRetModel[TaskModel]:
         res = await self.call_with_service_excepts(lambda: self.service.get_by_id(user_id, task_id))
         return self.sret.ret('task', 'successfully received task', res, ['name']), res
+
+@dataclass(eq=False)
+class TaskByDateUseCase(BaseTaskUseCase):
+    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo, AbsTaskRepo], init=False)
+
+    async def execute(self, user_id: int, date: datetime) -> ServiceRetModel[list[TaskModelWithProjName | None]]:
+        res = await self.call_with_service_excepts(lambda: self.service.get_by_date(user_id, date))
+        return self.sret.ret('tasks', 'successfully received tasks by date', res, ['name', 'project_name']), res
 

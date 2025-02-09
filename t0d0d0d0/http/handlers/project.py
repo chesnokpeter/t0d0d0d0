@@ -1,4 +1,4 @@
-from litestar import post, get, patch
+from litestar import post, get, patch, delete
 
 from ...app.application import NewProjUseCase, AllProjectsUseCase, EditProjectUseCase, DeleteProjectUseCase
 from ..shortcuts import DishkaRouter, SUOW, UseCase, FACCESS, RET
@@ -30,10 +30,10 @@ async def edit_project(data: EditProjectSch, uc: UseCase[EditProjectUseCase], s:
 
 
 
-@patch('/delete')
+@delete('/delete')
 async def delete_project(data: DeleteProjectSch, uc: UseCase[DeleteProjectUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
-        r, model = await uow.uc.execute(id, data.id)
+        r = await uow.uc.execute(id, data.id)
     return r
 
 

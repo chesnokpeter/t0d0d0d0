@@ -17,7 +17,7 @@ class ServiceReturn:
 class SReturnBuilder:
     returner: ServiceReturn
 
-    def ret(self, message: str, desc: str, data: list[BaseModel], type: Literal['success', 'error'] = 'success', encrypted: list[str] | None = None) ->  ServiceReturn:
+    def ret(self, message: str, desc: str, data: list[BaseModel], encrypted: list[str] | None = None, type: Literal['success', 'error'] = 'success') ->  ServiceReturn:
         return self.returner(
             message=message,
             desc=desc,

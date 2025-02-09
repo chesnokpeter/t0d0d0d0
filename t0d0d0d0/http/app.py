@@ -11,6 +11,7 @@ from .shortcuts import after_request, faccess_secure
 
 from .handlers.user import router as user
 from .handlers.project import router as project
+from .handlers.task import router as task
 
 def use_case_err(request, exception: UseCaseErrRet):
     return exception.ret.response
@@ -21,7 +22,8 @@ def create_app() -> Litestar:
     app = Litestar(
         route_handlers=[
             user,
-            project
+            project,
+            task
         ], 
         debug=True, 
         after_request=after_request, 

@@ -36,7 +36,7 @@ class BaseUseCase(ABC):
         try:
             r = await call()
         except (NotFoundError, ConflictError, IncorrectError, PermissionError) as service_error:
-            raise UseCaseErrRet(self.sret.ret(service_error.type, service_error.message, None, 'error'))
+            raise UseCaseErrRet(self.sret.ret(service_error.type, service_error.message, [], [], 'error'))
         except Exception as e:
             raise e
         return r
