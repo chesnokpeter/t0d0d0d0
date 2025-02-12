@@ -9,7 +9,7 @@ from litestar.handlers.base import BaseRouteHandler
 from litestar.routes.base import BaseRoute
 from litestar.routes.http import HTTPRoute
 
-from .ioc import RestServiceReturn, SetupUOW, faccess_secure, accST, rshST, frefresh_secure
+from .ioc import RestServiceReturn, SetupUOW, faccess_secure, accST, rshST, frefresh_secure, FREF, FACC
 
 def _process_route_recursively(route: list[BaseRoute]):
     if isinstance(route, HTTPRoute):
@@ -37,9 +37,9 @@ UseCase: TypeAlias = Annotated[FromDishka[T], T]
 
 SUOW: TypeAlias = Annotated[FromDishka[SetupUOW], SetupUOW]
 
-FACCESS: TypeAlias = Annotated[FromDishka[faccess_secure], faccess_secure]
+FACCESS: TypeAlias = Annotated[FromDishka[FACC], faccess_secure]
 
-FREFRESH: TypeAlias = Annotated[FromDishka[frefresh_secure], frefresh_secure]
+FREFRESH: TypeAlias = Annotated[FromDishka[FREF], frefresh_secure]
 
 accST: TypeAlias = Annotated[FromDishka[accST], accST]
 rshST: TypeAlias = Annotated[FromDishka[rshST], rshST]

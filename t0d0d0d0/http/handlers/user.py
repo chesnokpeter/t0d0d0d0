@@ -3,7 +3,7 @@ from litestar import post, get
 from ...app.application import SignUpUseCase, SignInUseCase, GetByIdUseCase
 from ..shortcuts import DishkaRouter, SUOW, UseCase, accST, rshST, FACCESS, RET, FREFRESH
 
-from ..schemas import SignUpSch
+from ..schemas import SignUpSch, SignInSch
 
 
 @post('/signup')
@@ -18,9 +18,9 @@ async def signup_user(data: SignUpSch, s: SUOW, uc: UseCase[SignUpUseCase], acce
 
 
 @post('/login')
-async def login_user(authcode: str, s: SUOW, uc: UseCase[SignInUseCase], accessSecure: accST, refreshSecure: rshST) -> RET:
+async def login_user(data: SignInSch, s: SUOW, uc: UseCase[SignInUseCase], accessSecure: accST, refreshSecure: rshST) -> RET:
     async with s.uow(uc) as uow:
-        r, id = await uow.uc.execute(authcode)
+        r, id = await uow.uc.execute(data.authcode)
         await uow.commit()
     token = accessSecure.encode(id)
     rtoken = refreshSecure.encode(id)

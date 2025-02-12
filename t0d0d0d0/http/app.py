@@ -1,4 +1,4 @@
-from litestar import Litestar
+from litestar import Litestar, Router
 from litestar.di import Provide
 
 from dishka.integrations.litestar import setup_dishka, LitestarProvider
@@ -11,7 +11,7 @@ from .shortcuts import after_request, faccess_secure
 
 from .handlers.user import router as user
 from .handlers.project import router as project
-from .handlers.task import router as task
+from .handlers.task import router as task, inbox
 
 def use_case_err(request, exception: UseCaseErrRet):
     return exception.ret.response
@@ -19,12 +19,14 @@ def use_case_err(request, exception: UseCaseErrRet):
 
 
 def create_app() -> Litestar:
+
     app = Litestar(
-        route_handlers=[
+        route_handlers=[Router('/api', route_handlers=[
+            inbox,
             user,
             project,
             task
-        ], 
+        ])], 
         debug=True, 
         after_request=after_request, 
         exception_handlers={UseCaseErrRet:use_case_err}

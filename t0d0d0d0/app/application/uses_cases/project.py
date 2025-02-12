@@ -12,6 +12,8 @@ from ...domain.repos import AbsUserRepo, AbsEncryptionRepo, BaseRepo, AbsProject
 class BaseProjectUseCase(BaseUseCase):
     service: ProjectService
 
+    async def execute(self): ...
+
 
 @dataclass(eq=False)
 class NewProjUseCase(BaseProjectUseCase):

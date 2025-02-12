@@ -32,6 +32,8 @@ export async function request(path, method, data, jwtcheck=false, decrypte=true)
             headers: {'Content-Type': 'application/json;charset=utf-8'}
         });
         const res = response.data;
+        console.log(res);
+        
         if (decrypte) {
             return decrypt(res.data, res.encrypted)
         } return res

@@ -1,4 +1,4 @@
-import base64, json
+import base64, json, datetime, enum
 
 from dataclasses import dataclass, field
 
@@ -15,7 +15,10 @@ class RestServiceReturn(ServiceReturn):
     @property
     def response(self) -> Response:
         def by_encode(val: bytes):
-            return base64.b64encode(val).decode('utf-8')
+            try:
+                return val.decode('utf-8')
+            except:
+                return base64.b64encode(val).decode('utf-8')
 
         def process_value(val):
             if isinstance(val, bytes):
@@ -24,6 +27,10 @@ class RestServiceReturn(ServiceReturn):
                 return [process_value(item) for item in val]
             elif isinstance(val, dict):
                 return {k: process_value(v) for k, v in val.items()}
+            elif isinstance(val, datetime.datetime):
+                return str(val)
+            elif isinstance(val, enum.Enum):
+                return str(val.value)
             else:
                 return val
 

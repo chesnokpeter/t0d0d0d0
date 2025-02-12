@@ -13,6 +13,8 @@ from ...domain.repos import AbsUserRepo, AbsEncryptionRepo, BaseRepo, AbsProject
 class BaseTaskUseCase(BaseUseCase):
     service: TaskService
 
+    async def execute(self): ...
+
 
 @dataclass(eq=False)
 class NewTaskUseCase(BaseTaskUseCase):

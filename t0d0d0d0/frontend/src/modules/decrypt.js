@@ -31,3 +31,4 @@ const decrypted = forge.util.decodeUtf8(decryptedBytes);
 
     return decrypted;
 }
+

@@ -1,4 +1,4 @@
-from litestar import post, get, patch, delete, Router
+from litestar import post, get, patch, delete
 from datetime import datetime, time
 from ...app.application import NewTaskUseCase, DeleteTaskUseCase, TaskByDateUseCase, TaskByIdUseCase, EditTaskUseCase, AllInboxUseCase
 from ...app.shared import TaskStatus
@@ -14,10 +14,10 @@ async def new_task(data: NewTaskSch, uc: UseCase[NewTaskUseCase], s: SUOW, id: F
     return r
 
 @delete('/delete')
-async def delete_task(data: DeleteTaskSch, uc: UseCase[DeleteTaskUseCase], s: SUOW, id: FACCESS) -> RET:
+async def delete_task(data: DeleteTaskSch, uc: UseCase[DeleteTaskUseCase], s: SUOW, id: FACCESS) -> None:
     async with s.uow(uc) as uow:
         r = await uow.uc.execute(id, data)
-    return r
+
 
 @post('/get/byDate')
 async def get_tasks_by_date(data: GetTasksByDate, uc: UseCase[TaskByDateUseCase], s: SUOW, id: FACCESS) -> RET:
@@ -78,14 +78,13 @@ async def get_inbox(uc: UseCase[AllInboxUseCase], s: SUOW, id: FACCESS) -> RET:
     return r
 
 
-router = Router('/inbox', route_handlers=[
+inbox = DishkaRouter('/inbox', route_handlers=[
     get_inbox,
 ])
 
 
 
 router = DishkaRouter('/task', route_handlers=[
-    router,
     new_task,
     delete_task,
     get_tasks_by_date,

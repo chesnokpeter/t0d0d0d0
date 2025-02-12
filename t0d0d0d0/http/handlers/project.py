@@ -31,10 +31,10 @@ async def edit_project(data: EditProjectSch, uc: UseCase[EditProjectUseCase], s:
 
 
 @delete('/delete')
-async def delete_project(data: DeleteProjectSch, uc: UseCase[DeleteProjectUseCase], s: SUOW, id: FACCESS) -> RET:
+async def delete_project(data: DeleteProjectSch, uc: UseCase[DeleteProjectUseCase], s: SUOW, id: FACCESS) -> None:
     async with s.uow(uc) as uow:
         r = await uow.uc.execute(id, data.id)
-    return r
+
 
 
 

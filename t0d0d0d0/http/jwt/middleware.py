@@ -32,3 +32,6 @@ async def frefresh_secure(request: Request, accessSecure: accST) -> int:
     if not token.get('extras'):
         raise InvalidJWTError()
     return token['id']
+
+FACC: TypeAlias = faccess_secure
+FREF: TypeAlias = frefresh_secure

@@ -13,6 +13,8 @@ from ...domain.models import UserModel
 class BaseUserUseCase(BaseUseCase):
     service: UserService
 
+    async def execute(self): ...
+
 
 
 
@@ -33,7 +35,6 @@ class SignInUseCase(BaseUserUseCase):
 
     async def execute(self, authcode: str) -> ServiceRetModel[int | None]:
         res, private_key_pem, id = await self.call_with_service_excepts(lambda: self.service.login(authcode))
-
         return self.sret.ret('sign in', 'successfully login user', [{"private_key":private_key_pem}]), id
 
 @dataclass(eq=False)
