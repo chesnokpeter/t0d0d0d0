@@ -22,7 +22,7 @@ class ProjectService:
         return await self.project_repo.add(p)
 
     async def get_all(self, user_id: int) -> list[ProjectModel] | None:
-        u = await self.user_repo.get(id=user_id)
+        u = await self.user_repo.get(user_id)
         if not u:
             raise NotFoundError('user not found')
 
@@ -32,7 +32,7 @@ class ProjectService:
         u = await self.user_repo.get(user_id)
         if not u:
             raise NotFoundError('user not found')
-        p = await self.project_repo.get(id=project_id)
+        p = await self.project_repo.get(project_id)
         if not p:
             raise NotFoundError('project not found')
         

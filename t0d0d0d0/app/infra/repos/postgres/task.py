@@ -18,12 +18,12 @@ class TaskRepoPostgresql(PostgresDefaultRepo[TaskModel], AbsTaskRepo):
         result = result.all()
         # return [i[0].model() for i in result]
         return [TaskModelWithProjName(            
-            id=i.id,
-            name=i.name,
-            createdate=i.createdat,
-            date=i.date,
-            time=i.time,
-            status=i.status,
-            user_id=i.user_id,
-            project_id=i.project_id,
+            id=i[0].id,
+            name=i[0].name,
+            createdate=i[0].createdat,
+            date=i[0].date,
+            time=i[0].time,
+            status=i[0].status,
+            user_id=i[0].user_id,
+            project_id=i[0].project_id,
             project_name='ЙОООУ') for i in result]

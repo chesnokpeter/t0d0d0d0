@@ -11,12 +11,14 @@ from ..schemas import EditTaskSch, NewTaskSch, DeleteTaskSch, GetTasksByDate, Ge
 async def new_task(data: NewTaskSch, uc: UseCase[NewTaskUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data)
+        await uow.commit()
     return r
 
 @delete('/delete')
 async def delete_task(data: DeleteTaskSch, uc: UseCase[DeleteTaskUseCase], s: SUOW, id: FACCESS) -> None:
     async with s.uow(uc) as uow:
         r = await uow.uc.execute(id, data)
+        await uow.commit()
 
 
 @post('/get/byDate')
@@ -37,6 +39,7 @@ async def get_tasks_by_id(data: GetTasksById, uc: UseCase[TaskByIdUseCase], s: S
 async def task_edit_name(data: EditTaskSch[str], uc: UseCase[EditTaskUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data.id, name=data.edit)
+        await uow.commit()
     return r
 
 
@@ -44,6 +47,7 @@ async def task_edit_name(data: EditTaskSch[str], uc: UseCase[EditTaskUseCase], s
 async def task_edit_date(data: EditTaskSch[datetime], uc: UseCase[EditTaskUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data.id, date=data.edit)
+        await uow.commit()
     return r
 
 
@@ -52,6 +56,7 @@ async def task_edit_date(data: EditTaskSch[datetime], uc: UseCase[EditTaskUseCas
 async def task_edit_time(data: EditTaskSch[time], uc: UseCase[EditTaskUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data.id, time=data.edit)
+        await uow.commit()
     return r
 
 
@@ -60,12 +65,14 @@ async def task_edit_time(data: EditTaskSch[time], uc: UseCase[EditTaskUseCase], 
 async def task_edit_status(data: EditTaskSch[TaskStatus], uc: UseCase[EditTaskUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data.id, status=data.edit)
+        await uow.commit()
     return r
 
 @patch('/edit/project')
 async def task_edit_project(data: EditTaskSch[int], uc: UseCase[EditTaskUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data.id, project_id=data.edit)
+        await uow.commit()
     return r
 
 

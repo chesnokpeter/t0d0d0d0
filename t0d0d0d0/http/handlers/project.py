@@ -11,6 +11,7 @@ from ..schemas import NewProjectSch, EditProjectSch, DeleteProjectSch
 async def new_project(data: NewProjectSch, uc: UseCase[NewProjUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data)
+        await uow.commit()
     return r
 
 
@@ -26,6 +27,7 @@ async def get_user_projects(uc: UseCase[AllProjectsUseCase], s: SUOW, id: FACCES
 async def edit_project(data: EditProjectSch, uc: UseCase[EditProjectUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data.id, name=data.name)
+        await uow.commit()
     return r
 
 
@@ -34,6 +36,8 @@ async def edit_project(data: EditProjectSch, uc: UseCase[EditProjectUseCase], s:
 async def delete_project(data: DeleteProjectSch, uc: UseCase[DeleteProjectUseCase], s: SUOW, id: FACCESS) -> None:
     async with s.uow(uc) as uow:
         r = await uow.uc.execute(id, data.id)
+        await uow.commit()
+
 
 
 

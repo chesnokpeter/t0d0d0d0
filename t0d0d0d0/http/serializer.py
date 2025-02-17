@@ -29,6 +29,8 @@ class RestServiceReturn(ServiceReturn):
                 return {k: process_value(v) for k, v in val.items()}
             elif isinstance(val, datetime.datetime):
                 return str(val)
+            elif isinstance(val, datetime.date):
+                return str(val)
             elif isinstance(val, enum.Enum):
                 return str(val.value)
             else:
@@ -36,6 +38,8 @@ class RestServiceReturn(ServiceReturn):
 
         def process_data(data):
             ret = []
+            if not isinstance(data, list):
+                data = [data]
             for o in data:
                 item = {}
                 for name, val in dtcls_slots2dict(o).items():

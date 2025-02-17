@@ -32,7 +32,9 @@ class TaskService:
                 raise NotFoundError('project not found')
 
         name = self.encryption_repo.rsa_encrypt(data.name, self.encryption_repo.rsa_public_deserial(u.public_key))
-        p = AddTask(**dtcls_slots2dict(data), name=name)
+        data = dtcls_slots2dict(data)
+        data['name'] = name
+        p = AddTask(**data, user_id=user_id)
         return await self.task_repo.add(p)
 
 
