@@ -85,7 +85,6 @@ class TaskService:
             if data['name'] == '':
                 data['name'] = ' '
             data['name'] = self.encryption_repo.rsa_encrypt(data['name'], self.encryption_repo.rsa_public_deserial(u.public_key))
-
         return await self.task_repo.update(id, AddTask(**data))
 
         # if data.get('time', None):
