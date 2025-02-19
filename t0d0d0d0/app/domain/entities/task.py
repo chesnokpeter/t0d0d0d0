@@ -6,8 +6,8 @@ from ...shared import TaskStatus
 
 @dataclass(eq=False, slots=True)
 class AddTask:
-    name: bytes
     user_id: int
+    name: bytes | None = None
     createdat: datetime = field(default_factory=datetime.now, kw_only=True)
     date: datetype | None = None
     time: timetype | None = None

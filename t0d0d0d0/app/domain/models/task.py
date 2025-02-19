@@ -18,5 +18,13 @@ class TaskModel(BaseModel):
 
 @dataclass(eq=False, slots=True)
 class TaskModelWithProjName(TaskModel):
+    id: int
+    name: bytes
+    user_id: int
+    createdate: datetime = field(default_factory=datetime.now, kw_only=True)
+    date: datetype | None = None
+    time: timetype | None = None
+    status: TaskStatus = TaskStatus.backlog
+    project_id: int | None = None
     project_name: bytes | None = None
 

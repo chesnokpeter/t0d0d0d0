@@ -46,7 +46,7 @@ class PostgresDefaultRepo(BaseRepo[Session], Generic[T]):
         return [i[0].model() for i in result]
 
     async def update(self, key: int, data: AbsAddEntity) -> T:
-        data = dtcls_slots2dict(data)
+        data = {k: v for k, v in dtcls_slots2dict(data).items() if v}
         query = update(self.table).where(self.table.id == key).values(**data).returning(self.table)
         scalar: AbsPostgresTable = await self.session.scalar(query)  # type: ignore
         return scalar.model()
