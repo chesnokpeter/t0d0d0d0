@@ -31,6 +31,8 @@ class RestServiceReturn(ServiceReturn):
                 return str(val)
             elif isinstance(val, datetime.date):
                 return str(val)
+            elif isinstance(val, datetime.time):
+                return str(val)
             elif isinstance(val, enum.Enum):
                 return str(val.value)
             else:

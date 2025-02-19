@@ -1,11 +1,10 @@
 from litestar import post, get, patch, delete
-from datetime import datetime, time
+from datetime import time, date
 from ...app.application import NewTaskUseCase, DeleteTaskUseCase, TaskByDateUseCase, TaskByIdUseCase, EditTaskUseCase, AllInboxUseCase
 from ...app.shared import TaskStatus
 from ..shortcuts import DishkaRouter, SUOW, UseCase, FACCESS, RET
 
 from ..schemas import EditTaskSch, NewTaskSch, DeleteTaskSch, GetTasksByDate, GetTasksById, EditTaskSch
-
 
 @post('/new')
 async def new_task(data: NewTaskSch, uc: UseCase[NewTaskUseCase], s: SUOW, id: FACCESS) -> RET:
@@ -44,7 +43,7 @@ async def task_edit_name(data: EditTaskSch[str], uc: UseCase[EditTaskUseCase], s
 
 
 @patch('/edit/date')
-async def task_edit_date(data: EditTaskSch[datetime], uc: UseCase[EditTaskUseCase], s: SUOW, id: FACCESS) -> RET:
+async def task_edit_date(data: EditTaskSch[date], uc: UseCase[EditTaskUseCase], s: SUOW, id: FACCESS) -> RET:
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data.id, date=data.edit)
         await uow.commit()
@@ -53,7 +52,12 @@ async def task_edit_date(data: EditTaskSch[datetime], uc: UseCase[EditTaskUseCas
 
 
 @patch('/edit/time')
-async def task_edit_time(data: EditTaskSch[time], uc: UseCase[EditTaskUseCase], s: SUOW, id: FACCESS) -> RET:
+async def task_edit_time(data: EditTaskSch[str], uc: UseCase[EditTaskUseCase], s: SUOW, id: FACCESS) -> RET:
+    try:
+        hours, minutes = map(int, data.edit.split(':'))
+        data.edit = time(hours, minutes)
+    except ValueError as e:
+        raise e
     async with s.uow(uc) as uow:
         r, model = await uow.uc.execute(id, data.id, time=data.edit)
         await uow.commit()
