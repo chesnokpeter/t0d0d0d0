@@ -85,24 +85,27 @@ class TaskService:
             if data['name'] == '':
                 data['name'] = ' '
             data['name'] = self.encryption_repo.rsa_encrypt(data['name'], self.encryption_repo.rsa_public_deserial(u.public_key))
-        return await self.task_repo.update(id, AddTask(**data))
 
-        # if data.get('time', None):
-        #     combined_datetime = datetime.datetime.combine(t.date, t.time)
-        #     now = datetime.datetime.now()
-        #     delaydelta = combined_datetime - now
-        #     delay = delaydelta.total_seconds()
-        #     if delay > 0:
-        #         pr = rsa_private_deserial(aes_decrypt(u.aes_private_key, convert_tgid_to_aes_key(u.notify_id)))
-        #         taskname = rsa_decrypt(t.name, pr)
-        #         projname = rsa_decrypt(rawt.project.name, pr)
-        #         tasknotify = TasknotifyModel(tgid=u.notify_id, taskname=taskname, projname=projname)
-        #         sheduler = ShedulernotifyModel(
-        #             queue_after_delay=tasknotify.queue_name,
-        #             delay=round(delay),
-        #             message=tasknotify.model_dump_json(),
-        #         )
-        #         await self.uow.shedulernotify.send(sheduler)
+        upd = await self.task_repo.update(id, AddTask(**data))
+
+        if data.get('time', None):
+            combined_datetime = datetime.combine(t.date, t.time)
+            now = datetime.now()
+            delaydelta = combined_datetime - now
+            delay = delaydelta.total_seconds()
+            if delay > 0:
+                pr = self.encryption_repo.rsa_private_deserial(self.encryption_repo.aes_decrypt(u.aes_private_key, self.encryption_repo.convert_tgid_to_aes_key(u.notify_id)))
+                taskname = self.encryption_repo.rsa_decrypt(t.name, pr)
+                projname = self.encryption_repo.rsa_decrypt(upd.project_name, pr)
+                tasknotify = self.broker_repo.send() TasknotifyModel(tgid=u.notify_id, taskname=taskname, projname=projname)
+                sheduler = ShedulernotifyModel(
+                    queue_after_delay=tasknotify.queue_name,
+                    delay=round(delay),
+                    message=tasknotify.model_dump_json(),
+                )
+                await self.uow.shedulernotify.send(sheduler)
+
+        return upd
 
 
     async def delete(self, user_id: int, id: int) -> None:

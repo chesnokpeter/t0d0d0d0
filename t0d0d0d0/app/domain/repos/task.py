@@ -16,7 +16,7 @@ class AbsTaskRepo(BaseRepo[sT]):
     async def get_all(self, **data) -> list[TaskModel] | None: raise NotImplementedError
 
     @abstractmethod
-    async def update(self, key: Any, data: AddTask) -> TaskModel: raise NotImplementedError
+    async def update(self, key: Any, data: AddTask) -> TaskModelWithProjName: raise NotImplementedError
 
     @abstractmethod
     async def delete(self, key: Any) -> None: raise NotImplementedError

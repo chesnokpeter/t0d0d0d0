@@ -22,7 +22,6 @@ export function decrypt(objs, encrypted) {
 function decryptRSA(encryptedData, privateKeyPem) {
     const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
     const encryptedBytes = forge.util.decode64(encryptedData);
-    console.log(encryptedData);
     
     const decryptedBytes = privateKey.decrypt(encryptedBytes, 'RSA-OAEP', {
     md: forge.md.sha256.create(),
