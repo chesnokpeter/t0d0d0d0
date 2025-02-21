@@ -11,8 +11,17 @@ class AuthnotifyBroker(AbsBrokerMessage):
         return {field: getattr(self, field) for field in self.__annotations__}
     
 dataclass(eq=False, slots=True)
-class ShedulernotifyModel(AbsBrokerMessage):
+class ShedulernotifyBroker(AbsBrokerMessage):
     queue_name: str = 'sheduler'
     message: str
     queue_after_delay: str
     delay: int
+
+dataclass(eq=False, slots=True)
+class TasknotifyBroker(AbsBrokerMessage):
+    queue_name: str = 'notifytask'
+    tgid: int
+    taskname: str
+    projname: str
+
+

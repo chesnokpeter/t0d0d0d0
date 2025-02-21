@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 
+from json import dumps
+
 from datetime import datetime
 
 from .exceptions import NotFoundError, ConflictError
 from ..interfaces import AbsBrokerMessage
 from ..models import TaskModel, TaskModelWithProjName
-from ..entities import AddTask, AuthnotifyBroker
+from ..entities import AddTask, AuthnotifyBroker, ShedulernotifyBroker, TasknotifyBroker
 from ..schemas import NewTaskSch
 from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo, AbsMemoryRepo
 
@@ -87,9 +89,9 @@ class TaskService:
             data['name'] = self.encryption_repo.rsa_encrypt(data['name'], self.encryption_repo.rsa_public_deserial(u.public_key))
 
         upd = await self.task_repo.update(id, AddTask(**data))
-
-        if data.get('time', None):
-            combined_datetime = datetime.combine(t.date, t.time)
+        print(data)
+        if data.get('time', None) and data.get('date', None):
+            combined_datetime = datetime.combine(data['date'], data['time'])
             now = datetime.now()
             delaydelta = combined_datetime - now
             delay = delaydelta.total_seconds()
@@ -97,13 +99,13 @@ class TaskService:
                 pr = self.encryption_repo.rsa_private_deserial(self.encryption_repo.aes_decrypt(u.aes_private_key, self.encryption_repo.convert_tgid_to_aes_key(u.notify_id)))
                 taskname = self.encryption_repo.rsa_decrypt(t.name, pr)
                 projname = self.encryption_repo.rsa_decrypt(upd.project_name, pr)
-                tasknotify = self.broker_repo.send() TasknotifyModel(tgid=u.notify_id, taskname=taskname, projname=projname)
-                sheduler = ShedulernotifyModel(
+                tasknotify = TasknotifyBroker(tgid=u.notify_id, taskname=taskname, projname=projname)
+                sheduler = ShedulernotifyBroker(
                     queue_after_delay=tasknotify.queue_name,
                     delay=round(delay),
-                    message=tasknotify.model_dump_json(),
+                    message=dumps(dtcls_slots2dict(tasknotify)),
                 )
-                await self.uow.shedulernotify.send(sheduler)
+                await self.broker_repo.send(sheduler)
 
         return upd
 
