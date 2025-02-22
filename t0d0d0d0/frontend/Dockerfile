@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends && \
     pip install --upgrade pip && \
     apt-get clean
 
-COPY ../t0d0d0d0/frontend .
+COPY ../frontend .
 
 RUN npm install && \
     npm run build

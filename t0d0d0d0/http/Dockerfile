@@ -4,12 +4,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends && \
     pip install --upgrade pip && \
     apt-get clean
 
-COPY ../t0d0d0d0/http/requirements.txt /t0d0d0d0/http/requirements.txt
+RUN ls
 
-RUN pip install -r /t0d0d0d0/http/requirements.txt
+COPY ../http/requirements.txt /http/requirements.txt
 
-COPY ../t0d0d0d0/http /t0d0d0d0/http
-COPY ../t0d0d0d0/app /t0d0d0d0/app
+RUN pip install -r /http/requirements.txt
+
+COPY ../http ./http
+COPY ../app ./app
 
 ENV POSTGRES_URL=""
 ENV REDIS_HOST=""
@@ -21,4 +23,4 @@ EXPOSE 8011
 
 RUN useradd -m appuser
 USER appuser
-CMD ["uvicorn", "--factory", "t0d0d0d0.http.app:create_app", "--port", "8011"]
+CMD ["uvicorn", "--factory", "http.app:create_app", "--port", "8011"]
