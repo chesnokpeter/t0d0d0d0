@@ -9,10 +9,7 @@ services:
       REDIS_PORT: ${REDIS_PORT}
       SECRET_KEY: ${SECRET_KEY}
       RABBIT_URL: ${RABBIT_URL}
-    ports:
-      - "8011:8011"
-    networks:
-      - appnetwork
+    network_mode: host
 
   bot:
     build:
@@ -24,36 +21,19 @@ services:
       REDIS_PORT: ${REDIS_PORT}
       RABBIT_URL: ${RABBIT_URL}
       BOT_TOKEN: ${BOT_TOKEN}
-    networks:
-      - appnetwork
+    network_mode: host
 
   frontend:
     build:
       context: ./
       dockerfile: ./t0d0d0d0/frontend/Dockerfile
-    ports:
-      - "8101:8101"
-    networks:
-      - appnetwork
+    network_mode: host
 
-  # notyfier:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./t0d0d0d0/notyfier/Dockerfile
-  #   environment:
-  #     POSTGRES_URL: ${POSTGRES_URL}
-  #     RABBIT_URL: ${RABBIT_URL}
-  #   networks:
-  #     - appnetwork
-
-  # sheduler:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./t0d0d0d0/sheduler/Dockerfile
-  #   environment:
-  #     RABBIT_URL: ${RABBIT_URL}
-  #   networks:
-  #     - appnetwork
+  nginx:
+    build:
+      context: ./deploy/nginx
+      dockerfile: ./Dockerfile
+    network_mode: host
 
 
 networks:
