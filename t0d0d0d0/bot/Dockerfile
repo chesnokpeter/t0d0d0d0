@@ -4,20 +4,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends && \
     pip install --upgrade pip && \
     apt-get clean
 
-COPY ../bot/requirements.txt /bot/requirements.txt
+COPY ./t0d0d0d0/bot/requirements.txt /t0d0d0d0/bot/requirements.txt
 
-RUN pip install -r /bot/requirements.txt
+RUN pip install -r /t0d0d0d0/bot/requirements.txt
 
-COPY ../bot /bot
-COPY ../app /app
+COPY ./t0d0d0d0/bot /t0d0d0d0/bot
+COPY ./t0d0d0d0/app /t0d0d0d0/app
 
 ENV POSTGRES_URL=""
 ENV REDIS_HOST=""
 ENV REDIS_PORT=""
-ENV SECRET_KEY=""
 ENV RABBIT_URL=""
 ENV BOT_TOKEN=""
 
 RUN useradd -m appuser
 USER appuser
-CMD ["python", "-m", "bot"]
+CMD ["python", "-m", "t0d0d0d0.bot"]

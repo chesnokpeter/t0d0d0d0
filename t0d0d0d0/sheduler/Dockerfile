@@ -1,11 +1,8 @@
-FROM golang:1.20-alpine
+FROM golang:1.22.2-alpine
 
-RUN apt-get update && apt-get install -y --no-install-recommends && \
-    pip install --upgrade pip && \
-    apt-get clean
+WORKDIR /
 
-
-COPY ../sheduler/ .
+COPY ./t0d0d0d0/sheduler/ .
 RUN go mod download
 RUN go build
 

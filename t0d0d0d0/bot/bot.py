@@ -7,7 +7,7 @@ from aiogram import Bot, Dispatcher
 
 from t0d0d0d0.bot.handlers.auth import router as messageRouter
 # from t0d0d0d0.bot.handlers.task import router as taskRouter
-from t0d0d0d0.coreback.config import bot_token
+from .config import bot_token
 
 
 from dishka.integrations.aiogram import setup_dishka

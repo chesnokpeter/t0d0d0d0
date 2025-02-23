@@ -1,12 +1,11 @@
 FROM node:latest
 
 RUN apt-get update && apt-get install -y --no-install-recommends && \
-    pip install --upgrade pip && \
     apt-get clean
 
-COPY ../frontend .
+COPY ./t0d0d0d0/frontend .
 
-RUN npm install && \
+RUN npm install --force && \
     npm run build
 
 EXPOSE 8101

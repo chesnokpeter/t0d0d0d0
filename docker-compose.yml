@@ -1,0 +1,61 @@
+services:
+  http:
+    build:
+      context: ./
+      dockerfile: ./t0d0d0d0/http/Dockerfile
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      SECRET_KEY: ${SECRET_KEY}
+      RABBIT_URL: ${RABBIT_URL}
+    ports:
+      - "8011:8011"
+    networks:
+      - appnetwork
+
+  bot:
+    build:
+      context: ./
+      dockerfile: ./t0d0d0d0/bot/Dockerfile
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      RABBIT_URL: ${RABBIT_URL}
+      BOT_TOKEN: ${BOT_TOKEN}
+    networks:
+      - appnetwork
+
+  frontend:
+    build:
+      context: ./
+      dockerfile: ./t0d0d0d0/frontend/Dockerfile
+    ports:
+      - "8101:8101"
+    networks:
+      - appnetwork
+
+  # notyfier:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./t0d0d0d0/notyfier/Dockerfile
+  #   environment:
+  #     POSTGRES_URL: ${POSTGRES_URL}
+  #     RABBIT_URL: ${RABBIT_URL}
+  #   networks:
+  #     - appnetwork
+
+  # sheduler:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./t0d0d0d0/sheduler/Dockerfile
+  #   environment:
+  #     RABBIT_URL: ${RABBIT_URL}
+  #   networks:
+  #     - appnetwork
+
+
+networks:
+  appnetwork:
+    driver: bridge
