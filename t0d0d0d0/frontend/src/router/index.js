@@ -5,6 +5,7 @@ import SignupView from '../views/SignupView.vue'
 import OverView from '../views/OverView.vue'
 import ProjectsView from '../views/ProjectsView.vue'
 import TaskView from '../views/TaskView.vue'
+import SettingsView from '../views/SettingsView.vue'
 // import test from '../views/test.vue'
 
 const router = createRouter({
@@ -35,6 +36,11 @@ const router = createRouter({
       name: 'tasks',
       component: TaskView
     },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView
+    }
 
 
     // {

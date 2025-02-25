@@ -5,5 +5,5 @@ class AbsBrokerMessage(ABC):
     @abstractmethod
     def queue_name(self): raise NotImplementedError
 
-    @abstractmethod
-    def dict(self): raise NotImplementedError
+    def dict(self):
+        return {field: getattr(self, field) for field in self.__annotations__}

@@ -11,7 +11,7 @@ RUN pip install -r /t0d0d0d0/notyfier/requirements.txt
 COPY ./t0d0d0d0/notyfier /t0d0d0d0/notyfier
 COPY ./t0d0d0d0/app /t0d0d0d0/app
 
-ENV POSTGRES_URL=""
+ENV BOT_TOKEN=""
 ENV RABBIT_URL=""
 
 RUN useradd -m appuser

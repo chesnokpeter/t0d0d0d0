@@ -97,6 +97,8 @@ func main() {
 
 	messageQueue := &MessageQueue{}
 
+	fmt.Println("start")
+
 	go func() {
 		for d := range msgs {
 			var msg Message

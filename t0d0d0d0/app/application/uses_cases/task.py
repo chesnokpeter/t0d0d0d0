@@ -7,7 +7,7 @@ from .base import BaseUseCase
 
 from ...presentation import ServiceReturn, ServiceRetModel
 
-from ...domain.repos import AbsUserRepo, AbsEncryptionRepo, BaseRepo, AbsProjectRepo, AbsTaskRepo
+from ...domain.repos import AbsUserRepo, AbsEncryptionRepo, BaseRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo
 
 @dataclass(eq=False)
 class BaseTaskUseCase(BaseUseCase):
@@ -28,7 +28,7 @@ class NewTaskUseCase(BaseTaskUseCase):
 
 @dataclass(eq=False)
 class EditTaskUseCase(BaseTaskUseCase):
-    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo, AbsTaskRepo, AbsEncryptionRepo], init=False)
+    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo, AbsTaskRepo, AbsEncryptionRepo, AbsBrokerRepo], init=False)
 
     async def execute(self, user_id: int, task_id: int, **data) -> ServiceRetModel[TaskModel]:
         res = await self.call_with_service_excepts(lambda: self.service.edit(user_id, task_id, **data))

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from json import dumps
 
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 from .exceptions import NotFoundError, ConflictError
 from ..interfaces import AbsBrokerMessage
@@ -12,6 +12,9 @@ from ..schemas import NewTaskSch
 from ..repos import AbsUserRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo, AbsBrokerRepo, AbsMemoryRepo
 
 from ...shared import dtcls_slots2dict
+
+tz = timezone(timedelta(hours=+3.0)) #fix
+
 
 @dataclass(eq=False, slots=True)
 class TaskService:
@@ -89,16 +92,16 @@ class TaskService:
             data['name'] = self.encryption_repo.rsa_encrypt(data['name'], self.encryption_repo.rsa_public_deserial(u.public_key))
 
         upd = await self.task_repo.update(id, AddTask(**data))
-        print(data)
-        if data.get('time', None) and data.get('date', None):
-            combined_datetime = datetime.combine(data['date'], data['time'])
-            now = datetime.now()
-            delaydelta = combined_datetime - now
+        if data.get('time', None):
+            combined_datetime = datetime.combine(t.date, data['time'])
+            now = datetime.now(tz)
+            delaydelta = combined_datetime - now #fix
             delay = delaydelta.total_seconds()
+            print(combined_datetime, delaydelta)
             if delay > 0:
                 pr = self.encryption_repo.rsa_private_deserial(self.encryption_repo.aes_decrypt(u.aes_private_key, self.encryption_repo.convert_tgid_to_aes_key(u.notify_id)))
-                taskname = self.encryption_repo.rsa_decrypt(t.name, pr)
-                projname = self.encryption_repo.rsa_decrypt(upd.project_name, pr)
+                taskname = self.encryption_repo.rsa_decrypt(upd.name, pr)
+                projname = self.encryption_repo.rsa_decrypt(upd.project_name, pr) if upd.project_name else None
                 tasknotify = TasknotifyBroker(tgid=u.notify_id, taskname=taskname, projname=projname)
                 sheduler = ShedulernotifyBroker(
                     queue_after_delay=tasknotify.queue_name,

@@ -35,6 +35,23 @@ services:
       dockerfile: ./Dockerfile
     network_mode: host
 
+  notyfier:
+    build:
+      context: ./
+      dockerfile: ./t0d0d0d0/notyfier/Dockerfile
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      RABBIT_URL: ${RABBIT_URL}
+    network_mode: host
+
+  sheduler:
+    build:
+      context: ./
+      dockerfile: ./t0d0d0d0/sheduler/Dockerfile
+    environment:
+      RABBIT_URL: ${RABBIT_URL}
+    network_mode: host
+
 
 networks:
   appnetwork:
