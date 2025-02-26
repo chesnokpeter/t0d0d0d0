@@ -4,7 +4,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from t0d0d0d0.app.infra.utils.postgres import *
+from t0d0d0d0.app.infra.utils.postgres.tables import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
