@@ -40,8 +40,12 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView
-    }
-
+    },
+    {
+      path: '/',
+      name: 'general',
+      component: OverView
+    },
 
     // {
     //   path: '/about',
