@@ -93,7 +93,7 @@ class TaskService:
 
         upd = await self.task_repo.update(id, AddTask(**data))
         if data.get('time', None):
-            combined_datetime = datetime.combine(t.date, data['time'])
+            combined_datetime = datetime.combine(t.date, data['time']).replace(tzinfo=tz)
             now = datetime.now(tz)
             delaydelta = combined_datetime - now #fix
             delay = delaydelta.total_seconds()
