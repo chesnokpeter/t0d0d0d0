@@ -10,6 +10,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       RABBIT_URL: ${RABBIT_URL}
     network_mode: host
+    image: docker.io/chesnokdeep/t0:http
 
   bot:
     build:
@@ -22,18 +23,21 @@ services:
       RABBIT_URL: ${RABBIT_URL}
       BOT_TOKEN: ${BOT_TOKEN}
     network_mode: host
+    image: docker.io/chesnokdeep/t0:bot
 
   frontend:
     build:
       context: ./
       dockerfile: ./t0d0d0d0/frontend/Dockerfile
     network_mode: host
+    image: docker.io/chesnokdeep/t0:frontend
 
   nginx:
     build:
       context: ./deploy/nginx
       dockerfile: ./Dockerfile
     network_mode: host
+    image: docker.io/chesnokdeep/t0:nginx
 
   notyfier:
     build:
@@ -43,6 +47,7 @@ services:
       BOT_TOKEN: ${BOT_TOKEN}
       RABBIT_URL: ${RABBIT_URL}
     network_mode: host
+    image: docker.io/chesnokdeep/t0:notyfier
 
   sheduler:
     build:
@@ -51,6 +56,7 @@ services:
     environment:
       RABBIT_URL: ${RABBIT_URL}
     network_mode: host
+    image: docker.io/chesnokdeep/t0:sheduler
 
 
 networks:
