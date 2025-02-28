@@ -3,11 +3,8 @@
     <div class="view">
         <div class="default-text">Login</div>
         <div class="form">
-            <div class="gray-text">get the authcode in the bot</div>
-            <a href="https://t.me/t0d0d0d0bot" class="link">telegram bot</a>
-            <div class="gray-text">authcode</div>
-            <input type="text" class="input" name="authcode" id="authcode" v-model="authcode">
-            <button class="button" @click="login">done</button>
+            <div class="gray-text">start the bot at the link</div>
+            <a :href="'https://t.me/t0d0d0d0bot?start='+authcode_bot" class="link">telegram bot</a>
             <router-link class="referer" to="/signup">sign up</router-link>
             <div class="error">{{ error }}</div>
         </div>
@@ -18,11 +15,13 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import Logo from '../components/Logo.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { request } from '@/modules/requester'
 
 const authcode = ref('')
 const error = ref('') 
+
+const authcode_bot = ref('') 
 
 async function login() {
     let r = await request('/user/login', 'POST', {authcode:authcode.value}, false, false)
@@ -36,6 +35,31 @@ async function login() {
         window.location = '/overview'
     }
 }
+
+onMounted(async ()=> {
+
+    let r = await request('/user/authcode/new', 'POST', {}, false, false)
+    authcode_bot.value = r.data[0].authcode
+
+    async function check() {
+        let r = await request('/user/authcode/login', 'POST', {authcode:authcode_bot.value}, false, false)
+        console.log(r);
+        
+        if (r.type != 'error') {
+            clearInterval(intervalId)
+
+            localStorage.setItem('private_key', r.data[0].private_key)
+            error.value = ''
+            window.location = '/overview'
+        }
+
+
+    }
+
+    const intervalId = setInterval(check, 500);
+
+})
+
 </script>
 
 

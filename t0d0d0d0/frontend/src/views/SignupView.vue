@@ -39,6 +39,30 @@ async function signup() {
 }
 
 
+onMounted(async ()=> {
+
+let r = await request('/user/authcode/new', 'POST', {})
+authcode_bot.value = r.data[0].authcode
+
+async function check() {
+    let r = await request('/user/authcode/login', 'POST', {authcode:authcode_bot.value})
+
+    if (r.status != 404) {
+        clearInterval(intervalId)
+
+        localStorage.setItem('private_key', r.data[0].private_key)
+        error.value = ''
+        window.location = '/overview'
+    }
+
+
+}
+
+const intervalId = setInterval(check, 500);
+
+})
+
+
 </script>
 
 

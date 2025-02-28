@@ -9,6 +9,8 @@ from ...domain.repos import AbsUserRepo, AbsMemoryRepo, AbsBrokerRepo, AbsEncryp
 
 from ...domain.models import UserModel
 
+from ...domain.entities import AuthcodeMemory
+
 @dataclass(eq=False)
 class BaseUserUseCase(BaseUseCase):
     service: UserService
@@ -68,3 +70,39 @@ class GetByIdUseCase(BaseUserUseCase):
 
         return self.sret.ret('profile', 'successfully get profile', [res]), res
 
+@dataclass(eq=False)
+class GenNewAuthcodeUseCase(BaseUserUseCase):
+    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsMemoryRepo], init=False)
+
+    async def execute(self) -> ServiceRetModel[str]:
+        res = await self.call_with_service_excepts(lambda: self.service.gen_new_authcode())
+        return self.sret.ret('new authcode', 'successfully create authcode', [{'authcode':res}]), res
+
+@dataclass(eq=False)
+class CheckAuthcodeUseCase(BaseUserUseCase):
+    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsMemoryRepo], init=False)
+
+    async def execute(self, code: str) -> ServiceRetModel[AuthcodeMemory | None]:
+        res = await self.call_with_service_excepts(lambda: self.service.check_authcode(code))
+
+        return self.sret.ret('check', 'successfully checked authcode', [res]), res
+
+
+@dataclass(eq=False)
+class AuthcodeSignUpUseCase(BaseUserUseCase):
+    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo, AbsMemoryRepo, AbsBrokerRepo, AbsEncryptionRepo, AbsProjectRepo, AbsTaskRepo], init=False)
+
+    async def execute(self, authcode: str) -> ServiceRetModel[int | None]:
+        res, private_key_pem, id = await self.call_with_service_excepts(lambda: self.service.signup_authcode(authcode))
+
+        return self.sret.ret('sign up', 'successfully created user', [{"private_key":private_key_pem}]), id
+
+
+
+@dataclass(eq=False)
+class AuthcodeSignInUseCase(BaseUserUseCase):
+    repo_used: list[BaseRepo] = field(default_factory=lambda: [AbsUserRepo, AbsMemoryRepo, AbsBrokerRepo, AbsEncryptionRepo], init=False)
+
+    async def execute(self, authcode: str) -> ServiceRetModel[int | None]:
+        res, private_key_pem, id = await self.call_with_service_excepts(lambda: self.service.login_authcode(authcode))
+        return self.sret.ret('sign in', 'successfully login user', [{"private_key":private_key_pem}]), id

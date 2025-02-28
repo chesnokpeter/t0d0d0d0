@@ -111,20 +111,15 @@ async function closeModal() {
 async function gettasksbydate(date) {
     try {
         let r = await request('/task/get/byDate', 'POST', {date:date}, true)
+        if (Object.keys(r.data[0]).length === 0) {
+            return []
+        }
+        return r.data
     }
     catch {
         window.location.href = 'login';
     }
-    if (Object.keys(r.data[0]).length === 0) {
-        return []
-    }
 
-
-
-
-
-
-    return r.data
 }
 async function gettasksbyid(data) {
     let r = await request('/task/get/byId', 'POST', {id:data}, true)

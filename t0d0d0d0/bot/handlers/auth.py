@@ -25,10 +25,15 @@ router = Router()
 async def command_start_handler(message: Message, state: FSMContext, s: SUOW, uc: UseCase[BaseUserUseCase], repo1: FromDishka[AbsUserRepo], repo2: FromDishka[AbsEncryptionRepo], repo3: FromDishka[AbsMemoryRepo]) -> None:
     await state.clear()
 
-    async with s.uow_repos(uc, repo1, repo2, repo3) as uow:
-        code = await uow.uc.service.prereg(message.chat.id, message.chat.username)
+    args = message.text.split()
+    ref = None
+    if len(args) > 1:
+        ref = args[1] 
 
-    await message.answer(
-        f'🪪Your code for authorization at <b>t0d0d0d0.com</b>:\n\n<code>{code}</code>\n\nThe code is valid for 30 seconds',
-        parse_mode=ParseMode.HTML,
-    )
+        async with s.uow_repos(uc, repo1, repo2, repo3) as uow:
+            code = await uow.uc.service.update_authcode(ref, message.chat.id, message.chat.username)
+
+        await message.answer(
+            f'🪪Your code for authorization at <b>t0d0d0d0.com</b>:\n\n<code>{code}</code>\n\nThe code is valid for 30 seconds',
+            parse_mode=ParseMode.HTML,
+        )
