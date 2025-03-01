@@ -4,7 +4,7 @@
         <div class="default-text">Login</div>
         <div class="form">
             <div class="gray-text">start the bot at the link</div>
-            <a :href="'https://t.me/t0d0d0d0bot?start='+authcode_bot" class="link">telegram bot</a>
+            <a :href="'https://t.me/t0d0d0d0bot?start='+authcode_bot" target="_blank" rel="noopener noreferrer" class="link">telegram bot</a>
             <router-link class="referer" to="/signup">sign up</router-link>
             <div class="error">{{ error }}</div>
         </div>

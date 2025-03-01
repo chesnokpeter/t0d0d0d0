@@ -160,7 +160,7 @@ class UserService:
         if check:
             user = await self.user_repo.get_all(tgid=self.encryption_repo.hashed(str(check.tgid)))
             if not user:
-                raise NotFoundError('user not found')
+                return await self.signup_authcode(code)
             user = user[0]
             await self.broker_repo.send(AuthnotifyBroker(tgid=check.tgid))
             private_key = self.encryption_repo.aes_decrypt(user.aes_private_key, self.encryption_repo.convert_tgid_to_aes_key(check.tgid))
@@ -170,7 +170,7 @@ class UserService:
         raise NotFoundError('authcode not found')
 
     async def signup_authcode(self, code: str) -> tuple[UserModel, bytes, int]: 
-        reg: AuthcodeMemory = await self.memory_repo.get(key=code, ref=AuthcodeMemory)
+        reg: AuthcodeMemory = await self.memory_repo.get(code, ref=AuthcodeMemory)
         if not reg:
             raise NotFoundError('authcode not found')
 
@@ -179,16 +179,16 @@ class UserService:
         public_key_pem = self.encryption_repo.rsa_public_serial(public_key)
         aes_private_key  = self.encryption_repo.aes_encrypt(private_key_pem.decode(), self.encryption_repo.convert_tgid_to_aes_key(reg.tgid))
 
-        name = self.encryption_repo.rsa_encrypt('name', public_key)
+        name = self.encryption_repo.rsa_encrypt(reg.tgusername, public_key)
         tgid = self.encryption_repo.hashed(str(reg.tgid))
         tgusername = self.encryption_repo.rsa_encrypt(reg.tgusername, public_key)
 
         exist = await self.user_repo.get_all(tgid=tgid)
         if exist:
-            raise ConflictError('user already exist')
+            return await self.login_authcode(code)
         exist = await self.user_repo.get_all(tgusername=tgusername)
         if exist:
-            raise ConflictError('user already exist')
+            return await self.login_authcode(code)
 
         user = AddUser(
             tgid=tgid,

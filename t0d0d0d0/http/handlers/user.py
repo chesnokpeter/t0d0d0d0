@@ -72,7 +72,7 @@ async def login_authcode(data: CheckAuthcodeSch, uc: UseCase[AuthcodeSignInUseCa
 @post('/authcode/signup')
 async def signup_authcode(data: CheckAuthcodeSch, s: SUOW, uc: UseCase[AuthcodeSignUpUseCase], accessSecure: accST, refreshSecure: rshST) -> RET:
     async with s.uow(uc) as uow:
-        r, id = await uow.uc.execute(data)
+        r, id = await uow.uc.execute(data.authcode)
         await uow.commit()
     token = accessSecure.encode(id)
     rtoken = refreshSecure.encode(id)

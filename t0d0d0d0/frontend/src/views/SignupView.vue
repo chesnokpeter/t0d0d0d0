@@ -3,13 +3,8 @@
     <div class="view">
         <div class="default-text">Registration</div>
         <div class="form">
-            <div class="gray-text">get the authcode in the bot</div>
-            <a href="https://t.me/t0d0d0d0bot" class="link">telegram bot</a>
-            <div class="gray-text">authcode</div>
-            <input type="text" class="input" name="authcode" id="authcode" v-model="authcode">
-            <div class="gray-text">name</div>
-            <input type="text" class="input" name="name" id="name" v-model="name">
-            <button class="button" @click="signup">done</button>
+            <div class="gray-text">start the bot at the link</div>
+            <a :href="'https://t.me/t0d0d0d0bot?start='+authcode_bot" target="_blank" rel="noopener noreferrer" class="link">telegram bot</a>
             <router-link class="referer" to="/login">log in</router-link>
             <div class="error">{{ error }}</div>
         </div>
@@ -20,12 +15,14 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import Logo from '../components/Logo.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { request } from '@/modules/requester'
 
 const authcode = ref('')
 const name = ref('') 
 const error = ref('') 
+
+const authcode_bot = ref('') 
 
 async function signup() {
     let r = await request('/user/signup', 'POST', {name:name.value, authcode:authcode.value}, false, false)
@@ -41,24 +38,25 @@ async function signup() {
 
 onMounted(async ()=> {
 
-let r = await request('/user/authcode/new', 'POST', {})
-authcode_bot.value = r.data[0].authcode
+    let r = await request('/user/authcode/new', 'POST', {})
+    authcode_bot.value = r.data[0].authcode
 
-async function check() {
-    let r = await request('/user/authcode/login', 'POST', {authcode:authcode_bot.value})
+    async function check() {
+        let r = await request('/user/authcode/signup', 'POST', {authcode:authcode_bot.value}, false, false)
+        console.log(r);
+        
+        if (r.type != 'error') {
+            clearInterval(intervalId)
 
-    if (r.status != 404) {
-        clearInterval(intervalId)
+            localStorage.setItem('private_key', r.data[0].private_key)
+            error.value = ''
+            window.location = '/overview'
+        }
 
-        localStorage.setItem('private_key', r.data[0].private_key)
-        error.value = ''
-        window.location = '/overview'
+
     }
 
-
-}
-
-const intervalId = setInterval(check, 500);
+    const intervalId = setInterval(check, 500);
 
 })
 

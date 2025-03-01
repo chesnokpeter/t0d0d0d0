@@ -8,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    BigInteger,
     String,
     Time,
     inspect,
@@ -48,7 +49,7 @@ class USER(Base):
     aes_private_key: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
     public_key: Mapped[bytes] = mapped_column(LargeBinary(), nullable=False)
 
-    notify_id: Mapped[int] = mapped_column(Integer(), nullable=True) #! future set False!!
+    notify_id: Mapped[int] = mapped_column(BigInteger(), nullable=True) #! future set False!!
 
     tasks: Mapped[list['TASK']] = relationship(
         'TASK',

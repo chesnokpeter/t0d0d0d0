@@ -1,6 +1,7 @@
-FROM node:20-alpine as builder
+FROM node:latest
 
-WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends && \
+    apt-get clean
 
 COPY ./t0d0d0d0/frontend/package*.json .
 
@@ -10,14 +11,9 @@ COPY ./t0d0d0d0/frontend .
 
 RUN npm run build
 
-FROM gcr.io/distroless/nodejs20-debian12
-
-WORKDIR /app
-
-COPY --from=builder /app/dist ./app
-COPY --from=builder /app/node_modules ./app/node_modules
-COPY --from=builder /app/server.js ./app
-
 EXPOSE 8101
 
-CMD ["app/server.js"]
+RUN useradd -m appuser
+USER appuser
+
+CMD ["node", "server.js"]
