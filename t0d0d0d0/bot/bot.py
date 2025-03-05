@@ -5,7 +5,7 @@ from typing import NoReturn
 
 from aiogram import Bot, Dispatcher
 
-from t0d0d0d0.bot.handlers.auth import router as messageRouter
+from t0d0d0d0.bot.handlers.main import router as messageRouter
 # from t0d0d0d0.bot.handlers.task import router as taskRouter
 from .config import bot_token
 

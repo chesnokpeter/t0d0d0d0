@@ -119,7 +119,7 @@ class UserService:
 
 
     async def get_by_tgid(self, tgid: int) -> UserModel:
-        u = await self.user_repo.get_all(tgid=tgid)
+        u = await self.user_repo.get_all(tgid=self.encryption_repo.hashed(str(tgid)))
         if not u:
             raise NotFoundError('user not found')
         return u[0]
