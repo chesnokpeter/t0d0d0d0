@@ -51,6 +51,17 @@ class IoC(Provider):
             AbsMemoryRepo: memory
         }
 
+    @provide()
+    def repo_realizations(self, broker: AbsBrokerRepo, encryption: AbsEncryptionRepo, memory: AbsMemoryRepo, project: AbsProjectRepo, task: AbsTaskRepo, user: AbsUserRepo) -> RepoRealizations:
+        return {
+            AbsUserRepo: user,
+            AbsProjectRepo: project,
+            AbsTaskRepo: task,
+            AbsEncryptionRepo: encryption,
+            AbsBrokerRepo: broker,
+            AbsMemoryRepo: memory
+        }
+
 ioc = IoC()
 
 [ioc.provide(__all_realizations_repos__[k], provides=v) for k, v in enumerate(__all_abs_repos__)]

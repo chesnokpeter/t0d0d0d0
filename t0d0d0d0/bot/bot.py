@@ -6,7 +6,6 @@ from typing import NoReturn
 from aiogram import Bot, Dispatcher
 
 from t0d0d0d0.bot.handlers.main import router as messageRouter
-# from t0d0d0d0.bot.handlers.task import router as taskRouter
 from .config import bot_token
 
 
@@ -20,12 +19,12 @@ bot = Bot(bot_token)
 
 
 dp.include_router(messageRouter)
-# dp.include_router(taskRouter)
 
 
 async def main() -> NoReturn:
     container = make_async_container(ioc)
     setup_dishka(container, dp)
+
     await dp.start_polling(bot)
 
 
