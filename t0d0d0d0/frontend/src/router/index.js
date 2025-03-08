@@ -6,6 +6,7 @@ import OverView from '../views/OverView.vue'
 import ProjectsView from '../views/ProjectsView.vue'
 import TaskView from '../views/TaskView.vue'
 import SettingsView from '../views/SettingsView.vue'
+import LandingView from '../views/LandingView.vue'
 // import test from '../views/test.vue'
 
 const router = createRouter({
@@ -44,7 +45,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'general',
-      component: OverView
+      component: LandingView
     },
 
     // {

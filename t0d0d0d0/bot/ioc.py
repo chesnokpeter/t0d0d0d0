@@ -16,6 +16,7 @@ from ..app.infra import SetupUOW, AbsConnector
 
 from .config import postgres_url, rabbit_url, redis_host, redis_port
 
+from .handlers.utils.decrypter import FDecrypter, decrypt
 
 class IoC(Provider):
     scope = Scope.REQUEST
@@ -52,15 +53,10 @@ class IoC(Provider):
         }
 
     @provide()
-    def repo_realizations(self, broker: AbsBrokerRepo, encryption: AbsEncryptionRepo, memory: AbsMemoryRepo, project: AbsProjectRepo, task: AbsTaskRepo, user: AbsUserRepo) -> RepoRealizations:
-        return {
-            AbsUserRepo: user,
-            AbsProjectRepo: project,
-            AbsTaskRepo: task,
-            AbsEncryptionRepo: encryption,
-            AbsBrokerRepo: broker,
-            AbsMemoryRepo: memory
-        }
+    def get_decrypter(self, encryption: AbsEncryptionRepo) -> FDecrypter:
+        return lambda message, key: decrypt(message, key, encryption)
+    
+
 
 ioc = IoC()
 

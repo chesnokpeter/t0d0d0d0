@@ -21,13 +21,18 @@ from ...app.domain.repos import AbsUserRepo, AbsEncryptionRepo, AbsMemoryRepo
 
 from ...app.domain import NewTaskSch
 
+from ..ioc import FDecrypter
+
 from .utils import send_main_menu, TaskState
+
+from .utils.depends import private_key
 
 router = Router()
 
 
 @router.message(CommandStart())
 @inject
+@private_key
 async def command_start_handler(message: Message, state: FSMContext, s: SUOW, uc: UseCase[BaseUserUseCase], repo1: FromDishka[AbsUserRepo], repo2: FromDishka[AbsEncryptionRepo], repo3: FromDishka[AbsMemoryRepo]) -> None:
     await state.clear()
 
@@ -73,13 +78,12 @@ async def plus_inbox_message(message: Message, state: FSMContext, s: SUOW, uc: U
 
 @router.callback_query(lambda callback: callback.data == 'list_inbox')
 @inject
-async def plus_inbox_callback(callback: CallbackQuery, state: FSMContext, s: SUOW, uc: UseCase[AllInboxUseCase], uc2: UseCase[GetByTGIDUseCase]) -> None:
+@private_key
+async def plus_inbox_callback(callback: CallbackQuery, decrypt: FDecrypter, state: FSMContext, s: SUOW, uc: UseCase[AllInboxUseCase], uc2: UseCase[GetByTGIDUseCase]) -> None:
     async with s.uow(uc) as uow:
-        async with s.uow(uc2) as uoww:
-            r, modell = await uoww.uc.execute(callback.message.chat.id)
-        r, model = await uow.uc.execute(modell.id)
+        r, model = await uow.uc.execute(state.get_value('id'))
 
     if model:
-        await callback.message.answer('\n'.join([i.name for i in model]))
+        await callback.message.answer('\n'.join([decrypt(i.name, state.get_value('private_key')) for i in model]))
 
     await send_main_menu(callback.message.answer)

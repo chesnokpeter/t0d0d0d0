@@ -13,7 +13,7 @@ from ....app.application.uses_cases import GetByTGIDUseCase
 
 def private_key(func):
     @wraps(func)
-    async def wrapper(state: FSMContext, s: SUOW, uc: UseCase[GetByTGIDUseCase], *args, **kwargs):
+    async def wrapper(s: SUOW, uc: UseCase[GetByTGIDUseCase], *args, **kwargs):
         data = await state.get_data()
         if not data.get('id'):
             id: int = None
