@@ -52,9 +52,9 @@ class IoC(Provider):
             AbsMemoryRepo: memory
         }
 
-    @provide()
-    def get_decrypter(self, encryption: AbsEncryptionRepo) -> FDecrypter:
-        return lambda message, key: decrypt(message, key, encryption)
+    # @provide()
+    # def get_decrypter(self, encryption: AbsEncryptionRepo) -> FDecrypter:
+    #     return lambda message, key: decrypt(message, key, encryption)
     
 
 
