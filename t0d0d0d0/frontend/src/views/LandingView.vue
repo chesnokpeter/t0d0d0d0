@@ -66,7 +66,7 @@ a {
     right: 60px;
     top: 30px;
     gap: 30px;
-    box-shadow: 0px 0px 0px 1500px rgba(0, 0, 0, 1);
+    box-shadow: 0px 0px 0px 2000px rgba(0, 0, 0, 1);
     background-color: #000;
     animation: postLoad 0.5s 0.5s forwards; 
 }
@@ -145,7 +145,7 @@ a {
 
 @keyframes postLoad {
     from {
-        box-shadow: 0px 0px 0px 1500px rgba(0, 0, 0, 1);
+        box-shadow: 0px 0px 0px 2000px rgba(0, 0, 0, 1);
     }
     to {
         box-shadow: none;
