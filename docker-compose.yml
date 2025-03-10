@@ -32,13 +32,6 @@ services:
     network_mode: host
     image: docker.io/chesnokdeep/t0:frontend
 
-  nginx:
-    build:
-      context: ./deploy/nginx
-      dockerfile: ./Dockerfile
-    network_mode: host
-    image: docker.io/chesnokdeep/t0:nginx
-
   notyfier:
     build:
       context: ./
@@ -58,6 +51,25 @@ services:
     network_mode: host
     image: docker.io/chesnokdeep/t0:sheduler
 
+  nginx:
+    build:
+      context: ./deploy/nginx
+      dockerfile: ./Dockerfile
+    volumes:
+      - certbot-data:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    environment:
+      DOMAIN: t0d0d0d0.ru
+      EMAIL: ChesnokovP1107@yandex.ru
+    network_mode: host
+    image: docker.io/chesnokdeep/t0:nginx
+    depends_on:
+      - http
+      - frontend
+
+volumes:
+  certbot-data:
+  certbot-www:
 
 networks:
   appnetwork:
