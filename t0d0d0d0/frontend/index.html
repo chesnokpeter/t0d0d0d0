@@ -4,10 +4,21 @@
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
+    <title>t0d0d0d0</title>
+
+    <link rel="apple-touch-icon" href="./src/assets/apple-touch-icon.png" sizes="180x180">
+    <link rel="mask-icon" href="./src/assets/icon.svg" color="#121212">
+    <meta name="theme-color" content="#121212">
   </head>
   <body>
+    <script>
+      if('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+        })
+      }
+    </script>
     <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>
