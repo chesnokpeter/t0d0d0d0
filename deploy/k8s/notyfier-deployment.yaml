@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notyfier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notyfier
+  template:
+    metadata:
+      labels:
+        app: notyfier
+    spec:
+      containers:
+      - name: notyfier
+        image: docker.io/chesnokdeep/t0:notyfier
+        env:
+        - name: BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: bot_token
+        - name: RABBIT_URL
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: rabbit_url

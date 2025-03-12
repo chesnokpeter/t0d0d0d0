@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: docker.io/chesnokdeep/t0:nginx
+        env:
+        - name: DOMAIN
+          value: t0d0d0d0.ru
+        - name: EMAIL
+          value: ChesnokovP1107@yandex.ru
+        volumeMounts:
+        - name: certbot-data
+          mountPath: /etc/letsencrypt
+        - name: certbot-www
+          mountPath: /var/www/certbot
+      volumes:
+      - name: certbot-data
+        persistentVolumeClaim:
+          claimName: certbot-data-pvc
+      - name: certbot-www
+        persistentVolumeClaim:
+          claimName: certbot-www-pvc

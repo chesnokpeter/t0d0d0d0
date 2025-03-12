@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sheduler
+  template:
+    metadata:
+      labels:
+        app: sheduler
+    spec:
+      containers:
+      - name: sheduler
+        image: docker.io/chesnokdeep/t0:sheduler
+        env:
+        - name: RABBIT_URL
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: rabbit_url
