@@ -18,6 +18,7 @@ export default defineConfig({
         short_name: 't0d0d0d0',
         description: 'minimalistic t0d0 manager',
         theme_color: '#121212',
+        background_color: "#121212",
         icons: [
           {
             src: '192.png',
